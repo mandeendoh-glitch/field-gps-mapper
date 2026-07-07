@@ -6,283 +6,144 @@
 <title>Field GPS Mapper</title>
 <style>
   :root {
-    --bg:      #F5F0E8;
-    --surface: #EDE8DE;
-    --panel:   #EAE5DB;
-    --panel2:  #F9F6F0;
-    --border:  rgba(0,0,0,0.10);
-    --border2: rgba(0,0,0,0.16);
-    --accent:  #2A7DD4;
-    --cyan:    #1A6EBF;
-    --orange:  #C06010;
-    --amber:   #9A7000;
-    --purple:  #6858C0;
-    --green:   #1A8040;
-    --red:     #C03030;
-    --text:    #1A1E26;
-    --dim:     #6A7888;
-    --dim2:    #9AAABB;
-    --font:    -apple-system,'Hiragino Sans','Yu Gothic UI',sans-serif;
-    --mono:    'SF Mono','Consolas',monospace;
-    --shadow:  0 1px 4px rgba(0,0,0,0.12);
+    --bg:#F5F0E8;--surface:#EDE8DE;--panel:#EAE5DB;--panel2:#F9F6F0;
+    --border:rgba(0,0,0,0.10);--border2:rgba(0,0,0,0.16);
+    --accent:#2A7DD4;--cyan:#1A6EBF;--orange:#C06010;--amber:#9A7000;
+    --purple:#6858C0;--green:#1A8040;--red:#C03030;
+    --text:#1A1E26;--dim:#6A7888;--dim2:#9AAABB;
+    --font:-apple-system,'Hiragino Sans','Yu Gothic UI',sans-serif;
+    --mono:'SF Mono','Consolas',monospace;--shadow:0 1px 4px rgba(0,0,0,0.12);
   }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:var(--font);font-size:13px;}
+  #app{display:flex;flex-direction:column;height:100vh;}
 
-  * { margin:0; padding:0; box-sizing:border-box; }
-  html, body { width:100%; height:100%; overflow:hidden; background:var(--bg); color:var(--text); font-family:var(--font); font-size:13px; }
-  #app { display:flex; flex-direction:column; height:100vh; }
+  /* Top bar */
+  #topbar{height:42px;flex-shrink:0;background:var(--panel);border-bottom:1px solid var(--border);display:flex;align-items:center;box-shadow:var(--shadow);z-index:200;}
+  .tb-logo{display:flex;align-items:center;gap:8px;padding:0 16px;height:100%;border-right:1px solid var(--border);font-size:13px;font-weight:700;color:var(--cyan);letter-spacing:.04em;white-space:nowrap;}
+  .tb-menu{display:flex;height:100%;position:relative;}
+  .tb-item{padding:0 13px;height:100%;display:flex;align-items:center;font-size:12px;color:var(--dim);cursor:pointer;border-right:1px solid var(--border);transition:background .15s,color .15s;position:relative;}
+  .tb-item:hover{background:rgba(0,0,0,.04);color:var(--text);}
+  .tb-dropdown{display:none;position:absolute;top:42px;left:0;background:white;border:1px solid var(--border2);border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,.15);min-width:160px;z-index:500;}
+  .tb-item:hover .tb-dropdown{display:block;}
+  .tb-dd-item{padding:8px 16px;font-size:12px;color:var(--text);cursor:pointer;white-space:nowrap;}
+  .tb-dd-item:hover{background:#F5F0E8;}
+  .tb-dd-sep{height:1px;background:var(--border);margin:4px 0;}
+  .tb-spacer{flex:1;}
+  .tb-stats{display:flex;align-items:center;gap:14px;padding:0 16px;}
+  .tb-stat{display:flex;align-items:center;gap:5px;font-size:11px;}
+  .tb-stat-dot{width:7px;height:7px;border-radius:50%;}
+  .tb-stat-num{font-weight:700;font-variant-numeric:tabular-nums;color:var(--text);}
+  .tb-stat-lbl{color:var(--dim);}
 
-  /* ── Top bar ── */
-  #topbar {
-    height:42px; flex-shrink:0;
-    background:var(--panel);
-    border-bottom:1px solid var(--border);
-    display:flex; align-items:center;
-    box-shadow:var(--shadow); z-index:200;
-  }
-  .tb-logo {
-    display:flex; align-items:center; gap:8px;
-    padding:0 16px; height:100%;
-    border-right:1px solid var(--border);
-    font-size:13px; font-weight:700; color:var(--cyan);
-    letter-spacing:.04em; white-space:nowrap;
-  }
-  .tb-menu { display:flex; height:100%; }
-  .tb-item {
-    padding:0 13px; height:100%; display:flex; align-items:center;
-    font-size:12px; color:var(--dim); cursor:pointer;
-    border-right:1px solid var(--border);
-    transition:background .15s, color .15s;
-  }
-  .tb-item:hover { background:rgba(0,0,0,.04); color:var(--text); }
-  .tb-spacer { flex:1; }
-  .tb-stats { display:flex; align-items:center; gap:14px; padding:0 16px; }
-  .tb-stat { display:flex; align-items:center; gap:5px; font-size:11px; }
-  .tb-stat-dot { width:7px; height:7px; border-radius:50%; }
-  .tb-stat-num { font-weight:700; font-variant-numeric:tabular-nums; color:var(--text); }
-  .tb-stat-lbl { color:var(--dim); }
+  /* Tool bar */
+  #toolbar{height:38px;flex-shrink:0;background:var(--panel2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;padding:0 12px;z-index:200;}
+  .btn-load{height:26px;padding:0 12px;background:var(--cyan);color:white;border:none;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer;transition:background .15s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+  .btn-load:hover{background:#1560A8;}
+  .btn-sm{height:26px;padding:0 10px;background:white;color:var(--text);border:1px solid var(--border2);border-radius:5px;font-size:11px;cursor:pointer;white-space:nowrap;transition:background .15s;box-shadow:0 1px 2px rgba(0,0,0,.08);}
+  .btn-sm:hover{background:#F0EBE0;}
+  .btn-green{background:#EAF5EE;color:var(--green);border-color:rgba(26,128,64,.3);}
+  .btn-green:hover{background:#D8EDDF;}
+  .btn-green:disabled{opacity:.45;cursor:not-allowed;}
+  #toolbar .sep{width:1px;height:18px;background:var(--border);margin:0 4px;}
 
-  /* ── API bar ── */
-  #apibar {
-    height:38px; flex-shrink:0;
-    background:var(--panel2);
-    border-bottom:1px solid var(--border);
-    display:flex; align-items:center; gap:8px;
-    padding:0 12px; z-index:200;
-  }
-  #apibar label { font-size:11px; color:var(--dim); white-space:nowrap; }
-  #apiKey {
-    flex:1; max-width:300px; height:26px;
-    background:white; border:1px solid var(--border2);
-    border-radius:5px; padding:0 10px;
-    color:var(--text); font-family:var(--mono); font-size:11px; outline:none;
-    box-shadow:inset 0 1px 3px rgba(0,0,0,.07);
-  }
-  #apiKey:focus { border-color:var(--cyan); box-shadow:0 0 0 2px rgba(26,110,191,.15); }
-  .btn-load {
-    height:26px; padding:0 12px;
-    background:var(--cyan); color:white;
-    border:none; border-radius:5px;
-    font-size:11px; font-weight:700; cursor:pointer;
-    transition:background .15s;
-    box-shadow:0 1px 3px rgba(0,0,0,.2);
-  }
-  .btn-load:hover { background:#1560A8; }
-  .btn-sm {
-    height:26px; padding:0 10px;
-    background:white; color:var(--text);
-    border:1px solid var(--border2); border-radius:5px;
-    font-size:11px; cursor:pointer; white-space:nowrap;
-    transition:background .15s;
-    box-shadow:0 1px 2px rgba(0,0,0,.08);
-  }
-  .btn-sm:hover { background:#F0EBE0; }
-  .btn-green { background:#EAF5EE; color:var(--green); border-color:rgba(26,128,64,.3); }
-  .btn-green:hover { background:#D8EDDF; }
-  .btn-green:disabled { opacity:.45; cursor:not-allowed; }
-  #apibar .sep { width:1px; height:18px; background:var(--border); margin:0 4px; }
+  /* Body */
+  #body{display:flex;flex:1;overflow:hidden;}
 
-  /* ── Body ── */
-  #body { display:flex; flex:1; overflow:hidden; }
+  /* Left panel */
+  #left{width:185px;flex-shrink:0;background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+  .panel-section{border-bottom:1px solid var(--border);}
+  .panel-section-title{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--dim);padding:9px 12px 5px;}
+  .layer-row{display:flex;align-items:center;gap:8px;padding:5px 12px;cursor:pointer;transition:background .12s;}
+  .layer-row:hover{background:rgba(0,0,0,.04);}
+  .layer-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .layer-name{font-size:12px;flex:1;color:var(--text);}
+  .layer-toggle{width:30px;height:16px;border-radius:8px;background:var(--dim2);position:relative;cursor:pointer;transition:background .2s;flex-shrink:0;box-shadow:inset 0 1px 2px rgba(0,0,0,.15);}
+  .layer-toggle.on{background:var(--cyan);}
+  .layer-toggle::after{content:'';position:absolute;width:12px;height:12px;border-radius:50%;background:white;top:2px;left:2px;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+  .layer-toggle.on::after{left:16px;}
+  .filter-row{padding:5px 10px;}
+  .filter-select{width:100%;height:26px;background:white;border:1px solid var(--border2);border-radius:5px;color:var(--text);font-size:11px;padding:0 7px;outline:none;cursor:pointer;box-shadow:inset 0 1px 2px rgba(0,0,0,.06);}
+  .filter-label{font-size:10px;color:var(--dim);margin-bottom:3px;}
+  .left-footer{margin-top:auto;padding:10px;display:flex;flex-direction:column;gap:6px;}
+  .out-btn{width:100%;height:30px;background:white;border:1px solid var(--border2);border-radius:5px;color:var(--dim);font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:all .15s;box-shadow:0 1px 2px rgba(0,0,0,.07);}
+  .out-btn:hover{background:#F0EBE0;color:var(--text);}
+  .out-btn:disabled{opacity:.45;cursor:not-allowed;}
+  .out-btn.primary{background:#E8F0FA;color:var(--accent);border-color:rgba(42,125,212,.3);}
+  .out-btn.primary:hover{background:#D8E5F5;}
 
-  /* ── Left panel ── */
-  #left {
-    width:185px; flex-shrink:0;
-    background:var(--panel);
-    border-right:1px solid var(--border);
-    display:flex; flex-direction:column; overflow:hidden;
-  }
-  .panel-section { border-bottom:1px solid var(--border); }
-  .panel-section-title {
-    font-size:10px; font-weight:700; letter-spacing:.07em;
-    text-transform:uppercase; color:var(--dim);
-    padding:9px 12px 5px;
-  }
-  .layer-row {
-    display:flex; align-items:center; gap:8px;
-    padding:5px 12px; cursor:pointer; transition:background .12s;
-  }
-  .layer-row:hover { background:rgba(0,0,0,.04); }
-  .layer-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
-  .layer-name { font-size:12px; flex:1; color:var(--text); }
-  .layer-toggle {
-    width:30px; height:16px; border-radius:8px;
-    background:var(--dim2); position:relative; cursor:pointer;
-    transition:background .2s; flex-shrink:0;
-    box-shadow:inset 0 1px 2px rgba(0,0,0,.15);
-  }
-  .layer-toggle.on { background:var(--cyan); }
-  .layer-toggle::after {
-    content:''; position:absolute;
-    width:12px; height:12px; border-radius:50%;
-    background:white; top:2px; left:2px;
-    transition:left .2s; box-shadow:0 1px 3px rgba(0,0,0,.2);
-  }
-  .layer-toggle.on::after { left:16px; }
-  .filter-row { padding:5px 10px; }
-  .filter-select {
-    width:100%; height:26px;
-    background:white; border:1px solid var(--border2);
-    border-radius:5px; color:var(--text); font-size:11px;
-    padding:0 7px; outline:none; cursor:pointer;
-    box-shadow:inset 0 1px 2px rgba(0,0,0,.06);
-  }
-  .filter-label { font-size:10px; color:var(--dim); margin-bottom:3px; }
-  .left-footer { margin-top:auto; padding:10px; display:flex; flex-direction:column; gap:6px; }
-  .out-btn {
-    width:100%; height:30px;
-    background:white; border:1px solid var(--border2);
-    border-radius:5px; color:var(--dim); font-size:11px;
-    cursor:pointer; display:flex; align-items:center; justify-content:center; gap:5px;
-    transition:all .15s; box-shadow:0 1px 2px rgba(0,0,0,.07);
-  }
-  .out-btn:hover { background:#F0EBE0; color:var(--text); }
-  .out-btn:disabled { opacity:.45; cursor:not-allowed; }
-  .out-btn.primary { background:#E8F0FA; color:var(--accent); border-color:rgba(42,125,212,.3); }
-  .out-btn.primary:hover { background:#D8E5F5; }
+  /* Map */
+  #map-wrap{flex:1;position:relative;background:#E8E0D0;}
+  #map{width:100%;height:100%;}
+  #map-placeholder{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:var(--bg);}
+  #map-placeholder .ph-icon{font-size:52px;opacity:.3;}
+  #map-placeholder p{font-size:13px;color:var(--dim);}
+  #drop-overlay{position:absolute;inset:0;background:rgba(26,110,191,.07);border:2px dashed var(--cyan);display:none;align-items:center;justify-content:center;z-index:100;pointer-events:none;}
+  #drop-overlay span{font-size:18px;font-weight:700;color:var(--cyan);}
+  #drop-overlay.active{display:flex;}
+  #progress{position:absolute;inset:0;background:rgba(245,240,232,.88);display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;z-index:150;backdrop-filter:blur(4px);}
+  #progress.show{display:flex;}
+  #prog-text{font-size:13px;color:var(--dim);}
+  #prog-bar-wrap{width:220px;height:3px;background:rgba(0,0,0,.1);border-radius:2px;overflow:hidden;}
+  #prog-bar{height:100%;background:var(--cyan);width:0%;transition:width .2s;border-radius:2px;}
+  #map-type{position:absolute;bottom:28px;left:8px;display:flex;gap:3px;z-index:50;}
+  .mt-btn{height:24px;padding:0 10px;background:rgba(255,255,255,.92);color:var(--dim);border:1px solid var(--border2);border-radius:4px;font-size:10px;cursor:pointer;transition:all .15s;box-shadow:0 1px 3px rgba(0,0,0,.15);}
+  .mt-btn.active{background:var(--cyan);color:white;border-color:var(--cyan);}
+  .mt-btn:hover:not(.active){background:white;color:var(--text);}
+  #coords-bar{position:absolute;bottom:0;left:0;right:0;height:22px;background:rgba(245,240,232,.92);border-top:1px solid var(--border);display:flex;align-items:center;padding:0 10px;gap:16px;font-size:10px;color:var(--dim);font-family:var(--mono);z-index:50;}
 
-  /* ── Map ── */
-  #map-wrap { flex:1; position:relative; background:#E8E0D0; }
-  #map { width:100%; height:100%; }
-  #map-placeholder {
-    position:absolute; inset:0;
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    gap:12px; background:var(--bg);
-  }
-  #map-placeholder .ph-icon { font-size:52px; opacity:.3; }
-  #map-placeholder p { font-size:13px; color:var(--dim); }
-  #drop-overlay {
-    position:absolute; inset:0;
-    background:rgba(26,110,191,.07);
-    border:2px dashed var(--cyan);
-    display:none; align-items:center; justify-content:center;
-    z-index:100; pointer-events:none;
-  }
-  #drop-overlay span { font-size:18px; font-weight:700; color:var(--cyan); }
-  #drop-overlay.active { display:flex; }
-  #progress {
-    position:absolute; inset:0;
-    background:rgba(245,240,232,.88);
-    display:none; flex-direction:column; align-items:center; justify-content:center;
-    gap:12px; z-index:150; backdrop-filter:blur(4px);
-  }
-  #progress.show { display:flex; }
-  #prog-text { font-size:13px; color:var(--dim); }
-  #prog-bar-wrap { width:220px; height:3px; background:rgba(0,0,0,.1); border-radius:2px; overflow:hidden; }
-  #prog-bar { height:100%; background:var(--cyan); width:0%; transition:width .2s; border-radius:2px; }
-  #map-type { position:absolute; bottom:28px; left:8px; display:flex; gap:3px; z-index:50; }
-  .mt-btn {
-    height:24px; padding:0 10px;
-    background:rgba(255,255,255,.92); color:var(--dim);
-    border:1px solid var(--border2); border-radius:4px;
-    font-size:10px; cursor:pointer; transition:all .15s;
-    box-shadow:0 1px 3px rgba(0,0,0,.15);
-  }
-  .mt-btn.active { background:var(--cyan); color:white; border-color:var(--cyan); }
-  .mt-btn:hover:not(.active) { background:white; color:var(--text); }
-  #coords-bar {
-    position:absolute; bottom:0; left:0; right:0; height:22px;
-    background:rgba(245,240,232,.92); border-top:1px solid var(--border);
-    display:flex; align-items:center; padding:0 10px; gap:16px;
-    font-size:10px; color:var(--dim); font-family:var(--mono); z-index:50;
-  }
+  /* Right panel */
+  #right{width:215px;flex-shrink:0;background:var(--panel);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+  #list-header{height:34px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 12px;border-bottom:1px solid var(--border);background:var(--panel2);font-size:11px;font-weight:700;color:var(--dim);letter-spacing:.04em;text-transform:uppercase;}
+  #list-count{font-size:10px;color:var(--dim2);font-weight:400;}
+  #photo-list{flex:1;overflow-y:auto;background:var(--panel2);}
+  #photo-list::-webkit-scrollbar{width:4px;}
+  #photo-list::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+  .list-item{display:flex;align-items:center;gap:8px;padding:7px 10px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s;}
+  .list-item:hover{background:rgba(0,0,0,.04);}
+  .list-item.active{background:rgba(26,110,191,.10);border-left:2px solid var(--cyan);}
+  .li-thumb{width:38px;height:30px;border-radius:4px;object-fit:cover;flex-shrink:0;background:var(--surface);border:1px solid var(--border);}
+  .li-info{flex:1;min-width:0;}
+  .li-name{font-size:11px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text);}
+  .li-meta{font-size:10px;color:var(--dim);margin-top:1px;font-family:var(--mono);}
+  .li-dir{font-size:10px;color:var(--orange);margin-top:1px;}
+  .li-nogps{font-size:10px;color:var(--red);margin-top:1px;}
+  .li-del{width:18px;height:18px;border:none;background:none;color:var(--dim2);cursor:pointer;font-size:14px;flex-shrink:0;border-radius:3px;display:flex;align-items:center;justify-content:center;}
+  .li-del:hover{background:rgba(192,48,48,.1);color:var(--red);}
+  .list-memo{padding:6px 10px;border-bottom:1px solid var(--border);background:rgba(154,112,0,.06);cursor:pointer;transition:background .12s;}
+  .list-memo:hover{background:rgba(154,112,0,.11);}
+  .list-memo .memo-tag{font-size:9px;font-weight:700;color:var(--amber);letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px;}
+  .list-memo .memo-text{font-size:11px;color:var(--text);line-height:1.4;}
+  .list-memo .memo-time{font-size:9px;color:var(--dim);margin-top:2px;}
+  #preview-panel{height:145px;flex-shrink:0;border-top:1px solid var(--border);position:relative;background:var(--surface);overflow:hidden;}
+  #preview-img{width:100%;height:100%;object-fit:cover;display:none;}
+  #preview-info{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.55);padding:6px 10px;}
+  #preview-name{font-size:11px;font-weight:700;color:white;}
+  #preview-sub{font-size:10px;color:rgba(255,255,255,.7);margin-top:1px;}
+  #preview-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--dim2);}
 
-  /* ── Right panel ── */
-  #right {
-    width:215px; flex-shrink:0;
-    background:var(--panel);
-    border-left:1px solid var(--border);
-    display:flex; flex-direction:column; overflow:hidden;
-  }
-  #list-header {
-    height:34px; flex-shrink:0;
-    display:flex; align-items:center; justify-content:space-between;
-    padding:0 12px; border-bottom:1px solid var(--border);
-    background:var(--panel2);
-    font-size:11px; font-weight:700; color:var(--dim);
-    letter-spacing:.04em; text-transform:uppercase;
-  }
-  #list-count { font-size:10px; color:var(--dim2); font-weight:400; }
-  #photo-list { flex:1; overflow-y:auto; background:var(--panel2); }
-  #photo-list::-webkit-scrollbar { width:4px; }
-  #photo-list::-webkit-scrollbar-thumb { background:var(--border2); border-radius:2px; }
-  .list-item {
-    display:flex; align-items:center; gap:8px;
-    padding:7px 10px; border-bottom:1px solid var(--border);
-    cursor:pointer; transition:background .12s;
-  }
-  .list-item:hover { background:rgba(0,0,0,.04); }
-  .list-item.active { background:rgba(26,110,191,.10); border-left:2px solid var(--cyan); }
-  .li-thumb {
-    width:38px; height:30px; border-radius:4px;
-    object-fit:cover; flex-shrink:0;
-    background:var(--surface); border:1px solid var(--border);
-  }
-  .li-info { flex:1; min-width:0; }
-  .li-name { font-size:11px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--text); }
-  .li-meta { font-size:10px; color:var(--dim); margin-top:1px; font-family:var(--mono); }
-  .li-dir { font-size:10px; color:var(--orange); margin-top:1px; }
-  .li-nogps { font-size:10px; color:var(--red); margin-top:1px; }
-  .list-memo {
-    padding:6px 10px; border-bottom:1px solid var(--border);
-    background:rgba(154,112,0,.06); cursor:pointer; transition:background .12s;
-  }
-  .list-memo:hover { background:rgba(154,112,0,.11); }
-  .list-memo .memo-tag { font-size:9px; font-weight:700; color:var(--amber); letter-spacing:.06em; text-transform:uppercase; margin-bottom:2px; }
-  .list-memo .memo-text { font-size:11px; color:var(--text); line-height:1.4; }
-  .list-memo .memo-time { font-size:9px; color:var(--dim); margin-top:2px; }
-  #preview-panel {
-    height:145px; flex-shrink:0;
-    border-top:1px solid var(--border);
-    position:relative; background:var(--surface); overflow:hidden;
-  }
-  #preview-img { width:100%; height:100%; object-fit:cover; display:none; }
-  #preview-info { position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,.55); padding:6px 10px; }
-  #preview-name { font-size:11px; font-weight:700; color:white; }
-  #preview-sub { font-size:10px; color:rgba(255,255,255,.7); margin-top:1px; }
-  #preview-empty {
-    position:absolute; inset:0;
-    display:flex; align-items:center; justify-content:center;
-    font-size:11px; color:var(--dim2);
-  }
+  /* Edit modal */
+  #edit-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1000;align-items:center;justify-content:center;}
+  #edit-modal.show{display:flex;}
+  .edit-box{background:white;border-radius:10px;padding:20px;width:320px;box-shadow:0 8px 32px rgba(0,0,0,.2);}
+  .edit-box h3{font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px;}
+  .edit-box textarea{width:100%;height:80px;border:1px solid var(--border2);border-radius:5px;padding:8px;font-size:12px;font-family:var(--font);resize:vertical;outline:none;}
+  .edit-box textarea:focus{border-color:var(--cyan);}
+  .edit-btns{display:flex;gap:8px;margin-top:10px;justify-content:flex-end;}
+  .edit-btn-cancel{height:28px;padding:0 14px;background:white;border:1px solid var(--border2);border-radius:5px;font-size:11px;cursor:pointer;}
+  .edit-btn-save{height:28px;padding:0 14px;background:var(--cyan);color:white;border:none;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer;}
 
-  /* ── Toast ── */
-  #toast {
-    position:fixed; bottom:20px; right:20px;
-    background:white; border:1px solid var(--border2);
-    border-radius:8px; padding:9px 16px;
-    font-size:12px; color:var(--text);
-    box-shadow:0 4px 16px rgba(0,0,0,.18);
-    transform:translateY(50px); opacity:0;
-    transition:all .3s; z-index:9999; max-width:280px;
-  }
-  #toast.show { transform:translateY(0); opacity:1; }
-  #toast.ok { border-left:3px solid var(--green); }
-  #toast.err { border-left:3px solid var(--red); }
+  /* Toast */
+  #toast{position:fixed;bottom:20px;right:20px;background:white;border:1px solid var(--border2);border-radius:8px;padding:9px 16px;font-size:12px;color:var(--text);box-shadow:0 4px 16px rgba(0,0,0,.18);transform:translateY(50px);opacity:0;transition:all .3s;z-index:9999;max-width:280px;}
+  #toast.show{transform:translateY(0);opacity:1;}
+  #toast.ok{border-left:3px solid var(--green);}
+  #toast.err{border-left:3px solid var(--red);}
 </style>
 </head>
 <body>
 <div id="app">
 
+  <!-- Top bar -->
   <div id="topbar">
     <div class="tb-logo">
       <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
@@ -299,10 +160,33 @@
       Field GPS Mapper
     </div>
     <div class="tb-menu">
-      <div class="tb-item">ファイル</div>
-      <div class="tb-item">表示</div>
-      <div class="tb-item">出力</div>
-      <div class="tb-item">設定</div>
+      <div class="tb-item">ファイル
+        <div class="tb-dropdown">
+          <div class="tb-dd-item" onclick="document.getElementById('photoInput').click()">📁 写真を読み込む</div>
+          <div class="tb-dd-item" onclick="document.getElementById('kmlInput').click()">📂 KMLを読み込む</div>
+          <div class="tb-dd-sep"></div>
+          <div class="tb-dd-item" onclick="clearAll()">🗑 クリア</div>
+        </div>
+      </div>
+      <div class="tb-item">表示
+        <div class="tb-dropdown">
+          <div class="tb-dd-item" onclick="toggleLayer('photos')">撮影ポイント ON/OFF</div>
+          <div class="tb-dd-item" onclick="toggleLayer('arrows')">撮影方向 ON/OFF</div>
+          <div class="tb-dd-item" onclick="toggleLayer('route')">作業動線 ON/OFF</div>
+          <div class="tb-dd-item" onclick="toggleLayer('memos')">しゃべメモ ON/OFF</div>
+        </div>
+      </div>
+      <div class="tb-item">出力
+        <div class="tb-dropdown">
+          <div class="tb-dd-item" onclick="exportKML()">⬇ KML出力</div>
+          <div class="tb-dd-item" onclick="exportExcel()">📊 Excel出力</div>
+        </div>
+      </div>
+      <div class="tb-item">設定
+        <div class="tb-dropdown">
+          <div class="tb-dd-item" onclick="toggleApiBar()">APIキー設定</div>
+        </div>
+      </div>
     </div>
     <div class="tb-spacer"></div>
     <div class="tb-stats">
@@ -324,18 +208,19 @@
     </div>
   </div>
 
-  <div id="apibar">
-    <label>Google Maps API Key</label>
-    <input type="text" id="apiKey" placeholder="AIzaSy..." spellcheck="false" autocomplete="off" value="AIzaSyCxFFQxa-0PtBYfJ9gXWkur2wiszMwk7S0"/>
-    <button class="btn-load" onclick="loadMap()">地図を読み込む</button>
-    <div class="sep"></div>
+  <!-- Tool bar -->
+  <div id="toolbar">
     <button class="btn-sm" onclick="document.getElementById('photoInput').click()">📁 写真を読み込む</button>
-    <input type="file" id="photoInput" multiple accept="image/jpeg,image/jpg" style="display:none" onchange="handlePhotos(this.files)" webkitdirectory/>
+    <input type="file" id="photoInput" multiple accept="image/jpeg,image/jpg" style="display:none" onchange="handlePhotos(this.files)"/>
+    <div class="sep"></div>
     <button class="btn-sm btn-green" onclick="exportKML()" id="exportBtn" disabled>⬇ KML出力</button>
+    <button class="btn-sm btn-green" onclick="exportExcel()" id="exportExcelBtn" disabled style="background:#EAF5EE;color:var(--green);border-color:rgba(26,128,64,.3);">📊 Excel出力</button>
   </div>
 
+  <!-- Body -->
   <div id="body">
 
+    <!-- Left panel -->
     <div id="left">
       <div class="panel-section">
         <div class="panel-section-title">表示レイヤー</div>
@@ -348,6 +233,11 @@
           <div class="layer-dot" style="background:var(--orange)"></div>
           <span class="layer-name">撮影方向</span>
           <div class="layer-toggle on" id="lyr-arrows"></div>
+        </div>
+        <div class="layer-row" onclick="toggleLayer('route')">
+          <div class="layer-dot" style="background:#2A7DD4"></div>
+          <span class="layer-name">作業動線</span>
+          <div class="layer-toggle on" id="lyr-route"></div>
         </div>
         <div class="layer-row" onclick="toggleLayer('kml')">
           <div class="layer-dot" style="background:var(--purple)"></div>
@@ -362,12 +252,6 @@
       </div>
       <div class="panel-section">
         <div class="panel-section-title">フィルター</div>
-        <div class="filter-row">
-          <div class="filter-label">プロジェクト</div>
-          <select class="filter-select" id="projFilter" onchange="applyFilter()">
-            <option value="">すべて</option>
-          </select>
-        </div>
         <div class="filter-row">
           <div class="filter-label">GPS</div>
           <select class="filter-select" id="gpsFilter" onchange="applyFilter()">
@@ -389,24 +273,14 @@
       <div class="left-footer">
         <button class="out-btn primary" onclick="exportKML()" id="exportBtn2" disabled>⬇ KML追記出力</button>
         <button class="out-btn" onclick="clearAll()">🗑 クリア</button>
-
-        <!-- しゃべメモ誘導 -->
-        <div style="margin-top:10px; padding:10px; background:rgba(154,112,0,.08); border:1px solid rgba(154,112,0,.25); border-radius:8px;">
-          <div style="font-size:10px; font-weight:700; color:var(--amber); letter-spacing:.06em; text-transform:uppercase; margin-bottom:6px;">💬 しゃべメモ</div>
-          <div style="font-size:10px; color:var(--dim); line-height:1.5; margin-bottom:8px;">現場メモをスマホで記録。GPS付きCSVをここに読み込めます。</div>
-          <button class="out-btn" style="background:rgba(154,112,0,.12); color:var(--amber); border-color:rgba(154,112,0,.3); margin-bottom:6px;" onclick="window.open('https://mandeendoh-glitch.github.io/shabememo/','_blank')">📱 しゃべメモを開く</button>
-          <div style="text-align:center; margin-top:4px;">
-            <div id="shabememo-qr" style="display:inline-block; background:white; padding:6px; border-radius:6px; border:1px solid var(--border);"></div>
-            <div style="font-size:9px; color:var(--dim); margin-top:4px;">スマホで読み取る</div>
-          </div>
-        </div>
       </div>
     </div>
 
+    <!-- Map -->
     <div id="map-wrap">
       <div id="map-placeholder">
         <div class="ph-icon">🗺</div>
-        <p>Google Maps APIキーを入力して地図を読み込んでください</p>
+        <p>写真をドロップすると地図が表示されます</p>
       </div>
       <div id="map"></div>
       <div id="drop-overlay"><span>ここにドロップ</span></div>
@@ -426,6 +300,7 @@
       </div>
     </div>
 
+    <!-- Right panel -->
     <div id="right">
       <div id="list-header">
         <span>写真リスト</span>
@@ -445,15 +320,32 @@
   </div>
 </div>
 
+<!-- Edit modal -->
+<div id="edit-modal">
+  <div class="edit-box">
+    <h3>📝 メモを編集</h3>
+    <div id="edit-photo-name" style="font-size:11px;color:var(--dim);margin-bottom:8px;"></div>
+    <textarea id="edit-textarea" placeholder="損傷メモを入力してください..."></textarea>
+    <div class="edit-btns">
+      <button class="edit-btn-cancel" onclick="closeEditModal()">キャンセル</button>
+      <button class="edit-btn-save" onclick="saveEditModal()">保存</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script>
-let map=null, markers=[], kmlMarkers=[], photos=[], memos=[], activeIW=null;
-let layers={photos:true,arrows:true,kml:true,memos:true};
+// ── State ──────────────────────────────────────
+const API_KEY = 'AIzaSyCxFFQxa-0PtBYfJ9gXWkur2wiszMwk7S0';
+let map=null, markers=[], kmlMarkers=[], photos=[], memos=[], activeIW=null, routeLine=null;
+let layers={photos:true,arrows:true,kml:true,memos:true,route:true};
+let editTargetIdx = null;
 
-function parseEXIF(buf) {
+// ── EXIF Parser ─────────────────────────────────
+function parseEXIF(buf){
   const v=new DataView(buf);
-  if(v.getUint16(0)!==0xFFD8) return null;
+  if(v.getUint16(0)!==0xFFD8)return null;
   let off=2,le=false,ifdOff=0,ts=0;
   while(off<v.byteLength-2){
     const mk=v.getUint16(off);
@@ -461,17 +353,17 @@ function parseEXIF(buf) {
       const hdr=String.fromCharCode(v.getUint8(off+4),v.getUint8(off+5),v.getUint8(off+6),v.getUint8(off+7));
       if(hdr==='Exif'){ts=off+10;le=v.getUint16(ts)===0x4949;ifdOff=v.getUint32(ts+4,le);break;}
     }
-    if(mk===0xFFDA) break;
+    if(mk===0xFFDA)break;
     off+=2+v.getUint16(off+2);
   }
-  if(!ifdOff) return null;
+  if(!ifdOff)return null;
   const SZ=[0,1,1,2,4,8,1,1,2,4,8,4,8];
   function readIFD(rel){
     const abs=ts+rel,cnt=v.getUint16(abs,le),tags={};
     for(let i=0;i<cnt;i++){
       const e=abs+2+i*12,tag=v.getUint16(e,le),typ=v.getUint16(e+2,le),num=v.getUint32(e+4,le);
       let vo=e+8;
-      if((SZ[typ]||1)*num>4) vo=ts+v.getUint32(e+8,le);
+      if((SZ[typ]||1)*num>4)vo=ts+v.getUint32(e+8,le);
       if(typ===5){const r=[];for(let j=0;j<num;j++){const n=v.getUint32(vo+j*8,le),d=v.getUint32(vo+j*8+4,le);r.push(d?n/d:0);}tags[tag]=r;}
       else if(typ===2){let s='';for(let j=0;j<num-1;j++)s+=String.fromCharCode(v.getUint8(vo+j));tags[tag]=s;}
       else if(typ===3)tags[tag]=v.getUint16(vo,le);
@@ -490,13 +382,12 @@ function parseEXIF(buf) {
   return{lat:(lat!==null&&!isNaN(lat))?lat:null,lng:(lng!==null&&!isNaN(lng))?lng:null,alt,dir:(dir!==null&&!isNaN(dir))?dir:null,dateTime:ifd0[0x0132]||ifd0[0x9003]||null};
 }
 
+// ── Helpers ──────────────────────────────────────
 function dirName(deg){const n=['北','北北東','北東','東北東','東','東南東','南東','南南東','南','南南西','南西','西南西','西','西北西','北西','北北西'];return n[Math.round(deg/22.5)%16];}
-function offsetPos(pos,deg,dist){const r=deg*Math.PI/180;return{lat:pos.lat+dist*Math.cos(r),lng:pos.lng+dist*Math.sin(r)/Math.cos(pos.lat*Math.PI/180)};}
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
+// ── Google Maps ──────────────────────────────────
 function loadMap(){
-  const key=document.getElementById('apiKey').value.trim();
-  if(!key){showToast('APIキーを入力してください','err');return;}
   const old=document.getElementById('_gm');if(old)old.remove();
   window.initMap=()=>{
     document.getElementById('map-placeholder').style.display='none';
@@ -508,34 +399,38 @@ function loadMap(){
     map.addListener('mousemove',e=>{document.getElementById('coord-ll').textContent=`${e.latLng.lat().toFixed(6)}°N  ${e.latLng.lng().toFixed(6)}°E`;});
     map.addListener('zoom_changed',()=>{document.getElementById('coord-zoom').textContent=`ズーム ${map.getZoom()}`;updateMarkerVisibility();});
     if(photos.length>0)plotAll();
-    showToast('地図を読み込みました ✓','ok');
   };
   const s=document.createElement('script');s.id='_gm';
-  s.src=`https://maps.googleapis.com/maps/api/js?key=${key}&callback=initMap`;
-  s.onerror=()=>showToast('APIキーが無効です','err');
+  s.src=`https://maps.googleapis.com/maps/api/js?key=${API_KEY}&callback=initMap`;
+  s.onerror=()=>showToast('地図の読み込みに失敗しました','err');
   document.head.appendChild(s);
 }
 
 function switchMapType(type,el){if(!map)return;map.setMapTypeId(type);document.querySelectorAll('.mt-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');}
+function toggleApiBar(){showToast('APIキーは設定済みです','ok');}
 
+// ── Photo handling ────────────────────────────────
 async function handlePhotos(files){
   if(!files||!files.length)return;
   const imgs=Array.from(files).filter(f=>/\.(jpe?g)$/i.test(f.name));
   if(!imgs.length){showToast('JPEGファイルが見つかりません','err');return;}
+  if(!map)loadMap();
   showProgress(true);const res=[];
   for(let i=0;i<imgs.length;i++){
     setProgress(i/imgs.length,`${i+1}/${imgs.length}: ${imgs[i].name}`);
-    try{const buf=await imgs[i].arrayBuffer();const exif=parseEXIF(buf);res.push({name:imgs[i].name,exif,thumbUrl:URL.createObjectURL(imgs[i]),file:imgs[i]});}
-    catch(e){res.push({name:imgs[i].name,exif:null,thumbUrl:null,file:imgs[i]});}
+    try{const buf=await imgs[i].arrayBuffer();const exif=parseEXIF(buf);res.push({name:imgs[i].name,exif,thumbUrl:URL.createObjectURL(imgs[i]),file:imgs[i],note:''});}
+    catch(e){res.push({name:imgs[i].name,exif:null,thumbUrl:null,file:imgs[i],note:''});}
   }
   setProgress(1,'完了');await new Promise(r=>setTimeout(r,250));showProgress(false);
   photos=[...photos,...res];updateStats();renderList();
   if(map)plotAll();
   document.getElementById('exportBtn').disabled=false;
   document.getElementById('exportBtn2').disabled=false;
+  document.getElementById('exportExcelBtn').disabled=false;
   showToast(`${res.length}枚読込（GPS付き:${res.filter(p=>p.exif?.lat!==null).length}枚）`,'ok');
 }
 
+// ── KML handling ──────────────────────────────────
 async function handleKML(file){
   if(!file)return;
   const text=await file.text();
@@ -555,30 +450,42 @@ async function handleKML(file){
   showToast(`KML読込完了（${kmlMarkers.length}地点）`,'ok');
 }
 
+// ── Plot all ──────────────────────────────────────
 function plotAll(){
   if(!map)return;
   markers.forEach(m=>{m.marker?.setMap(null);m.arrow?.setMap(null);m.iw?.close();});markers=[];
+  if(routeLine){routeLine.setMap(null);routeLine=null;}
   const bounds=new google.maps.LatLngBounds();let any=false;
+
   photos.forEach((photo,idx)=>{
     if(!photo.exif?.lat)return;
     const pos={lat:photo.exif.lat,lng:photo.exif.lng};bounds.extend(pos);any=true;
     const marker=new google.maps.Marker({position:pos,map:layers.photos?map:null,icon:{path:google.maps.SymbolPath.CIRCLE,fillColor:'#1A6EBF',fillOpacity:.9,strokeColor:'#fff',strokeWeight:2,scale:8},title:photo.name,zIndex:10});
+
     let arrow=null;
     if(photo.exif.dir!==null){
-      const end=offsetPos(pos,photo.exif.dir,0.00016);
+      // 矢印の長さをズームレベルに応じて調整（短め固定）
+      const zoom=map.getZoom()||15;
+      const dist=0.00008*Math.pow(2,15-zoom);
+      const r=photo.exif.dir*Math.PI/180;
+      const end={lat:pos.lat+dist*Math.cos(r),lng:pos.lng+dist*Math.sin(r)/Math.cos(pos.lat*Math.PI/180)};
       arrow=new google.maps.Polyline({path:[pos,end],map:layers.arrows?map:null,strokeColor:'#C06010',strokeOpacity:1,strokeWeight:2.5,icons:[{icon:{path:google.maps.SymbolPath.FORWARD_CLOSED_ARROW,scale:3,fillColor:'#C06010',fillOpacity:1,strokeColor:'#C06010',strokeWeight:1},offset:'100%'}],zIndex:9});
     }
+
     const d=photo.exif;
+    const noteHtml=photo.note?`<div style="padding:6px 12px;background:#FFFBF0;border-top:1px solid rgba(0,0,0,.06);font-size:11px;color:#5A4A00;white-space:pre-wrap;">${esc(photo.note)}</div>`:'';
     const content=`<div style="background:#fff;color:#1A1E26;border:1px solid rgba(0,0,0,.12);border-radius:8px;padding:0;min-width:220px;max-width:260px;overflow:hidden;font-family:sans-serif;box-shadow:0 4px 16px rgba(0,0,0,.15);">
       <div style="background:#F5F0E8;padding:8px 12px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(0,0,0,.08);">
         <div style="font-size:12px;font-weight:700;color:#1A6EBF;">${photo.name}</div>
         <div style="font-size:10px;color:#6A7888;">${d.dateTime?d.dateTime.substring(0,10).replace(/:/g,'/'):'—'}</div>
       </div>
-      <div style="position:relative;">
+      <div style="position:relative;cursor:pointer;" onclick="openEditModal(${idx})">
         ${photo.thumbUrl?`<img src="${photo.thumbUrl}" style="width:100%;height:120px;object-fit:cover;display:block;">`:'<div style="width:100%;height:80px;background:#EDE8DE;display:flex;align-items:center;justify-content:center;color:#9AAABB;font-size:11px;">写真なし</div>'}
         ${d.dir!==null?buildCompassSVG(d.dir,true):''}
         ${d.dir!==null?`<div style="position:absolute;bottom:8px;left:8px;background:rgba(255,255,255,.88);border-radius:3px;padding:2px 6px;font-size:10px;font-weight:700;color:#C06010;">${d.dir.toFixed(0)}° ${dirName(d.dir)}</div>`:''}
+        <div style="position:absolute;top:6px;right:6px;background:rgba(255,255,255,.88);border-radius:3px;padding:2px 6px;font-size:9px;color:#6A7888;">✏️ タップでメモ編集</div>
       </div>
+      ${noteHtml}
       <div style="padding:8px 12px;display:flex;flex-direction:column;gap:4px;background:#FDFAF5;">
         <div style="display:flex;justify-content:space-between;font-size:11px;"><span style="color:#6A7888;">撮影日時</span><span>${d.dateTime||'—'}</span></div>
         <div style="display:flex;justify-content:space-between;font-size:11px;"><span style="color:#6A7888;">高度</span><span>${d.alt!==null?d.alt.toFixed(1)+' m':'—'}</span></div>
@@ -589,6 +496,13 @@ function plotAll(){
     marker.addListener('click',()=>{if(activeIW)activeIW.close();iw.open(map,marker);activeIW=iw;highlightItem(idx);setPreview(photo);});
     markers.push({marker,arrow,iw,idx});
   });
+
+  // 作業動線
+  const routePoints=photos.filter(p=>p.exif?.lat).sort((a,b)=>(a.exif?.dateTime||'').localeCompare(b.exif?.dateTime||'')).map(p=>({lat:p.exif.lat,lng:p.exif.lng}));
+  if(routePoints.length>=2&&layers.route){
+    routeLine=new google.maps.Polyline({path:routePoints,map:map,strokeColor:'#2A7DD4',strokeOpacity:0.5,strokeWeight:2,zIndex:8});
+  }
+
   if(any)map.fitBounds(bounds,{padding:60});
   updateMarkerVisibility();
 }
@@ -609,7 +523,31 @@ function buildCompassSVG(deg,inPopup=false){
   </svg></div>`;
 }
 
-function toggleLayer(name){layers[name]=!layers[name];document.getElementById(`lyr-${name}`).classList.toggle('on',layers[name]);updateMarkerVisibility();}
+// ── Edit modal ────────────────────────────────────
+function openEditModal(idx){
+  editTargetIdx=idx;
+  const photo=photos[idx];
+  document.getElementById('edit-photo-name').textContent=photo.name;
+  document.getElementById('edit-textarea').value=photo.note||'';
+  document.getElementById('edit-modal').classList.add('show');
+}
+function closeEditModal(){document.getElementById('edit-modal').classList.remove('show');editTargetIdx=null;}
+function saveEditModal(){
+  if(editTargetIdx===null)return;
+  photos[editTargetIdx].note=document.getElementById('edit-textarea').value;
+  closeEditModal();
+  renderList();
+  if(map)plotAll();
+  showToast('メモを保存しました','ok');
+}
+
+// ── Layer toggles ──────────────────────────────────
+function toggleLayer(name){
+  layers[name]=!layers[name];
+  const el=document.getElementById(`lyr-${name}`);
+  if(el)el.classList.toggle('on',layers[name]);
+  updateMarkerVisibility();
+}
 
 function updateMarkerVisibility(){
   const zoom=map?map.getZoom():15,showThumb=zoom>=18;
@@ -621,8 +559,10 @@ function updateMarkerVisibility(){
     else m.marker.setIcon({path:google.maps.SymbolPath.CIRCLE,fillColor:'#1A6EBF',fillOpacity:.9,strokeColor:'#fff',strokeWeight:2,scale:8});
   });
   kmlMarkers.forEach(m=>m.marker?.setMap(layers.kml?map:null));
+  if(routeLine)routeLine.setMap(layers.route?map:null);
 }
 
+// ── List ──────────────────────────────────────────
 function renderList(){
   const list=document.getElementById('photo-list');list.innerHTML='';let count=0;
   const gf=document.getElementById('gpsFilter').value;
@@ -630,10 +570,10 @@ function renderList(){
     if(gf==='gps'&&!p.exif?.lat)return;if(gf==='nogps'&&p.exif?.lat)return;count++;
     const item=document.createElement('div');item.className='list-item';item.dataset.idx=idx;
     const thumb=p.thumbUrl?`<img class="li-thumb" src="${p.thumbUrl}" loading="lazy"/>`:`<div class="li-thumb" style="display:flex;align-items:center;justify-content:center;font-size:16px;">🖼</div>`;
-    item.innerHTML=`${thumb}<div class="li-info"><div class="li-name" title="${p.name}">${p.name}</div>${p.exif?.lat?`<div class="li-meta">${p.exif.lat.toFixed(5)}, ${p.exif.lng.toFixed(5)}</div>`:`<div class="li-nogps">GPS なし</div>`}${p.exif?.dir!==null?`<div class="li-dir">↑ ${p.exif.dir.toFixed(0)}°（${dirName(p.exif.dir)}）</div>`:''}</div>`;
+    item.innerHTML=`${thumb}<div class="li-info"><div class="li-name" title="${p.name}">${p.name}</div>${p.exif?.lat?`<div class="li-meta">${p.exif.lat.toFixed(5)}, ${p.exif.lng.toFixed(5)}</div>`:`<div class="li-nogps">GPS なし</div>`}${p.exif?.dir!=null?`<div class="li-dir">↑ ${p.exif.dir.toFixed(0)}°（${dirName(p.exif.dir)}）</div>`:''}</div><button class="li-del" onclick="deletePhoto(${idx},event)" title="削除">×</button>`;
     item.addEventListener('click',()=>focusPhoto(idx));list.appendChild(item);
   });
-  memos.forEach(memo=>{
+  memos.forEach((memo,mi)=>{
     const item=document.createElement('div');item.className='list-memo';
     item.innerHTML=`<div class="memo-tag">しゃべメモ</div><div class="memo-text">${memo.text}</div><div class="memo-time">${memo.time}</div>`;
     list.appendChild(item);count++;
@@ -641,62 +581,89 @@ function renderList(){
   document.getElementById('list-count').textContent=`${count}件`;
 }
 
-function focusPhoto(idx){if(!map)return;const p=photos[idx];if(!p?.exif?.lat)return;map.panTo({lat:p.exif.lat,lng:p.exif.lng});map.setZoom(19);const m=markers.find(m=>m.idx===idx);if(m){if(activeIW)activeIW.close();m.iw.open(map,m.marker);activeIW=m.iw;}highlightItem(idx);setPreview(p);}
+function deletePhoto(idx,e){
+  e.stopPropagation();
+  if(!confirm(`${photos[idx].name} を削除しますか？`))return;
+  if(photos[idx].thumbUrl)URL.revokeObjectURL(photos[idx].thumbUrl);
+  photos.splice(idx,1);
+  updateStats();renderList();
+  if(map)plotAll();
+  showToast('削除しました','ok');
+}
+
+function focusPhoto(idx){
+  if(!map)return;const p=photos[idx];if(!p?.exif?.lat)return;
+  map.panTo({lat:p.exif.lat,lng:p.exif.lng});map.setZoom(19);
+  const m=markers.find(m=>m.idx===idx);
+  if(m){if(activeIW)activeIW.close();m.iw.open(map,m.marker);activeIW=m.iw;}
+  highlightItem(idx);setPreview(p);
+}
 function highlightItem(idx){document.querySelectorAll('.list-item').forEach(el=>el.classList.remove('active'));const el=document.querySelector(`.list-item[data-idx="${idx}"]`);if(el){el.classList.add('active');el.scrollIntoView({block:'nearest'});}}
-function setPreview(photo){const img=document.getElementById('preview-img'),info=document.getElementById('preview-info'),empty=document.getElementById('preview-empty');if(photo.thumbUrl){img.src=photo.thumbUrl;img.style.display='block';info.style.display='block';empty.style.display='none';document.getElementById('preview-name').textContent=photo.name;const d=photo.exif;document.getElementById('preview-sub').textContent=[d?.dir!==null?`${d.dir.toFixed(0)}°（${dirName(d.dir)}）`:'',d?.alt?`${d.alt.toFixed(1)}m`:'',d?.dateTime||''].filter(Boolean).join(' · ');}}
+function setPreview(photo){const img=document.getElementById('preview-img'),info=document.getElementById('preview-info'),empty=document.getElementById('preview-empty');if(photo.thumbUrl){img.src=photo.thumbUrl;img.style.display='block';info.style.display='block';empty.style.display='none';document.getElementById('preview-name').textContent=photo.name;const d=photo.exif;document.getElementById('preview-sub').textContent=[d?.dir!=null?`${d.dir.toFixed(0)}°（${dirName(d.dir)}）`:'',d?.alt?`${d.alt.toFixed(1)}m`:'',d?.dateTime||''].filter(Boolean).join(' · ');}}
 function updateStats(){document.getElementById('stat-photos').textContent=photos.length;document.getElementById('stat-gps').textContent=photos.filter(p=>p.exif?.lat!==null).length;document.getElementById('stat-memo').textContent=memos.length;}
 function applyFilter(){renderList();}
 
+// ── KML Export ─────────────────────────────────────
 function exportKML(){
   const pts=photos.filter(p=>p.exif?.lat!==null);
   if(!pts.length){showToast('GPS付き写真がありません','err');return;}
-  const pms=pts.map(p=>`<Placemark><name>${esc(p.name)}</name><ExtendedData><Data name="撮影日時"><value>${esc(p.exif.dateTime||'')}</value></Data><Data name="撮影方向"><value>${p.exif.dir!==null?p.exif.dir.toFixed(1)+'°（'+dirName(p.exif.dir)+'）':''}</value></Data><Data name="高度"><value>${p.exif.alt?p.exif.alt.toFixed(1)+'m':''}</value></Data></ExtendedData><Point><coordinates>${p.exif.lng.toFixed(8)},${p.exif.lat.toFixed(8)},${p.exif.alt||0}</coordinates></Point></Placemark>`).join('');
+  const pms=pts.map(p=>`<Placemark><name>${esc(p.name)}</name><ExtendedData><Data name="撮影日時"><value>${esc(p.exif.dateTime||'')}</value></Data><Data name="撮影方向"><value>${p.exif.dir!=null?p.exif.dir.toFixed(1)+'°（'+dirName(p.exif.dir)+'）':''}</value></Data><Data name="高度"><value>${p.exif.alt?p.exif.alt.toFixed(1)+'m':''}</value></Data><Data name="メモ"><value>${esc(p.note||'')}</value></Data></ExtendedData><Point><coordinates>${p.exif.lng.toFixed(8)},${p.exif.lat.toFixed(8)},${p.exif.alt||0}</coordinates></Point></Placemark>`).join('');
   const kml=`<?xml version="1.0" encoding="UTF-8"?><kml xmlns="http://www.opengis.net/kml/2.2"><Document><name>撮影済みポイント（${new Date().toLocaleDateString('ja-JP')}）</name>${pms}</Document></kml>`;
   const blob=new Blob([kml],{type:'application/vnd.google-earth.kml+xml'});
   const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`field_gps_${new Date().toISOString().slice(0,10)}.kml`;a.click();URL.revokeObjectURL(url);
   showToast(`KML出力完了（${pts.length}地点）`,'ok');
 }
 
-function clearAll(){markers.forEach(m=>{m.marker?.setMap(null);m.arrow?.setMap(null);m.iw?.close();});markers=[];photos.forEach(p=>{if(p.thumbUrl)URL.revokeObjectURL(p.thumbUrl);});photos=[];memos=[];if(activeIW){activeIW.close();activeIW=null;}updateStats();renderList();document.getElementById('exportBtn').disabled=true;document.getElementById('exportBtn2').disabled=true;document.getElementById('preview-img').style.display='none';document.getElementById('preview-info').style.display='none';document.getElementById('preview-empty').style.display='flex';}
+// ── Excel Export ───────────────────────────────────
+function exportExcel(){
+  if(!photos.length){showToast('写真がありません','err');return;}
+  const BOM='\uFEFF';
+  const header=['No.','ファイル名','撮影日時','緯度','経度','高度(m)','撮影方向(°)','撮影方向','メモ'];
+  const rows=photos.map((p,i)=>[
+    i+1,p.name,p.exif?.dateTime||'',
+    p.exif?.lat!=null?p.exif.lat.toFixed(6):'',
+    p.exif?.lng!=null?p.exif.lng.toFixed(6):'',
+    p.exif?.alt!=null?p.exif.alt.toFixed(1):'',
+    p.exif?.dir!=null?p.exif.dir.toFixed(1):'',
+    p.exif?.dir!=null?dirName(p.exif.dir):'',
+    p.note||''
+  ]);
+  const csv=BOM+[header,...rows].map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`field_gps_${new Date().toISOString().slice(0,10)}.csv`;a.click();URL.revokeObjectURL(url);
+  showToast(`CSV出力完了（${photos.length}件）`,'ok');
+}
+
+// ── Clear ──────────────────────────────────────────
+function clearAll(){
+  if(photos.length>0&&!confirm('全データをクリアしますか？'))return;
+  markers.forEach(m=>{m.marker?.setMap(null);m.arrow?.setMap(null);m.iw?.close();});markers=[];
+  if(routeLine){routeLine.setMap(null);routeLine=null;}
+  photos.forEach(p=>{if(p.thumbUrl)URL.revokeObjectURL(p.thumbUrl);});photos=[];memos=[];
+  if(activeIW){activeIW.close();activeIW=null;}
+  updateStats();renderList();
+  document.getElementById('exportBtn').disabled=true;
+  document.getElementById('exportBtn2').disabled=true;
+  document.getElementById('exportExcelBtn').disabled=true;
+  document.getElementById('preview-img').style.display='none';
+  document.getElementById('preview-info').style.display='none';
+  document.getElementById('preview-empty').style.display='flex';
+}
+
+// ── Progress / Toast ───────────────────────────────
 function showProgress(v){document.getElementById('progress').classList.toggle('show',v);}
 function setProgress(r,t){document.getElementById('prog-bar').style.width=`${r*100}%`;document.getElementById('prog-text').textContent=t;}
 let _tt;
 function showToast(msg,type=''){const el=document.getElementById('toast');el.textContent=msg;el.className=`toast show ${type}`;clearTimeout(_tt);_tt=setTimeout(()=>el.classList.remove('show'),3000);}
 
+// ── Drag & Drop ────────────────────────────────────
 const mapWrap=document.getElementById('map-wrap');
 mapWrap.addEventListener('dragover',e=>{e.preventDefault();document.getElementById('drop-overlay').classList.add('active');});
 mapWrap.addEventListener('dragleave',()=>document.getElementById('drop-overlay').classList.remove('active'));
 mapWrap.addEventListener('drop',e=>{e.preventDefault();document.getElementById('drop-overlay').classList.remove('active');handlePhotos(e.dataTransfer.files);});
-document.getElementById('apiKey').addEventListener('keydown',e=>{if(e.key==='Enter')loadMap();});
-window.addEventListener('load', () => {
-  loadMap();
-  generateShabememoQR();
-});
 
-function generateShabememoQR() {
-  const url = 'https://mandeendoh-glitch.github.io/shabememo/';
-  const canvas = document.createElement('canvas');
-  canvas.width = 80;
-  canvas.height = 80;
-  const ctx = canvas.getContext('2d');
-
-  // QRコードをAPIで生成（Google Charts API）
-  const img = new Image();
-  img.crossOrigin = 'anonymous';
-  img.onload = () => {
-    ctx.drawImage(img, 0, 0, 80, 80);
-    document.getElementById('shabememo-qr').appendChild(canvas);
-  };
-  img.onerror = () => {
-    // フォールバック：テキストリンク表示
-    const div = document.getElementById('shabememo-qr');
-    div.style.fontSize = '9px';
-    div.style.padding = '8px';
-    div.style.color = 'var(--dim)';
-    div.textContent = 'QR読込失敗';
-  };
-  img.src = `https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(url)}`;
-}
+// ── Init ───────────────────────────────────────────
+window.addEventListener('load',()=>loadMap());
 </script>
 </body>
 </html>
