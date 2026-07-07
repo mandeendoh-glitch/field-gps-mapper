@@ -122,6 +122,22 @@
   #preview-sub{font-size:10px;color:rgba(255,255,255,.7);margin-top:1px;}
   #preview-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--dim2);}
 
+  /* Project modal */
+  #project-modal,#settings-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1000;align-items:center;justify-content:center;}
+  #project-modal.show,#settings-modal.show{display:flex;}
+  .modal-box{background:white;border-radius:10px;padding:20px;width:360px;box-shadow:0 8px 32px rgba(0,0,0,.2);max-height:80vh;overflow-y:auto;}
+  .modal-box h3{font-size:14px;font-weight:700;color:var(--text);margin-bottom:14px;}
+  .modal-input{width:100%;height:32px;border:1px solid var(--border2);border-radius:5px;padding:0 10px;font-size:12px;outline:none;margin-bottom:10px;}
+  .modal-input:focus{border-color:var(--cyan);}
+  .project-list{max-height:200px;overflow-y:auto;border:1px solid var(--border);border-radius:5px;margin-bottom:10px;}
+  .project-item{padding:8px 12px;border-bottom:1px solid var(--border);cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:12px;}
+  .project-item:hover{background:#F5F0E8;}
+  .project-item-del{color:var(--red);cursor:pointer;font-size:14px;padding:0 4px;}
+  .modal-btns{display:flex;gap:8px;justify-content:flex-end;}
+  .modal-btn{height:28px;padding:0 14px;border-radius:5px;font-size:11px;cursor:pointer;}
+  .modal-btn-cancel{background:white;border:1px solid var(--border2);}
+  .modal-btn-ok{background:var(--cyan);color:white;border:none;font-weight:700;}
+
   /* Edit modal */
   #edit-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1000;align-items:center;justify-content:center;}
   #edit-modal.show{display:flex;}
@@ -179,12 +195,18 @@
       <div class="tb-item">出力
         <div class="tb-dropdown">
           <div class="tb-dd-item" onclick="exportKML()">⬇ KML出力</div>
-          <div class="tb-dd-item" onclick="exportExcel()">📊 Excel出力</div>
+          <div class="tb-dd-item" onclick="exportExcel()">📊 CSV出力</div>
+          <div class="tb-dd-item" onclick="exportXlsx()">📸 写真付きExcel出力</div>
         </div>
       </div>
       <div class="tb-item">設定
         <div class="tb-dropdown">
-          <div class="tb-dd-item" onclick="toggleApiBar()">APIキー設定</div>
+          <div class="tb-dd-item" onclick="showProjectModal()">📁 プロジェクト管理</div>
+          <div class="tb-dd-sep"></div>
+          <div class="tb-dd-item" onclick="saveProject()">💾 プロジェクトを保存</div>
+          <div class="tb-dd-item" onclick="loadProjectList()">📂 プロジェクトを開く</div>
+          <div class="tb-dd-sep"></div>
+          <div class="tb-dd-item" onclick="showSettings()">⚙ 表示設定</div>
         </div>
       </div>
     </div>
@@ -320,6 +342,42 @@
   </div>
 </div>
 
+<!-- Project modal -->
+<div id="project-modal">
+  <div class="modal-box">
+    <h3>📁 プロジェクト管理</h3>
+    <div style="font-size:11px;color:var(--dim);margin-bottom:8px;">新規プロジェクト名</div>
+    <input type="text" id="project-name-input" class="modal-input" placeholder="例：水島橋梁点検_20260707"/>
+    <div style="font-size:11px;color:var(--dim);margin-bottom:6px;">保存済みプロジェクト</div>
+    <div class="project-list" id="project-list"></div>
+    <div class="modal-btns">
+      <button class="modal-btn modal-btn-cancel" onclick="closeProjectModal()">閉じる</button>
+      <button class="modal-btn modal-btn-ok" onclick="createProject()">新規作成・保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- Settings modal -->
+<div id="settings-modal">
+  <div class="modal-box">
+    <h3>⚙ 表示設定</h3>
+    <div style="font-size:12px;color:var(--dim);margin-bottom:12px;">サムネイル表示ズームレベル</div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+      <input type="range" id="thumb-zoom" min="15" max="21" value="18" style="flex:1;" oninput="document.getElementById('thumb-zoom-val').textContent=this.value"/>
+      <span id="thumb-zoom-val" style="font-weight:700;width:24px;text-align:center;">18</span>
+    </div>
+    <div style="font-size:12px;color:var(--dim);margin-bottom:8px;">矢印の長さ</div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+      <input type="range" id="arrow-len" min="1" max="10" value="4" style="flex:1;" oninput="document.getElementById('arrow-len-val').textContent=this.value"/>
+      <span id="arrow-len-val" style="font-weight:700;width:24px;text-align:center;">4</span>
+    </div>
+    <div class="modal-btns">
+      <button class="modal-btn modal-btn-cancel" onclick="closeSettingsModal()">キャンセル</button>
+      <button class="modal-btn modal-btn-ok" onclick="applySettings()">適用</button>
+    </div>
+  </div>
+</div>
+
 <!-- Edit modal -->
 <div id="edit-modal">
   <div class="edit-box">
@@ -409,6 +467,90 @@ function loadMap(){
 function switchMapType(type,el){if(!map)return;map.setMapTypeId(type);document.querySelectorAll('.mt-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');}
 function toggleApiBar(){showToast('APIキーは設定済みです','ok');}
 
+// ── Settings ──────────────────────────────────────
+let thumbZoom=18, arrowLen=4;
+function showSettings(){document.getElementById('settings-modal').classList.add('show');}
+function closeSettingsModal(){document.getElementById('settings-modal').classList.remove('show');}
+function applySettings(){
+  thumbZoom=parseInt(document.getElementById('thumb-zoom').value);
+  arrowLen=parseInt(document.getElementById('arrow-len').value);
+  closeSettingsModal();
+  if(map)plotAll();
+  showToast('設定を適用しました','ok');
+}
+
+// ── Project management ────────────────────────────
+function showProjectModal(){
+  renderProjectList();
+  document.getElementById('project-modal').classList.add('show');
+}
+function closeProjectModal(){document.getElementById('project-modal').classList.remove('show');}
+
+function saveProject(){
+  const name=prompt('プロジェクト名を入力してください');
+  if(!name)return;
+  const data={name,date:new Date().toISOString(),photos:photos.map(p=>({name:p.name,exif:p.exif,note:p.note})),memos};
+  const projects=getProjects();
+  projects[name]=data;
+  localStorage.setItem('fgm_projects',JSON.stringify(projects));
+  showToast(`「${name}」を保存しました`,'ok');
+}
+
+function createProject(){
+  const name=document.getElementById('project-name-input').value.trim();
+  if(!name){showToast('プロジェクト名を入力してください','err');return;}
+  const data={name,date:new Date().toISOString(),photos:photos.map(p=>({name:p.name,exif:p.exif,note:p.note})),memos};
+  const projects=getProjects();
+  projects[name]=data;
+  localStorage.setItem('fgm_projects',JSON.stringify(projects));
+  renderProjectList();
+  showToast(`「${name}」を保存しました`,'ok');
+}
+
+function loadProjectList(){
+  showProjectModal();
+}
+
+function getProjects(){
+  try{return JSON.parse(localStorage.getItem('fgm_projects')||'{}');}catch(e){return{};}
+}
+
+function renderProjectList(){
+  const projects=getProjects();
+  const list=document.getElementById('project-list');
+  list.innerHTML='';
+  const keys=Object.keys(projects);
+  if(!keys.length){list.innerHTML='<div style="padding:12px;font-size:11px;color:var(--dim2);text-align:center;">保存済みプロジェクトはありません</div>';return;}
+  keys.forEach(k=>{
+    const p=projects[k];
+    const item=document.createElement('div');item.className='project-item';
+    item.innerHTML=`<div><div style="font-weight:600;">${k}</div><div style="font-size:10px;color:var(--dim);">${new Date(p.date).toLocaleDateString('ja-JP')} · ${p.photos?.length||0}枚</div></div><span class="project-item-del" onclick="deleteProject('${k}',event)">×</span>`;
+    item.addEventListener('click',()=>loadProject(k));
+    list.appendChild(item);
+  });
+}
+
+function loadProject(name){
+  const projects=getProjects();
+  const data=projects[name];
+  if(!data)return;
+  photos=data.photos.map(p=>({...p,thumbUrl:null,file:null}));
+  memos=data.memos||[];
+  updateStats();renderList();
+  closeProjectModal();
+  showToast(`「${name}」を読み込みました（写真の再読み込みが必要です）`,'ok');
+}
+
+function deleteProject(name,e){
+  e.stopPropagation();
+  if(!confirm(`「${name}」を削除しますか？`))return;
+  const projects=getProjects();
+  delete projects[name];
+  localStorage.setItem('fgm_projects',JSON.stringify(projects));
+  renderProjectList();
+  showToast('削除しました','ok');
+}
+
 // ── Photo handling ────────────────────────────────
 async function handlePhotos(files){
   if(!files||!files.length)return;
@@ -464,9 +606,9 @@ function plotAll(){
 
     let arrow=null;
     if(photo.exif.dir!==null){
-      // 矢印の長さをズームレベルに応じて調整（短め固定）
+      // 矢印の長さをズームレベルと設定値に応じて調整
       const zoom=map.getZoom()||15;
-      const dist=0.00008*Math.pow(2,15-zoom);
+      const dist=(arrowLen*0.0001)*Math.pow(2,15-zoom);
       const r=photo.exif.dir*Math.PI/180;
       const end={lat:pos.lat+dist*Math.cos(r),lng:pos.lng+dist*Math.sin(r)/Math.cos(pos.lat*Math.PI/180)};
       arrow=new google.maps.Polyline({path:[pos,end],map:layers.arrows?map:null,strokeColor:'#C06010',strokeOpacity:1,strokeWeight:2.5,icons:[{icon:{path:google.maps.SymbolPath.FORWARD_CLOSED_ARROW,scale:3,fillColor:'#C06010',fillOpacity:1,strokeColor:'#C06010',strokeWeight:1},offset:'100%'}],zIndex:9});
@@ -550,7 +692,7 @@ function toggleLayer(name){
 }
 
 function updateMarkerVisibility(){
-  const zoom=map?map.getZoom():15,showThumb=zoom>=18;
+  const zoom=map?map.getZoom():15,showThumb=zoom>=thumbZoom;
   markers.forEach(m=>{
     if(!m.marker)return;
     m.marker.setMap(layers.photos?map:null);
@@ -632,6 +774,77 @@ function exportExcel(){
   const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
   const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`field_gps_${new Date().toISOString().slice(0,10)}.csv`;a.click();URL.revokeObjectURL(url);
   showToast(`CSV出力完了（${photos.length}件）`,'ok');
+}
+
+// ── xlsx Export（写真付き）────────────────────────
+function exportXlsx(){
+  if(!photos.length){showToast('写真がありません','err');return;}
+  showToast('Excel出力中...','ok');
+
+  // SheetJSを動的に読み込む
+  if(typeof XLSX==='undefined'){
+    const s=document.createElement('script');
+    s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    s.onload=()=>_doExportXlsx();
+    s.onerror=()=>showToast('ライブラリ読み込みエラー','err');
+    document.head.appendChild(s);
+  } else {
+    _doExportXlsx();
+  }
+}
+
+function _doExportXlsx(){
+  const wb=XLSX.utils.book_new();
+  const header=['No.','写真','ファイル名','撮影日時','緯度','経度','高度(m)','撮影方向(°)','撮影方向','メモ'];
+  const rows=photos.map((p,i)=>[
+    i+1,'',p.name,p.exif?.dateTime||'',
+    p.exif?.lat!=null?p.exif.lat.toFixed(6):'',
+    p.exif?.lng!=null?p.exif.lng.toFixed(6):'',
+    p.exif?.alt!=null?p.exif.alt.toFixed(1):'',
+    p.exif?.dir!=null?p.exif.dir.toFixed(1):'',
+    p.exif?.dir!=null?dirName(p.exif.dir):'',
+    p.note||''
+  ]);
+
+  const ws=XLSX.utils.aoa_to_sheet([header,...rows]);
+
+  // 列幅設定
+  ws['!cols']=[{wch:5},{wch:20},{wch:25},{wch:18},{wch:12},{wch:12},{wch:10},{wch:12},{wch:8},{wch:30}];
+
+  // 行高さ設定（写真行は80px相当）
+  ws['!rows']=[{hpt:20},...photos.map(()=>({hpt:60}))];
+
+  XLSX.utils.book_append_sheet(wb,ws,'点検記録');
+
+  // 写真を埋め込む
+  const promises=photos.map((p,i)=>{
+    if(!p.thumbUrl)return Promise.resolve();
+    return new Promise(resolve=>{
+      const img=new Image();
+      img.onload=()=>{
+        const canvas=document.createElement('canvas');
+        canvas.width=120;canvas.height=90;
+        const ctx=canvas.getContext('2d');
+        ctx.drawImage(img,0,0,120,90);
+        const b64=canvas.toDataURL('image/jpeg',.7).split(',')[1];
+        if(!wb.Sheets['点検記録']['!images'])wb.Sheets['点検記録']['!images']=[];
+        wb.Sheets['点検記録']['!images'].push({
+          name:`photo_${i}.jpg`,data:b64,type:'jpeg',
+          position:{type:'twoCellAnchor',attrs:{editAs:'oneCell'},
+            from:{col:1,colOff:0,row:i+1,rowOff:0},
+            to:{col:2,colOff:0,row:i+2,rowOff:0}}
+        });
+        resolve();
+      };
+      img.onerror=resolve;
+      img.src=p.thumbUrl;
+    });
+  });
+
+  Promise.all(promises).then(()=>{
+    XLSX.writeFile(wb,`field_gps_${new Date().toISOString().slice(0,10)}.xlsx`);
+    showToast(`Excel出力完了（${photos.length}件）`,'ok');
+  });
 }
 
 // ── Clear ──────────────────────────────────────────
