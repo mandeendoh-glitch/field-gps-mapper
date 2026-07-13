@@ -23,7 +23,7 @@
   .tb-item{padding:0 13px;height:100%;display:flex;align-items:center;font-size:12px;color:var(--dim);cursor:pointer;border-right:1px solid var(--border);transition:background .15s,color .15s;position:relative;}
   .tb-item:hover{background:rgba(0,0,0,.04);color:var(--text);}
   .tb-dropdown{display:none;position:absolute;top:42px;left:0;background:white;border:1px solid var(--border2);border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,.15);min-width:160px;z-index:500;}
-  .tb-item:hover .tb-dropdown{display:block;}
+  .tb-item.open .tb-dropdown{display:block;}
   .tb-dd-item{padding:8px 16px;font-size:12px;color:var(--text);cursor:pointer;white-space:nowrap;}
   .tb-dd-item:hover{background:#F5F0E8;}
   .tb-dd-sep{height:1px;background:var(--border);margin:4px 0;}
@@ -136,6 +136,11 @@
   #toast.show{transform:translateY(0);opacity:1;}
   #toast.ok{border-left:3px solid var(--green);}
   #toast.err{border-left:3px solid var(--red);}
+  #lightbox-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:2000;align-items:center;justify-content:center;padding:24px;}
+  #lightbox-modal.show{display:flex;}
+  #lightbox-img{max-width:100%;max-height:85vh;border-radius:6px;box-shadow:0 8px 40px rgba(0,0,0,.5);}
+  #lightbox-close{position:absolute;top:20px;right:24px;background:rgba(255,255,255,.92);border:none;border-radius:50%;width:38px;height:38px;font-size:20px;cursor:pointer;color:var(--text);line-height:1;}
+  #lightbox-close:hover{background:#fff;}
 </style>
 </head>
 <body>
@@ -354,6 +359,10 @@
   </div>
 </div>
 <div id="toast"></div>
+<div id="lightbox-modal">
+  <button id="lightbox-close" onclick="closeLightbox()">×</button>
+  <img id="lightbox-img" alt="拡大写真">
+</div>
 <script>
 const API_KEY = 'AIzaSyCxFFQxa-0PtBYfJ9gXWkur2wiszMwk7S0';
 let map=null, markers=[], kmlMarkers=[], photos=[], memos=[], activeIW=null, routeLine=null;
@@ -595,11 +604,11 @@ function plotAll(){
         <div style="font-size:12px;font-weight:700;color:#1A6EBF;">${photo.name}</div>
         <div style="font-size:10px;color:#6A7888;">${d.dateTime?d.dateTime.substring(0,10).replace(/:/g,'/'):'—'}</div>
       </div>
-      <div style="position:relative;cursor:pointer;" onclick="openEditModal(${idx})">
-        ${photo.thumbUrl?`<img src="${photo.thumbUrl}" style="width:100%;height:120px;object-fit:cover;display:block;">`:'<div style="width:100%;height:80px;background:#EDE8DE;display:flex;align-items:center;justify-content:center;color:#9AAABB;font-size:11px;">写真なし</div>'}
+      <div style="position:relative;">
+        ${photo.thumbUrl?`<img src="${photo.thumbUrl}" style="width:100%;height:120px;object-fit:cover;display:block;cursor:zoom-in;" onclick="openLightbox(${idx})">`:'<div style="width:100%;height:80px;background:#EDE8DE;display:flex;align-items:center;justify-content:center;color:#9AAABB;font-size:11px;">写真なし</div>'}
         ${d.dir!==null?buildCompassSVG(d.dir,true):''}
         ${d.dir!==null?`<div style="position:absolute;bottom:8px;left:8px;background:rgba(255,255,255,.88);border-radius:3px;padding:2px 6px;font-size:10px;font-weight:700;color:#C06010;">${d.dir.toFixed(0)}° ${dirName(d.dir)}</div>`:''}
-        <div style="position:absolute;top:6px;right:6px;background:rgba(255,255,255,.88);border-radius:3px;padding:2px 6px;font-size:9px;color:#6A7888;">✏️ タップでメモ編集</div>
+        <button onclick="openEditModal(${idx})" style="position:absolute;top:6px;right:6px;background:rgba(255,255,255,.88);border:none;border-radius:3px;padding:3px 7px;font-size:9px;color:#6A7888;cursor:pointer;font-family:inherit;">✏️ メモ編集</button>
       </div>
       ${noteHtml}
       <div style="padding:8px 12px;display:flex;flex-direction:column;gap:4px;background:#FDFAF5;">
@@ -637,6 +646,25 @@ function buildCompassSVG(deg,inPopup=false){
     <line x1="${cx}" y1="${cy}" x2="${bx}" y2="${by}" stroke="rgba(0,0,0,.2)" stroke-width="2"/>
   </svg></div>`;
 }
+
+function openLightboxUrl(url){
+  if(!url)return;
+  document.getElementById('lightbox-img').src=url;
+  document.getElementById('lightbox-modal').classList.add('show');
+}
+function openLightbox(idx){
+  const photo=photos[idx];
+  openLightboxUrl(photo?.thumbUrl);
+}
+function closeLightbox(){
+  document.getElementById('lightbox-modal').classList.remove('show');
+}
+document.getElementById('lightbox-modal').addEventListener('click',(e)=>{
+  if(e.target.id==='lightbox-modal')closeLightbox();
+});
+document.addEventListener('keydown',(e)=>{
+  if(e.key==='Escape')closeLightbox();
+});
 
 function openEditModal(idx){
   editTargetIdx=idx;
@@ -711,7 +739,7 @@ function focusPhoto(idx){
   highlightItem(idx);setPreview(p);
 }
 function highlightItem(idx){document.querySelectorAll('.list-item').forEach(el=>el.classList.remove('active'));const el=document.querySelector(`.list-item[data-idx="${idx}"]`);if(el){el.classList.add('active');el.scrollIntoView({block:'nearest'});}}
-function setPreview(photo){const img=document.getElementById('preview-img'),info=document.getElementById('preview-info'),empty=document.getElementById('preview-empty');if(photo.thumbUrl){img.src=photo.thumbUrl;img.style.display='block';info.style.display='block';empty.style.display='none';document.getElementById('preview-name').textContent=photo.name;const d=photo.exif;document.getElementById('preview-sub').textContent=[d?.dir!=null?`${d.dir.toFixed(0)}°（${dirName(d.dir)}）`:'',d?.alt?`${d.alt.toFixed(1)}m`:'',d?.dateTime||''].filter(Boolean).join(' · ');}}
+function setPreview(photo){const img=document.getElementById('preview-img'),info=document.getElementById('preview-info'),empty=document.getElementById('preview-empty');if(photo.thumbUrl){img.src=photo.thumbUrl;img.style.display='block';img.style.cursor='zoom-in';img.onclick=()=>openLightboxUrl(photo.thumbUrl);info.style.display='block';empty.style.display='none';document.getElementById('preview-name').textContent=photo.name;const d=photo.exif;document.getElementById('preview-sub').textContent=[d?.dir!=null?`${d.dir.toFixed(0)}°（${dirName(d.dir)}）`:'',d?.alt?`${d.alt.toFixed(1)}m`:'',d?.dateTime||''].filter(Boolean).join(' · ');}}
 function updateStats(){document.getElementById('stat-photos').textContent=photos.length;document.getElementById('stat-gps').textContent=photos.filter(p=>p.exif?.lat!==null).length;document.getElementById('stat-memo').textContent=memos.length;}
 function applyFilter(){renderList();}
 
@@ -832,6 +860,26 @@ mapWrap.addEventListener('dragleave',()=>document.getElementById('drop-overlay')
 mapWrap.addEventListener('drop',e=>{e.preventDefault();document.getElementById('drop-overlay').classList.remove('active');handlePhotos(e.dataTransfer.files);});
 
 window.addEventListener('load',()=>loadMap());
+
+// ── トップメニュー：クリックで開閉（ホバー方式は指の動きに弱いため廃止） ──
+function closeAllMenus(){
+  document.querySelectorAll('.tb-item.open').forEach(i=>i.classList.remove('open'));
+}
+document.querySelectorAll('.tb-item').forEach(item=>{
+  item.addEventListener('click', (e)=>{
+    if (e.target === item) {
+      // メニュー見出し（「ファイル」「表示」などのラベル部分）がクリックされた
+      e.stopPropagation();
+      const wasOpen = item.classList.contains('open');
+      closeAllMenus();
+      if (!wasOpen) item.classList.add('open');
+    } else {
+      // ドロップダウン内の項目がクリックされた → 実行後にメニューを閉じる
+      closeAllMenus();
+    }
+  });
+});
+document.addEventListener('click', ()=>{ closeAllMenus(); });
 </script>
 </body>
 </html>
