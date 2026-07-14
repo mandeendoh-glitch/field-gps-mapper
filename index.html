@@ -42,6 +42,11 @@
   .btn-green:hover{background:#D8EDDF;}
   .btn-green:disabled{opacity:.45;cursor:not-allowed;}
   #toolbar .sep{width:1px;height:18px;background:var(--border);margin:0 4px;}
+  #browser-banner{background:#FFF6E0;border-bottom:1px solid #E8D090;padding:7px 16px;font-size:11.5px;color:#7A5A00;display:flex;align-items:center;justify-content:space-between;gap:12px;z-index:190;}
+  #browser-banner.hide{display:none;}
+  #browser-banner span{line-height:1.5;}
+  #browser-banner button{flex-shrink:0;background:none;border:none;color:#7A5A00;font-size:16px;cursor:pointer;line-height:1;padding:2px 6px;}
+  #browser-banner button:hover{color:#4A3600;}
   #body{display:flex;flex:1;overflow:hidden;}
   #left{width:185px;flex-shrink:0;background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
   .panel-section{border-bottom:1px solid var(--border);}
@@ -166,6 +171,10 @@
           <div class="tb-dd-item" onclick="document.getElementById('photoInput').click()">📁 写真を読み込む</div>
           <div class="tb-dd-item" onclick="document.getElementById('kmlInput').click()">📂 KMLを読み込む</div>
           <div class="tb-dd-sep"></div>
+          <div class="tb-dd-item" onclick="showProjectModal()">📁 プロジェクト管理</div>
+          <div class="tb-dd-item" onclick="saveProject()">💾 プロジェクトを保存</div>
+          <div class="tb-dd-item" onclick="loadProjectList()">📂 プロジェクトを開く</div>
+          <div class="tb-dd-sep"></div>
           <div class="tb-dd-item" onclick="clearAll()">🗑 クリア</div>
         </div>
       </div>
@@ -186,11 +195,6 @@
       </div>
       <div class="tb-item">設定
         <div class="tb-dropdown">
-          <div class="tb-dd-item" onclick="showProjectModal()">📁 プロジェクト管理</div>
-          <div class="tb-dd-sep"></div>
-          <div class="tb-dd-item" onclick="saveProject()">💾 プロジェクトを保存</div>
-          <div class="tb-dd-item" onclick="loadProjectList()">📂 プロジェクトを開く</div>
-          <div class="tb-dd-sep"></div>
           <div class="tb-dd-item" onclick="showSettings()">⚙ 表示設定</div>
         </div>
       </div>
@@ -214,12 +218,17 @@
       </div>
     </div>
   </div>
+  <div id="browser-banner">
+    <span>⚠️ プロジェクトのフォルダ自動読込は<b>Google Chrome / Microsoft Edge</b>でのみ動作します(Safari・Firefoxでは写真の手動再選択が必要です)。フォルダの場所やファイル名を変更すると、自動読込できなくなります。</span>
+    <button onclick="closeBrowserBanner()" title="閉じる">×</button>
+  </div>
   <div id="toolbar">
     <button class="btn-sm" onclick="document.getElementById('photoInput').click()">📁 写真を読み込む</button>
     <input type="file" id="photoInput" multiple accept="image/jpeg,image/jpg" style="display:none" onchange="handlePhotos(this.files)"/>
     <div class="sep"></div>
     <button class="btn-sm btn-green" onclick="exportKML()" id="exportBtn" disabled>⬇ KML出力</button>
-    <button class="btn-sm btn-green" onclick="exportExcel()" id="exportExcelBtn" disabled style="background:#EAF5EE;color:var(--green);border-color:rgba(26,128,64,.3);">📊 Excel出力</button>
+    <button class="btn-sm btn-green" onclick="exportExcel()" id="exportExcelBtn" disabled style="background:#EAF5EE;color:var(--green);border-color:rgba(26,128,64,.3);">📊 CSV出力</button>
+    <button class="btn-sm btn-green" onclick="exportXlsx()" id="exportXlsxBtn" disabled style="background:#EAF5EE;color:var(--green);border-color:rgba(26,128,64,.3);">📸 写真付きExcel出力</button>
   </div>
   <div id="body">
     <div id="left">
@@ -332,10 +341,11 @@
   <div class="modal-box">
     <h3>⚙ 表示設定</h3>
     <div style="font-size:12px;color:var(--dim);margin-bottom:12px;">サムネイル表示ズームレベル</div>
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
-      <input type="range" id="thumb-zoom" min="15" max="21" value="18" style="flex:1;" oninput="document.getElementById('thumb-zoom-val').textContent=this.value"/>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+      <input type="range" id="thumb-zoom" min="10" max="24" value="18" style="flex:1;" oninput="document.getElementById('thumb-zoom-val').textContent=this.value"/>
       <span id="thumb-zoom-val" style="font-weight:700;width:24px;text-align:center;">18</span>
     </div>
+    <div style="font-size:10.5px;color:var(--dim2);margin-bottom:16px;">この数値以上にズームすると、地図上のピンが写真サムネイルに切り替わります。</div>
     <div style="font-size:12px;color:var(--dim);margin-bottom:8px;">矢印の長さ</div>
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
       <input type="range" id="arrow-len" min="1" max="10" value="4" style="flex:1;" oninput="document.getElementById('arrow-len-val').textContent=this.value"/>
@@ -445,7 +455,7 @@ function loadMap(){
       mapTypeControl:false,streetViewControl:false,fullscreenControl:true,
     });
     map.addListener('mousemove',e=>{document.getElementById('coord-ll').textContent=`${e.latLng.lat().toFixed(6)}°N  ${e.latLng.lng().toFixed(6)}°E`;});
-    map.addListener('zoom_changed',()=>{document.getElementById('coord-zoom').textContent=`ズーム ${map.getZoom()}`;updateMarkerVisibility();});
+    map.addListener('zoom_changed',()=>{document.getElementById('coord-zoom').textContent=`ズーム ${map.getZoom()}`;updateMarkerVisibility();updateArrows();});
     if(photos.length>0)plotAll();
   };
   const s=document.createElement('script');s.id='_gm';
@@ -473,6 +483,47 @@ function showProjectModal(){
 }
 function closeProjectModal(){document.getElementById('project-modal').classList.remove('show');}
 
+// ── フォルダハンドル保存用IndexedDB（FileSystemDirectoryHandleはlocalStorageに保存できないため）──
+let fgmHandleDB=null;
+function openHandleDB(){
+  return new Promise((resolve,reject)=>{
+    const req=indexedDB.open('fgm_handles',1);
+    req.onupgradeneeded=()=>{
+      const db=req.result;
+      if(!db.objectStoreNames.contains('dirHandles'))db.createObjectStore('dirHandles');
+    };
+    req.onsuccess=()=>resolve(req.result);
+    req.onerror=()=>reject(req.error);
+  });
+}
+async function saveDirHandle(projectName,handle){
+  if(!fgmHandleDB)fgmHandleDB=await openHandleDB();
+  return new Promise((resolve)=>{
+    const tx=fgmHandleDB.transaction('dirHandles','readwrite');
+    tx.objectStore('dirHandles').put(handle,projectName);
+    tx.oncomplete=()=>resolve();
+    tx.onerror=()=>resolve();
+  });
+}
+async function getDirHandle(projectName){
+  if(!fgmHandleDB)fgmHandleDB=await openHandleDB();
+  return new Promise((resolve)=>{
+    const tx=fgmHandleDB.transaction('dirHandles','readonly');
+    const req=tx.objectStore('dirHandles').get(projectName);
+    req.onsuccess=()=>resolve(req.result||null);
+    req.onerror=()=>resolve(null);
+  });
+}
+async function linkFolderToProject(name){
+  if(!('showDirectoryPicker' in window))return;
+  if(!confirm('次回から写真を自動で読み込めるように、写真が保存されているフォルダを選択しますか？\n(Chrome/Edgeのみ対応。あとから「プロジェクト管理」でも設定できます)'))return;
+  try{
+    const handle=await window.showDirectoryPicker({mode:'read'});
+    await saveDirHandle(name,handle);
+    showToast('写真フォルダを紐付けました','ok');
+  }catch(e){ /* ユーザーがキャンセルした場合は何もしない */ }
+}
+
 function saveProject(){
   const name=prompt('プロジェクト名を入力してください');
   if(!name)return;
@@ -481,6 +532,7 @@ function saveProject(){
   projects[name]=data;
   localStorage.setItem('fgm_projects',JSON.stringify(projects));
   showToast(`「${name}」を保存しました`,'ok');
+  linkFolderToProject(name);
 }
 
 function createProject(){
@@ -492,6 +544,7 @@ function createProject(){
   localStorage.setItem('fgm_projects',JSON.stringify(projects));
   renderProjectList();
   showToast(`「${name}」を保存しました`,'ok');
+  linkFolderToProject(name);
 }
 
 function loadProjectList(){
@@ -517,15 +570,55 @@ function renderProjectList(){
   });
 }
 
-function loadProject(name){
+async function loadProject(name){
   const projects=getProjects();
   const data=projects[name];
   if(!data)return;
+  closeProjectModal();
+  if(!map)loadMap();
+
+  // フォルダの紐付けがあれば、File System Access APIで写真を自動再読込する
+  if('showDirectoryPicker' in window){
+    try{
+      const handle=await getDirHandle(name);
+      if(handle){
+        let granted=(await handle.queryPermission({mode:'read'}))==='granted';
+        if(!granted)granted=(await handle.requestPermission({mode:'read'}))==='granted';
+        if(granted){
+          showToast('写真フォルダを再読み込み中...','ok');
+          const nameSet=new Set(data.photos.map(p=>p.name));
+          const loaded=[];
+          for await (const entry of handle.values()){
+            if(entry.kind==='file'&&nameSet.has(entry.name)){
+              try{
+                const file=await entry.getFile();
+                const buf=await file.arrayBuffer();
+                const exif=parseEXIF(buf);
+                const saved=data.photos.find(p=>p.name===entry.name);
+                loaded.push({name:entry.name,exif,thumbUrl:URL.createObjectURL(file),file,note:saved?.note||exif?.note||''});
+              }catch(err){}
+            }
+          }
+          photos=[...photos,...loaded];
+          memos=data.memos||[];
+          updateStats();renderList();
+          if(map)plotAll();
+          document.getElementById('exportBtn').disabled=false;
+          document.getElementById('exportBtn2').disabled=false;
+          document.getElementById('exportExcelBtn').disabled=false;
+          document.getElementById('exportXlsxBtn').disabled=false;
+          showToast(`「${name}」を読み込みました（写真${loaded.length}/${data.photos.length}枚を自動復元）`,'ok');
+          return;
+        }
+      }
+    }catch(e){ /* 失敗時は下の手動読込フォールバックへ */ }
+  }
+
+  // フォルダ紐付けがない、または非対応ブラウザの場合：従来通り手動再読込が必要
   photos=data.photos.map(p=>({...p,thumbUrl:null,file:null}));
   memos=data.memos||[];
   updateStats();renderList();
-  closeProjectModal();
-  showToast(`「${name}」を読み込みました（写真の再読み込みが必要です）`,'ok');
+  showToast(`「${name}」を読み込みました（写真フォルダの紐付けがないため、写真の再読み込みが必要です）`,'ok');
 }
 
 function deleteProject(name,e){
@@ -555,6 +648,7 @@ async function handlePhotos(files){
   document.getElementById('exportBtn').disabled=false;
   document.getElementById('exportBtn2').disabled=false;
   document.getElementById('exportExcelBtn').disabled=false;
+  document.getElementById('exportXlsxBtn').disabled=false;
   showToast(`${res.length}枚読込（GPS付き:${res.filter(p=>p.exif?.lat!==null).length}枚）`,'ok');
 }
 
@@ -613,7 +707,6 @@ function plotAll(){
       ${noteHtml}
       <div style="padding:8px 12px;display:flex;flex-direction:column;gap:4px;background:#FDFAF5;">
         <div style="display:flex;justify-content:space-between;font-size:11px;"><span style="color:#6A7888;">撮影日時</span><span>${d.dateTime||'—'}</span></div>
-        <div style="display:flex;justify-content:space-between;font-size:11px;"><span style="color:#6A7888;">高度</span><span>${d.alt!==null?d.alt.toFixed(1)+' m':'—'}</span></div>
         <div style="display:flex;justify-content:space-between;font-size:11px;"><span style="color:#6A7888;">GPS</span><span style="font-size:10px;font-family:monospace;">${d.lat.toFixed(5)}, ${d.lng.toFixed(5)}</span></div>
       </div>
     </div>`;
@@ -703,6 +796,23 @@ function updateMarkerVisibility(){
   if(routeLine)routeLine.setMap(layers.route?map:null);
 }
 
+// ズームが変わるたびに、矢印の実際の長さ（緯度経度上の距離）を現在のズームで引き直す
+// （読込直後の初期ズームのまま固定されてしまい、その後の拡大縮小で見た目の長さが狂うバグの修正）
+function updateArrows(){
+  if(!map)return;
+  const zoom=map.getZoom()||15;
+  markers.forEach(m=>{
+    if(!m.arrow)return;
+    const photo=photos[m.idx];
+    if(!photo?.exif?.lat||photo.exif.dir===null)return;
+    const pos={lat:photo.exif.lat,lng:photo.exif.lng};
+    const dist=(arrowLen*0.0001)*Math.pow(2,15-zoom);
+    const r=photo.exif.dir*Math.PI/180;
+    const end={lat:pos.lat+dist*Math.cos(r),lng:pos.lng+dist*Math.sin(r)/Math.cos(pos.lat*Math.PI/180)};
+    m.arrow.setPath([pos,end]);
+  });
+}
+
 function renderList(){
   const list=document.getElementById('photo-list');list.innerHTML='';let count=0;
   const gf=document.getElementById('gpsFilter').value;
@@ -739,14 +849,14 @@ function focusPhoto(idx){
   highlightItem(idx);setPreview(p);
 }
 function highlightItem(idx){document.querySelectorAll('.list-item').forEach(el=>el.classList.remove('active'));const el=document.querySelector(`.list-item[data-idx="${idx}"]`);if(el){el.classList.add('active');el.scrollIntoView({block:'nearest'});}}
-function setPreview(photo){const img=document.getElementById('preview-img'),info=document.getElementById('preview-info'),empty=document.getElementById('preview-empty');if(photo.thumbUrl){img.src=photo.thumbUrl;img.style.display='block';img.style.cursor='zoom-in';img.onclick=()=>openLightboxUrl(photo.thumbUrl);info.style.display='block';empty.style.display='none';document.getElementById('preview-name').textContent=photo.name;const d=photo.exif;document.getElementById('preview-sub').textContent=[d?.dir!=null?`${d.dir.toFixed(0)}°（${dirName(d.dir)}）`:'',d?.alt?`${d.alt.toFixed(1)}m`:'',d?.dateTime||''].filter(Boolean).join(' · ');}}
+function setPreview(photo){const img=document.getElementById('preview-img'),info=document.getElementById('preview-info'),empty=document.getElementById('preview-empty');if(photo.thumbUrl){img.src=photo.thumbUrl;img.style.display='block';img.style.cursor='zoom-in';img.onclick=()=>openLightboxUrl(photo.thumbUrl);info.style.display='block';empty.style.display='none';document.getElementById('preview-name').textContent=photo.name;const d=photo.exif;document.getElementById('preview-sub').textContent=[d?.dir!=null?`${d.dir.toFixed(0)}°（${dirName(d.dir)}）`:'',d?.dateTime||''].filter(Boolean).join(' · ');}}
 function updateStats(){document.getElementById('stat-photos').textContent=photos.length;document.getElementById('stat-gps').textContent=photos.filter(p=>p.exif?.lat!==null).length;document.getElementById('stat-memo').textContent=memos.length;}
 function applyFilter(){renderList();}
 
 function exportKML(){
   const pts=photos.filter(p=>p.exif?.lat!==null);
   if(!pts.length){showToast('GPS付き写真がありません','err');return;}
-  const pms=pts.map(p=>`<Placemark><name>${esc(p.name)}</name><ExtendedData><Data name="撮影日時"><value>${esc(p.exif.dateTime||'')}</value></Data><Data name="撮影方向"><value>${p.exif.dir!=null?p.exif.dir.toFixed(1)+'°（'+dirName(p.exif.dir)+'）':''}</value></Data><Data name="高度"><value>${p.exif.alt?p.exif.alt.toFixed(1)+'m':''}</value></Data><Data name="メモ"><value>${esc(p.note||'')}</value></Data></ExtendedData><Point><coordinates>${p.exif.lng.toFixed(8)},${p.exif.lat.toFixed(8)},${p.exif.alt||0}</coordinates></Point></Placemark>`).join('');
+  const pms=pts.map(p=>`<Placemark><name>${esc(p.name)}</name><ExtendedData><Data name="撮影日時"><value>${esc(p.exif.dateTime||'')}</value></Data><Data name="撮影方向"><value>${p.exif.dir!=null?p.exif.dir.toFixed(1)+'°（'+dirName(p.exif.dir)+'）':''}</value></Data><Data name="メモ"><value>${esc(p.note||'')}</value></Data></ExtendedData><Point><coordinates>${p.exif.lng.toFixed(8)},${p.exif.lat.toFixed(8)},${p.exif.alt||0}</coordinates></Point></Placemark>`).join('');
   const kml=`<?xml version="1.0" encoding="UTF-8"?><kml xmlns="http://www.opengis.net/kml/2.2"><Document><name>撮影済みポイント（${new Date().toLocaleDateString('ja-JP')}）</name>${pms}</Document></kml>`;
   const blob=new Blob([kml],{type:'application/vnd.google-earth.kml+xml'});
   const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`field_gps_${new Date().toISOString().slice(0,10)}.kml`;a.click();URL.revokeObjectURL(url);
@@ -756,12 +866,11 @@ function exportKML(){
 function exportExcel(){
   if(!photos.length){showToast('写真がありません','err');return;}
   const BOM='\uFEFF';
-  const header=['No.','ファイル名','撮影日時','緯度','経度','高度(m)','撮影方向(°)','撮影方向','メモ'];
+  const header=['No.','ファイル名','撮影日時','緯度','経度','撮影方向(°)','撮影方向','メモ'];
   const rows=photos.map((p,i)=>[
     i+1,p.name,p.exif?.dateTime||'',
     p.exif?.lat!=null?p.exif.lat.toFixed(6):'',
     p.exif?.lng!=null?p.exif.lng.toFixed(6):'',
-    p.exif?.alt!=null?p.exif.alt.toFixed(1):'',
     p.exif?.dir!=null?p.exif.dir.toFixed(1):'',
     p.exif?.dir!=null?dirName(p.exif.dir):'',
     p.note||''
@@ -775,9 +884,9 @@ function exportExcel(){
 function exportXlsx(){
   if(!photos.length){showToast('写真がありません','err');return;}
   showToast('Excel出力中...','ok');
-  if(typeof XLSX==='undefined'){
+  if(typeof ExcelJS==='undefined'){
     const s=document.createElement('script');
-    s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    s.src='https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js';
     s.onload=()=>_doExportXlsx();
     s.onerror=()=>showToast('ライブラリ読み込みエラー','err');
     document.head.appendChild(s);
@@ -786,52 +895,57 @@ function exportXlsx(){
   }
 }
 
-function _doExportXlsx(){
-  const wb=XLSX.utils.book_new();
-  const header=['No.','写真','ファイル名','撮影日時','緯度','経度','高度(m)','撮影方向(°)','撮影方向','メモ'];
-  const rows=photos.map((p,i)=>[
-    i+1,'',p.name,p.exif?.dateTime||'',
-    p.exif?.lat!=null?p.exif.lat.toFixed(6):'',
-    p.exif?.lng!=null?p.exif.lng.toFixed(6):'',
-    p.exif?.alt!=null?p.exif.alt.toFixed(1):'',
-    p.exif?.dir!=null?p.exif.dir.toFixed(1):'',
-    p.exif?.dir!=null?dirName(p.exif.dir):'',
-    p.note||''
-  ]);
+async function _doExportXlsx(){
+  try{
+    const wb=new ExcelJS.Workbook();
+    const ws=wb.addWorksheet('点検記録');
+    ws.columns=[
+      {header:'No.',key:'no',width:5},
+      {header:'写真',key:'photo',width:20},
+      {header:'ファイル名',key:'name',width:25},
+      {header:'撮影日時',key:'dt',width:18},
+      {header:'緯度',key:'lat',width:12},
+      {header:'経度',key:'lng',width:12},
+      {header:'撮影方向(°)',key:'dirDeg',width:12},
+      {header:'撮影方向',key:'dirName',width:8},
+      {header:'メモ',key:'note',width:30},
+    ];
+    ws.getRow(1).font={bold:true};
 
-  const ws=XLSX.utils.aoa_to_sheet([header,...rows]);
-  ws['!cols']=[{wch:5},{wch:20},{wch:25},{wch:18},{wch:12},{wch:12},{wch:10},{wch:12},{wch:8},{wch:30}];
-  ws['!rows']=[{hpt:20},...photos.map(()=>({hpt:60}))];
-  XLSX.utils.book_append_sheet(wb,ws,'点検記録');
-
-  const promises=photos.map((p,i)=>{
-    if(!p.thumbUrl)return Promise.resolve();
-    return new Promise(resolve=>{
-      const img=new Image();
-      img.onload=()=>{
-        const canvas=document.createElement('canvas');
-        canvas.width=120;canvas.height=90;
-        const ctx=canvas.getContext('2d');
-        ctx.drawImage(img,0,0,120,90);
-        const b64=canvas.toDataURL('image/jpeg',.7).split(',')[1];
-        if(!wb.Sheets['点検記録']['!images'])wb.Sheets['点検記録']['!images']=[];
-        wb.Sheets['点検記録']['!images'].push({
-          name:`photo_${i}.jpg`,data:b64,type:'jpeg',
-          position:{type:'twoCellAnchor',attrs:{editAs:'oneCell'},
-            from:{col:1,colOff:0,row:i+1,rowOff:0},
-            to:{col:2,colOff:0,row:i+2,rowOff:0}}
-        });
-        resolve();
-      };
-      img.onerror=resolve;
-      img.src=p.thumbUrl;
+    photos.forEach((p,i)=>{
+      ws.addRow({
+        no:i+1,photo:'',name:p.name,dt:p.exif?.dateTime||'',
+        lat:p.exif?.lat!=null?Number(p.exif.lat.toFixed(6)):'',
+        lng:p.exif?.lng!=null?Number(p.exif.lng.toFixed(6)):'',
+        dirDeg:p.exif?.dir!=null?Number(p.exif.dir.toFixed(1)):'',
+        dirName:p.exif?.dir!=null?dirName(p.exif.dir):'',
+        note:p.note||''
+      });
+      ws.getRow(i+2).height=65;
     });
-  });
 
-  Promise.all(promises).then(()=>{
-    XLSX.writeFile(wb,`field_gps_${new Date().toISOString().slice(0,10)}.xlsx`);
+    for(let i=0;i<photos.length;i++){
+      const p=photos[i];
+      if(!p.thumbUrl)continue;
+      try{
+        const resp=await fetch(p.thumbUrl);
+        const blob=await resp.blob();
+        const buf=await blob.arrayBuffer();
+        const imgId=wb.addImage({buffer:buf,extension:'jpeg'});
+        ws.addImage(imgId,{tl:{col:1,row:i+1},ext:{width:110,height:82}});
+      }catch(err){ /* 個別の画像取得失敗はスキップし、他のデータは残す */ }
+    }
+
+    const buffer=await wb.xlsx.writeBuffer();
+    const blob=new Blob([buffer],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;a.download=`field_gps_${new Date().toISOString().slice(0,10)}.xlsx`;a.click();
+    URL.revokeObjectURL(url);
     showToast(`Excel出力完了（${photos.length}件）`,'ok');
-  });
+  }catch(err){
+    showToast('Excel出力に失敗しました','err');
+  }
 }
 
 function clearAll(){
@@ -844,6 +958,7 @@ function clearAll(){
   document.getElementById('exportBtn').disabled=true;
   document.getElementById('exportBtn2').disabled=true;
   document.getElementById('exportExcelBtn').disabled=true;
+  document.getElementById('exportXlsxBtn').disabled=true;
   document.getElementById('preview-img').style.display='none';
   document.getElementById('preview-info').style.display='none';
   document.getElementById('preview-empty').style.display='flex';
@@ -859,7 +974,16 @@ mapWrap.addEventListener('dragover',e=>{e.preventDefault();document.getElementBy
 mapWrap.addEventListener('dragleave',()=>document.getElementById('drop-overlay').classList.remove('active'));
 mapWrap.addEventListener('drop',e=>{e.preventDefault();document.getElementById('drop-overlay').classList.remove('active');handlePhotos(e.dataTransfer.files);});
 
-window.addEventListener('load',()=>loadMap());
+window.addEventListener('load',()=>{
+  loadMap();
+  if(localStorage.getItem('fgm_banner_dismissed')==='1'){
+    document.getElementById('browser-banner').classList.add('hide');
+  }
+});
+function closeBrowserBanner(){
+  document.getElementById('browser-banner').classList.add('hide');
+  localStorage.setItem('fgm_banner_dismissed','1');
+}
 
 // ── トップメニュー：クリックで開閉（ホバー方式は指の動きに弱いため廃止） ──
 function closeAllMenus(){
