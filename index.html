@@ -21,6 +21,7 @@
   .tb-logo{display:flex;align-items:center;gap:8px;padding:0 16px;height:100%;border-right:1px solid var(--border);font-size:13px;font-weight:700;color:var(--cyan);letter-spacing:.04em;white-space:nowrap;}
   .tb-menu{display:flex;height:100%;position:relative;}
   .tb-item{padding:0 13px;height:100%;display:flex;align-items:center;font-size:12px;color:var(--dim);cursor:pointer;border-right:1px solid var(--border);transition:background .15s,color .15s;position:relative;}
+  .tb-item-label{display:block;}
   .tb-item:hover{background:rgba(0,0,0,.04);color:var(--text);}
   .tb-dropdown{display:none;position:absolute;top:42px;left:0;background:white;border:1px solid var(--border2);border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,.15);min-width:160px;z-index:500;}
   .tb-item.open .tb-dropdown{display:block;}
@@ -166,7 +167,8 @@
       写メモdeMAP
     </div>
     <div class="tb-menu">
-      <div class="tb-item">ファイル
+      <div class="tb-item">
+        <span class="tb-item-label" onclick="event.stopPropagation();toggleMenu(this.parentElement)">ファイル</span>
         <div class="tb-dropdown">
           <div class="tb-dd-item" onclick="document.getElementById('photoInput').click()">📁 写真を読み込む</div>
           <div class="tb-dd-item" onclick="document.getElementById('kmlInput').click()">📂 KMLを読み込む</div>
@@ -178,7 +180,8 @@
           <div class="tb-dd-item" onclick="clearAll()">🗑 クリア</div>
         </div>
       </div>
-      <div class="tb-item">表示
+      <div class="tb-item">
+        <span class="tb-item-label" onclick="event.stopPropagation();toggleMenu(this.parentElement)">表示</span>
         <div class="tb-dropdown">
           <div class="tb-dd-item" onclick="toggleLayer('photos')">撮影ポイント ON/OFF</div>
           <div class="tb-dd-item" onclick="toggleLayer('arrows')">撮影方向 ON/OFF</div>
@@ -186,14 +189,16 @@
           <div class="tb-dd-item" onclick="toggleLayer('memos')">しゃべメモ ON/OFF</div>
         </div>
       </div>
-      <div class="tb-item">出力
+      <div class="tb-item">
+        <span class="tb-item-label" onclick="event.stopPropagation();toggleMenu(this.parentElement)">出力</span>
         <div class="tb-dropdown">
           <div class="tb-dd-item" onclick="exportKML()">⬇ KML出力</div>
           <div class="tb-dd-item" onclick="exportExcel()">📊 CSV出力</div>
           <div class="tb-dd-item" onclick="exportXlsx()">📸 写真付きExcel出力</div>
         </div>
       </div>
-      <div class="tb-item">設定
+      <div class="tb-item">
+        <span class="tb-item-label" onclick="event.stopPropagation();toggleMenu(this.parentElement)">設定</span>
         <div class="tb-dropdown">
           <div class="tb-dd-item" onclick="showSettings()">⚙ 表示設定</div>
         </div>
@@ -989,19 +994,13 @@ function closeBrowserBanner(){
 function closeAllMenus(){
   document.querySelectorAll('.tb-item.open').forEach(i=>i.classList.remove('open'));
 }
-document.querySelectorAll('.tb-item').forEach(item=>{
-  item.addEventListener('click', (e)=>{
-    if (e.target === item) {
-      // メニュー見出し（「ファイル」「表示」などのラベル部分）がクリックされた
-      e.stopPropagation();
-      const wasOpen = item.classList.contains('open');
-      closeAllMenus();
-      if (!wasOpen) item.classList.add('open');
-    } else {
-      // ドロップダウン内の項目がクリックされた → 実行後にメニューを閉じる
-      closeAllMenus();
-    }
-  });
+function toggleMenu(item){
+  const wasOpen=item.classList.contains('open');
+  closeAllMenus();
+  if(!wasOpen)item.classList.add('open');
+}
+document.querySelectorAll('.tb-dropdown').forEach(dd=>{
+  dd.addEventListener('click',(e)=>{ e.stopPropagation(); closeAllMenus(); });
 });
 document.addEventListener('click', ()=>{ closeAllMenus(); });
 </script>
