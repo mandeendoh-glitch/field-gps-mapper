@@ -49,7 +49,7 @@
   #browser-banner button{flex-shrink:0;background:none;border:none;color:#7A5A00;font-size:16px;cursor:pointer;line-height:1;padding:2px 6px;}
   #browser-banner button:hover{color:#4A3600;}
   #body{display:flex;flex:1;overflow:hidden;}
-  #left{width:185px;flex-shrink:0;background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;position:relative;transition:width .18s ease;}
+  #left{width:185px;flex-shrink:0;background:var(--panel);border-right:1px solid var(--border);display:none;flex-direction:column;overflow:hidden;position:relative;transition:width .18s ease;}
   #left.collapsed{width:0;border-right:none;}
   #left-collapse-btn{position:absolute;top:8px;right:-14px;width:22px;height:22px;border-radius:50%;background:white;border:1px solid var(--border2);box-shadow:0 1px 4px rgba(0,0,0,.15);font-size:10px;color:var(--dim);cursor:pointer;z-index:60;display:flex;align-items:center;justify-content:center;}
   #left.collapsed #left-collapse-btn{transform:rotate(180deg);}
@@ -169,6 +169,9 @@
       </svg>
       写メモdeMAP
     </div>
+    <!-- ▼開発用バージョン表示（リリース時はこのdiv1つを削除するだけでOK） -->
+    <div id="dev-version-tag" style="font-size:10px;color:var(--dim2);padding:0 10px;white-space:nowrap;font-family:var(--mono);"></div>
+    <!-- ▲開発用バージョン表示ここまで -->
     <div class="tb-menu">
       <div class="tb-item">
         <span class="tb-item-label" onclick="event.stopPropagation();toggleMenu(this.parentElement)">ファイル</span>
@@ -206,6 +209,14 @@
           <div class="tb-dd-item" onclick="showSettings()">⚙ 表示設定</div>
         </div>
       </div>
+      <div style="display:flex;align-items:center;gap:6px;padding:0 10px;border-right:1px solid var(--border);height:100%;">
+        <select class="filter-select" id="gpsFilter" onchange="applyFilter()" style="height:26px;width:auto;">
+          <option value="">GPS:すべて表示</option>
+          <option value="gps">GPS付きのみ</option>
+          <option value="nogps">GPSなしのみ</option>
+        </select>
+        <button class="btn-sm" onclick="clearAll()" style="background:#FBEAEA;color:var(--red);border-color:rgba(192,48,48,.3);">🗑 クリア</button>
+      </div>
     </div>
     <div class="tb-spacer"></div>
     <div class="tb-stats">
@@ -242,40 +253,6 @@
   <div id="body">
     <div id="left">
       <button id="left-collapse-btn" onclick="toggleLeftPanel()" title="サイドバーの折りたたみ">◄</button>
-      <div class="panel-section">
-        <div class="panel-section-title">表示レイヤー</div>
-        <div class="layer-row" onclick="toggleLayer('photos')">
-          <div class="layer-dot" style="background:var(--cyan)"></div>
-          <span class="layer-name">撮影ポイント</span>
-          <div class="layer-toggle on" id="lyr-photos"></div>
-        </div>
-        <div class="layer-row" onclick="toggleLayer('arrows')">
-          <div class="layer-dot" style="background:var(--orange)"></div>
-          <span class="layer-name">撮影方向</span>
-          <div class="layer-toggle on" id="lyr-arrows"></div>
-        </div>
-        <div class="layer-row" onclick="toggleLayer('route')">
-          <div class="layer-dot" style="background:#2A7DD4"></div>
-          <span class="layer-name">作業動線</span>
-          <div class="layer-toggle on" id="lyr-route"></div>
-        </div>
-        <div class="layer-row" onclick="toggleLayer('kml')">
-          <div class="layer-dot" style="background:var(--purple)"></div>
-          <span class="layer-name">KML管理点</span>
-          <div class="layer-toggle on" id="lyr-kml"></div>
-        </div>
-      </div>
-      <div class="panel-section">
-        <div class="panel-section-title">フィルター</div>
-        <div class="filter-row">
-          <div class="filter-label">GPS</div>
-          <select class="filter-select" id="gpsFilter" onchange="applyFilter()">
-            <option value="">すべて表示</option>
-            <option value="gps">GPS付きのみ</option>
-            <option value="nogps">GPSなしのみ</option>
-          </select>
-        </div>
-      </div>
       <div class="panel-section" id="loaded-projects-section" style="display:none;">
         <div class="panel-section-title" style="display:flex;justify-content:space-between;align-items:center;padding-right:12px;">
           <span>読み込み済みプロジェクト</span>
@@ -285,10 +262,6 @@
           </span>
         </div>
         <div id="loaded-projects-list"></div>
-      </div>
-      <div class="left-footer">
-        <button class="out-btn primary" onclick="exportKML()" id="exportBtn2" disabled>⬇ KML追記出力</button>
-        <button class="out-btn" onclick="clearAll()" style="background:#FBEAEA;color:var(--red);border-color:rgba(192,48,48,.3);">🗑 クリア</button>
       </div>
     </div>
     <div id="map-wrap">
@@ -367,11 +340,12 @@
       <span id="thumb-zoom-val" style="font-weight:700;width:24px;text-align:center;">18</span>
     </div>
     <div style="font-size:10.5px;color:var(--dim2);margin-bottom:16px;">この数値以上にズームすると、地図上のピンが写真サムネイルに切り替わります。</div>
-    <div style="font-size:12px;color:var(--dim);margin-bottom:8px;">矢印の長さ</div>
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
-      <input type="range" id="arrow-len" min="1" max="10" value="4" style="flex:1;" oninput="document.getElementById('arrow-len-val').textContent=this.value"/>
-      <span id="arrow-len-val" style="font-weight:700;width:24px;text-align:center;">4</span>
+    <div style="font-size:12px;color:var(--dim);margin-bottom:8px;">矢印の長さ（画面上のピクセル長）</div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+      <input type="range" id="arrow-len" min="45" max="180" value="90" step="5" style="flex:1;" oninput="document.getElementById('arrow-len-val').textContent=this.value"/>
+      <span id="arrow-len-val" style="font-weight:700;width:32px;text-align:center;">90</span>
     </div>
+    <div style="font-size:10.5px;color:var(--dim2);margin-bottom:16px;">ズームレベルに関わらず、常にこのピクセル数の長さで表示されます。</div>
     <div class="modal-btns">
       <button class="modal-btn modal-btn-cancel" onclick="closeSettingsModal()">キャンセル</button>
       <button class="modal-btn modal-btn-ok" onclick="applySettings()">適用</button>
@@ -396,6 +370,10 @@
 </div>
 <script>
 const API_KEY = 'AIzaSyCxFFQxa-0PtBYfJ9gXWkur2wiszMwk7S0';
+
+// ▼開発用バージョン表示（リリース時はこの1行と、上のHTML内のdev-version-tag divを削除するだけでOK）
+document.getElementById('dev-version-tag').textContent = 'v0.9.5 (更新: 2026-07-24)';
+// ▲開発用バージョン表示ここまで
 let map=null, markers=[], kmlMarkers=[], photos=[], memos=[], activeIW=null, routeLine=null;
 let layers={photos:true,arrows:true,kml:true,memos:true,route:true};
 let editTargetIdx = null;
@@ -466,14 +444,11 @@ function parseEXIF(buf){
 function dirName(deg){const n=['北','北北東','北東','東北東','東','東南東','南東','南南東','南','南南西','南西','西南西','西','西北西','北西','北北西'];return n[Math.round(deg/22.5)%16];}
 
 // 矢印の実距離（緯度経度換算）を計算する。
-// サムネイル表示（写真アイコン60x45px）に切り替わっている時は、矢印が写真の中に埋もれないよう
-// 画面上で必ず一定ピクセル数以上はみ出すよう最低保証の長さを設ける
+// スライダーの値（arrowLen）を「画面上のピクセル長」として直接扱う方式にすることで、
+// ズームレベルに関わらず設定値がそのまま見た目の長さになるようにする
 function computeArrowDist(lat,zoom){
-  const base=(arrowLen*0.0001)*Math.pow(2,15-zoom);
   const metersPerPixel=156543.03392*Math.cos(lat*Math.PI/180)/Math.pow(2,zoom);
-  const minPx=zoom>=thumbZoom?90:20; // サムネイル(60x45px)の1.5倍程度を確保
-  const minDeg=(minPx*metersPerPixel)/111320;
-  return Math.max(base,minDeg);
+  return (arrowLen*metersPerPixel)/111320;
 }
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
@@ -502,7 +477,7 @@ function toggleLeftPanel(){
 
 function switchMapType(type,el){if(!map)return;map.setMapTypeId(type);document.querySelectorAll('.mt-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');}
 
-let thumbZoom=18, arrowLen=4;
+let thumbZoom=18, arrowLen=90;
 function showSettings(){document.getElementById('settings-modal').classList.add('show');}
 function closeSettingsModal(){document.getElementById('settings-modal').classList.remove('show');}
 function applySettings(){
@@ -679,7 +654,6 @@ async function loadSelectedProjects(){
   updateStats();renderList();renderLoadedProjectsSidebar();
   if(map)plotAll();
   document.getElementById('exportBtn').disabled=false;
-  document.getElementById('exportBtn2').disabled=false;
   document.getElementById('exportExcelBtn').disabled=false;
   document.getElementById('exportXlsxBtn').disabled=false;
   showToast(`${checked.length}件のプロジェクトを読み込みました（写真 ${totalLoaded}/${totalExpected}枚）`,'ok');
@@ -732,10 +706,16 @@ async function loadProjectById(id){
 }
 
 function renderLoadedProjectsSidebar(){
+  const left=document.getElementById('left');
   const section=document.getElementById('loaded-projects-section');
   const list=document.getElementById('loaded-projects-list');
   const ids=Object.keys(loadedProjectsMeta);
-  if(!ids.length){section.style.display='none';return;}
+  if(!ids.length){
+    section.style.display='none';
+    left.style.display='none'; // プロジェクトが無い間はサイドバー自体を出さない
+    return;
+  }
+  left.style.display='flex';
   section.style.display='block';
   list.innerHTML=ids.map(id=>{
     const m=loadedProjectsMeta[id];
@@ -790,7 +770,6 @@ async function handlePhotos(files){
   photos=[...photos,...res];updateStats();renderList();
   if(map)plotAll();
   document.getElementById('exportBtn').disabled=false;
-  document.getElementById('exportBtn2').disabled=false;
   document.getElementById('exportExcelBtn').disabled=false;
   document.getElementById('exportXlsxBtn').disabled=false;
   showToast(`${res.length}枚読込（GPS付き:${res.filter(p=>p.exif?.lat!==null).length}枚）`,'ok');
@@ -1149,7 +1128,6 @@ function clearAll(){
   if(activeIW){activeIW.close();activeIW=null;}
   updateStats();renderList();
   document.getElementById('exportBtn').disabled=true;
-  document.getElementById('exportBtn2').disabled=true;
   document.getElementById('exportExcelBtn').disabled=true;
   document.getElementById('exportXlsxBtn').disabled=true;
   document.getElementById('preview-img').style.display='none';
