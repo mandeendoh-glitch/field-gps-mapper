@@ -464,6 +464,17 @@ function parseEXIF(buf){
 }
 
 function dirName(deg){const n=['北','北北東','北東','東北東','東','東南東','南東','南南東','南','南南西','南西','西南西','西','西北西','北西','北北西'];return n[Math.round(deg/22.5)%16];}
+
+// 矢印の実距離（緯度経度換算）を計算する。
+// サムネイル表示（写真アイコン60x45px）に切り替わっている時は、矢印が写真の中に埋もれないよう
+// 画面上で必ず一定ピクセル数以上はみ出すよう最低保証の長さを設ける
+function computeArrowDist(lat,zoom){
+  const base=(arrowLen*0.0001)*Math.pow(2,15-zoom);
+  const metersPerPixel=156543.03392*Math.cos(lat*Math.PI/180)/Math.pow(2,zoom);
+  const minPx=zoom>=thumbZoom?90:20; // サムネイル(60x45px)の1.5倍程度を確保
+  const minDeg=(minPx*metersPerPixel)/111320;
+  return Math.max(base,minDeg);
+}
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
 function loadMap(){
@@ -822,7 +833,7 @@ function plotAll(){
     let arrow=null;
     if(photo.exif.dir!==null){
       const zoom=map.getZoom()||15;
-      const dist=(arrowLen*0.0001)*Math.pow(2,15-zoom);
+      const dist=computeArrowDist(pos.lat,zoom);
       const r=photo.exif.dir*Math.PI/180;
       const end={lat:pos.lat+dist*Math.cos(r),lng:pos.lng+dist*Math.sin(r)/Math.cos(pos.lat*Math.PI/180)};
       arrow=new google.maps.Polyline({path:[pos,end],map:layers.arrows?map:null,strokeColor:pinColor,strokeOpacity:1,strokeWeight:2.5,icons:[{icon:{path:google.maps.SymbolPath.FORWARD_CLOSED_ARROW,scale:3,fillColor:pinColor,fillOpacity:1,strokeColor:pinColor,strokeWeight:1},offset:'100%'}],zIndex:20});
@@ -943,7 +954,7 @@ function updateArrows(){
     const photo=photos[m.idx];
     if(!photo?.exif?.lat||photo.exif.dir===null)return;
     const pos={lat:photo.exif.lat,lng:photo.exif.lng};
-    const dist=(arrowLen*0.0001)*Math.pow(2,15-zoom);
+    const dist=computeArrowDist(pos.lat,zoom);
     const r=photo.exif.dir*Math.PI/180;
     const end={lat:pos.lat+dist*Math.cos(r),lng:pos.lng+dist*Math.sin(r)/Math.cos(pos.lat*Math.PI/180)};
     m.arrow.setPath([pos,end]);
