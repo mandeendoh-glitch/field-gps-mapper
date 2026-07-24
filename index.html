@@ -49,7 +49,10 @@
   #browser-banner button{flex-shrink:0;background:none;border:none;color:#7A5A00;font-size:16px;cursor:pointer;line-height:1;padding:2px 6px;}
   #browser-banner button:hover{color:#4A3600;}
   #body{display:flex;flex:1;overflow:hidden;}
-  #left{width:185px;flex-shrink:0;background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+  #left{width:185px;flex-shrink:0;background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;position:relative;transition:width .18s ease;}
+  #left.collapsed{width:0;border-right:none;}
+  #left-collapse-btn{position:absolute;top:8px;right:-14px;width:22px;height:22px;border-radius:50%;background:white;border:1px solid var(--border2);box-shadow:0 1px 4px rgba(0,0,0,.15);font-size:10px;color:var(--dim);cursor:pointer;z-index:60;display:flex;align-items:center;justify-content:center;}
+  #left.collapsed #left-collapse-btn{transform:rotate(180deg);}
   .panel-section{border-bottom:1px solid var(--border);}
   .panel-section-title{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--dim);padding:9px 12px 5px;}
   .layer-row{display:flex;align-items:center;gap:8px;padding:5px 12px;cursor:pointer;transition:background .12s;}
@@ -228,8 +231,9 @@
     <button onclick="closeBrowserBanner()" title="閉じる">×</button>
   </div>
   <div id="toolbar">
-    <button class="btn-sm" onclick="document.getElementById('photoInput').click()">📁 写真を読み込む</button>
+    <button class="btn-sm" onclick="document.getElementById('photoInput').click()" style="background:#E8F0FA;color:var(--accent);border-color:rgba(42,125,212,.35);font-weight:700;">📁 写真を読み込む</button>
     <input type="file" id="photoInput" multiple accept="image/jpeg,image/jpg" style="display:none" onchange="handlePhotos(this.files)"/>
+    <input type="file" id="kmlInput" accept=".kml,.kmz" style="display:none" onchange="handleKML(this.files[0])"/>
     <div class="sep"></div>
     <button class="btn-sm btn-green" onclick="exportKML()" id="exportBtn" disabled>⬇ KML出力</button>
     <button class="btn-sm btn-green" onclick="exportExcel()" id="exportExcelBtn" disabled style="background:#EAF5EE;color:var(--green);border-color:rgba(26,128,64,.3);">📊 CSV出力</button>
@@ -237,6 +241,7 @@
   </div>
   <div id="body">
     <div id="left">
+      <button id="left-collapse-btn" onclick="toggleLeftPanel()" title="サイドバーの折りたたみ">◄</button>
       <div class="panel-section">
         <div class="panel-section-title">表示レイヤー</div>
         <div class="layer-row" onclick="toggleLayer('photos')">
@@ -259,11 +264,6 @@
           <span class="layer-name">KML管理点</span>
           <div class="layer-toggle on" id="lyr-kml"></div>
         </div>
-        <div class="layer-row" onclick="toggleLayer('memos')">
-          <div class="layer-dot" style="background:var(--amber)"></div>
-          <span class="layer-name">しゃべメモ</span>
-          <div class="layer-toggle on" id="lyr-memos"></div>
-        </div>
       </div>
       <div class="panel-section">
         <div class="panel-section-title">フィルター</div>
@@ -276,18 +276,19 @@
           </select>
         </div>
       </div>
-      <div class="panel-section">
-        <div class="panel-section-title">KML読込</div>
-        <div class="filter-row">
-          <label style="display:block;cursor:pointer;" for="kmlInput">
-            <div class="out-btn" style="margin:0;">📂 KMLを読み込む</div>
-          </label>
-          <input type="file" id="kmlInput" accept=".kml,.kmz" style="display:none" onchange="handleKML(this.files[0])"/>
+      <div class="panel-section" id="loaded-projects-section" style="display:none;">
+        <div class="panel-section-title" style="display:flex;justify-content:space-between;align-items:center;padding-right:12px;">
+          <span>読み込み済みプロジェクト</span>
+          <span style="display:flex;gap:6px;">
+            <a href="#" onclick="toggleAllProjectVisibility(true);return false;" style="font-size:9px;">全表示</a>
+            <a href="#" onclick="toggleAllProjectVisibility(false);return false;" style="font-size:9px;">全非表示</a>
+          </span>
         </div>
+        <div id="loaded-projects-list"></div>
       </div>
       <div class="left-footer">
         <button class="out-btn primary" onclick="exportKML()" id="exportBtn2" disabled>⬇ KML追記出力</button>
-        <button class="out-btn" onclick="clearAll()">🗑 クリア</button>
+        <button class="out-btn" onclick="clearAll()" style="background:#FBEAEA;color:var(--red);border-color:rgba(192,48,48,.3);">🗑 クリア</button>
       </div>
     </div>
     <div id="map-wrap">
@@ -330,15 +331,30 @@
   </div>
 </div>
 <div id="project-modal">
-  <div class="modal-box">
+  <div class="modal-box" style="width:420px;">
     <h3>📁 プロジェクト管理</h3>
-    <div style="font-size:11px;color:var(--dim);margin-bottom:8px;">新規プロジェクト名</div>
-    <input type="text" id="project-name-input" class="modal-input" placeholder="例：水島橋梁点検_20260707"/>
-    <div style="font-size:11px;color:var(--dim);margin-bottom:6px;">保存済みプロジェクト</div>
-    <div class="project-list" id="project-list"></div>
-    <div class="modal-btns">
-      <button class="modal-btn modal-btn-cancel" onclick="closeProjectModal()">閉じる</button>
-      <button class="modal-btn modal-btn-ok" onclick="createProject()">新規作成・保存</button>
+    <div style="font-size:11px;color:var(--dim);margin-bottom:4px;">案件名</div>
+    <input type="text" id="project-group-input" class="modal-input" placeholder="例：水島橋梁点検"/>
+    <div style="font-size:11px;color:var(--dim);margin-bottom:4px;">日付ラベル(省略可・空欄なら今日の日付)</div>
+    <input type="text" id="project-date-input" class="modal-input" placeholder="例：7/16 または 上部工"/>
+    <div style="font-size:11px;color:var(--dim);margin-bottom:4px;">タグ(カンマ区切り・省略可)</div>
+    <input type="text" id="project-tags-input" class="modal-input" placeholder="例：配筋, 要確認"/>
+
+    <div style="display:flex;gap:8px;margin:6px 0 12px;">
+      <input type="text" id="project-search-input" class="modal-input" placeholder="🔍 案件名で検索" style="margin-bottom:0;flex:2;" oninput="renderProjectList()"/>
+      <select id="project-tag-filter" class="modal-input" style="margin-bottom:0;flex:1;" onchange="renderProjectList()">
+        <option value="">タグ:すべて</option>
+      </select>
+    </div>
+
+    <div style="font-size:11px;color:var(--dim);margin-bottom:6px;">保存済みプロジェクト(チェックして複数選択できます)</div>
+    <div class="project-list" id="project-list" style="max-height:260px;"></div>
+    <div class="modal-btns" style="justify-content:space-between;margin-top:10px;">
+      <button class="modal-btn" style="background:#E8F0FA;color:var(--accent);border:1px solid rgba(42,125,212,.3);font-weight:700;" onclick="loadSelectedProjects()">🗺 選択したものを地図に重ねて表示</button>
+      <div style="display:flex;gap:8px;">
+        <button class="modal-btn modal-btn-cancel" onclick="closeProjectModal()">閉じる</button>
+        <button class="modal-btn modal-btn-ok" onclick="createProject()">新規作成・保存</button>
+      </div>
     </div>
   </div>
 </div>
@@ -469,6 +485,10 @@ function loadMap(){
   document.head.appendChild(s);
 }
 
+function toggleLeftPanel(){
+  document.getElementById('left').classList.toggle('collapsed');
+}
+
 function switchMapType(type,el){if(!map)return;map.setMapTypeId(type);document.querySelectorAll('.mt-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');}
 
 let thumbZoom=18, arrowLen=4;
@@ -483,6 +503,7 @@ function applySettings(){
 }
 
 function showProjectModal(){
+  populateTagFilter();
   renderProjectList();
   document.getElementById('project-modal').classList.add('show');
 }
@@ -501,55 +522,77 @@ function openHandleDB(){
     req.onerror=()=>reject(req.error);
   });
 }
-async function saveDirHandle(projectName,handle){
+async function saveDirHandle(projectId,handle){
   if(!fgmHandleDB)fgmHandleDB=await openHandleDB();
   return new Promise((resolve)=>{
     const tx=fgmHandleDB.transaction('dirHandles','readwrite');
-    tx.objectStore('dirHandles').put(handle,projectName);
+    tx.objectStore('dirHandles').put(handle,projectId);
     tx.oncomplete=()=>resolve();
     tx.onerror=()=>resolve();
   });
 }
-async function getDirHandle(projectName){
+async function getDirHandle(projectId){
   if(!fgmHandleDB)fgmHandleDB=await openHandleDB();
   return new Promise((resolve)=>{
     const tx=fgmHandleDB.transaction('dirHandles','readonly');
-    const req=tx.objectStore('dirHandles').get(projectName);
+    const req=tx.objectStore('dirHandles').get(projectId);
     req.onsuccess=()=>resolve(req.result||null);
     req.onerror=()=>resolve(null);
   });
 }
-async function linkFolderToProject(name){
+async function linkFolderToProject(id){
   if(!('showDirectoryPicker' in window))return;
   if(!confirm('次回から写真を自動で読み込めるように、写真が保存されているフォルダを選択しますか？\n(Chrome/Edgeのみ対応。あとから「プロジェクト管理」でも設定できます)'))return;
   try{
     const handle=await window.showDirectoryPicker({mode:'read'});
-    await saveDirHandle(name,handle);
+    await saveDirHandle(id,handle);
     showToast('写真フォルダを紐付けました','ok');
   }catch(e){ /* ユーザーがキャンセルした場合は何もしない */ }
 }
 
+// ── 案件ごとの色分け ──────────────────────────
+const PROJECT_PALETTE=['#1A6EBF','#1A8040','#C06010','#6858C0','#C03030','#0E9494','#B8860B','#8B4789'];
+function getProjectColorMap(){
+  try{return JSON.parse(localStorage.getItem('fgm_project_colors')||'{}');}catch(e){return{};}
+}
+function assignProjectColor(group){
+  const map=getProjectColorMap();
+  if(map[group])return map[group];
+  const color=PROJECT_PALETTE[Object.keys(map).length%PROJECT_PALETTE.length];
+  map[group]=color;
+  localStorage.setItem('fgm_project_colors',JSON.stringify(map));
+  return color;
+}
+
 function saveProject(){
-  const name=prompt('プロジェクト名を入力してください');
-  if(!name)return;
-  const data={name,date:new Date().toISOString(),photos:photos.map(p=>({name:p.name,exif:p.exif,note:p.note})),memos};
+  const group=prompt('案件名を入力してください');
+  if(!group)return;
+  const id='p_'+Date.now();
+  const data={id,group,dateLabel:new Date().toLocaleDateString('ja-JP'),tags:[],date:new Date().toISOString(),photos:photos.map(p=>({name:p.name,exif:p.exif,note:p.note})),memos};
   const projects=getProjects();
-  projects[name]=data;
+  projects[id]=data;
   localStorage.setItem('fgm_projects',JSON.stringify(projects));
-  showToast(`「${name}」を保存しました`,'ok');
-  linkFolderToProject(name);
+  showToast(`「${group}」を保存しました`,'ok');
+  linkFolderToProject(id);
 }
 
 function createProject(){
-  const name=document.getElementById('project-name-input').value.trim();
-  if(!name){showToast('プロジェクト名を入力してください','err');return;}
-  const data={name,date:new Date().toISOString(),photos:photos.map(p=>({name:p.name,exif:p.exif,note:p.note})),memos};
+  const group=document.getElementById('project-group-input').value.trim();
+  if(!group){showToast('案件名を入力してください','err');return;}
+  const dateLabel=document.getElementById('project-date-input').value.trim()||new Date().toLocaleDateString('ja-JP');
+  const tags=document.getElementById('project-tags-input').value.split(',').map(t=>t.trim()).filter(Boolean);
+  const id='p_'+Date.now();
+  const data={id,group,dateLabel,tags,date:new Date().toISOString(),photos:photos.map(p=>({name:p.name,exif:p.exif,note:p.note})),memos};
   const projects=getProjects();
-  projects[name]=data;
+  projects[id]=data;
   localStorage.setItem('fgm_projects',JSON.stringify(projects));
+  document.getElementById('project-group-input').value='';
+  document.getElementById('project-date-input').value='';
+  document.getElementById('project-tags-input').value='';
+  populateTagFilter();
   renderProjectList();
-  showToast(`「${name}」を保存しました`,'ok');
-  linkFolderToProject(name);
+  showToast(`「${group} / ${dateLabel}」を保存しました`,'ok');
+  linkFolderToProject(id);
 }
 
 function loadProjectList(){
@@ -560,39 +603,96 @@ function getProjects(){
   try{return JSON.parse(localStorage.getItem('fgm_projects')||'{}');}catch(e){return{};}
 }
 
+function populateTagFilter(){
+  const projects=getProjects();
+  const tagSet=new Set();
+  Object.values(projects).forEach(p=>(p.tags||[]).forEach(t=>tagSet.add(t)));
+  const sel=document.getElementById('project-tag-filter');
+  const cur=sel.value;
+  sel.innerHTML='<option value="">タグ:すべて</option>'+[...tagSet].map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join('');
+  sel.value=cur;
+}
+
 function renderProjectList(){
   const projects=getProjects();
   const list=document.getElementById('project-list');
   list.innerHTML='';
-  const keys=Object.keys(projects);
-  if(!keys.length){list.innerHTML='<div style="padding:12px;font-size:11px;color:var(--dim2);text-align:center;">保存済みプロジェクトはありません</div>';return;}
-  keys.forEach(k=>{
-    const p=projects[k];
-    const item=document.createElement('div');item.className='project-item';
-    item.innerHTML=`<div><div style="font-weight:600;">${k}</div><div style="font-size:10px;color:var(--dim);">${new Date(p.date).toLocaleDateString('ja-JP')} · ${p.photos?.length||0}枚</div></div><span class="project-item-del" onclick="deleteProject('${k}',event)">×</span>`;
-    item.addEventListener('click',()=>loadProject(k));
-    list.appendChild(item);
+  const search=(document.getElementById('project-search-input')?.value||'').toLowerCase();
+  const tagFilter=document.getElementById('project-tag-filter')?.value||'';
+
+  // 案件(group)ごとにまとめる
+  const groups={};
+  Object.values(projects).forEach(p=>{
+    if(search && !p.group.toLowerCase().includes(search))return;
+    if(tagFilter && !(p.tags||[]).includes(tagFilter))return;
+    if(!groups[p.group])groups[p.group]=[];
+    groups[p.group].push(p);
+  });
+  const groupNames=Object.keys(groups);
+  if(!groupNames.length){list.innerHTML='<div style="padding:12px;font-size:11px;color:var(--dim2);text-align:center;">保存済みプロジェクトはありません</div>';return;}
+
+  groupNames.forEach(gname=>{
+    const items=groups[gname].sort((a,b)=>new Date(b.date)-new Date(a.date));
+    const color=assignProjectColor(gname);
+    const groupHead=document.createElement('div');
+    groupHead.style.cssText='display:flex;align-items:center;gap:6px;padding:7px 10px;background:#F5F0E8;font-size:11px;font-weight:700;border-bottom:1px solid var(--border);';
+    groupHead.innerHTML=`<span style="width:8px;height:8px;border-radius:50%;background:${color};flex-shrink:0;"></span>📁 ${esc(gname)} <span style="color:var(--dim);font-weight:400;">(${items.length}件)</span>`;
+    list.appendChild(groupHead);
+    items.forEach(p=>{
+      const item=document.createElement('div');item.className='project-item';
+      const tagsHtml=(p.tags||[]).map(t=>`<span style="font-size:9px;background:#EEE;color:#666;border-radius:3px;padding:1px 5px;margin-right:3px;">${esc(t)}</span>`).join('');
+      item.innerHTML=`
+        <label style="display:flex;align-items:center;gap:8px;flex:1;cursor:pointer;">
+          <input type="checkbox" class="project-check" value="${p.id}" onclick="event.stopPropagation()">
+          <div>
+            <div style="font-weight:600;">${esc(p.dateLabel)}</div>
+            <div style="font-size:10px;color:var(--dim);">${p.photos?.length||0}枚 ${tagsHtml}</div>
+          </div>
+        </label>
+        <span class="project-item-del" onclick="deleteProject('${p.id}',event)">×</span>`;
+      list.appendChild(item);
+    });
   });
 }
 
-async function loadProject(name){
-  const projects=getProjects();
-  const data=projects[name];
-  if(!data)return;
+async function loadSelectedProjects(){
+  const checked=[...document.querySelectorAll('.project-check:checked')].map(c=>c.value);
+  if(!checked.length){showToast('プロジェクトを選択してください','err');return;}
   closeProjectModal();
   if(!map)loadMap();
+  let totalLoaded=0,totalExpected=0;
+  for(const id of checked){
+    const res=await loadProjectById(id);
+    totalLoaded+=res.loaded;totalExpected+=res.expected;
+  }
+  updateStats();renderList();renderLoadedProjectsSidebar();
+  if(map)plotAll();
+  document.getElementById('exportBtn').disabled=false;
+  document.getElementById('exportBtn2').disabled=false;
+  document.getElementById('exportExcelBtn').disabled=false;
+  document.getElementById('exportXlsxBtn').disabled=false;
+  showToast(`${checked.length}件のプロジェクトを読み込みました（写真 ${totalLoaded}/${totalExpected}枚）`,'ok');
+}
 
-  // フォルダの紐付けがあれば、File System Access APIで写真を自動再読込する
+// 現在地図上に読み込まれているプロジェクトの一覧（表示ON/OFF管理用）
+let loadedProjectsMeta={};
+
+async function loadProjectById(id){
+  const projects=getProjects();
+  const data=projects[id];
+  if(!data)return{loaded:0,expected:0};
+  const color=assignProjectColor(data.group);
+  const label=`${data.group} / ${data.dateLabel}`;
+
+  let loaded=[];
   if('showDirectoryPicker' in window){
     try{
-      const handle=await getDirHandle(name);
+      const handle=await getDirHandle(id);
       if(handle){
         let granted=(await handle.queryPermission({mode:'read'}))==='granted';
         if(!granted)granted=(await handle.requestPermission({mode:'read'}))==='granted';
         if(granted){
-          showToast('写真フォルダを再読み込み中...','ok');
           const nameSet=new Set(data.photos.map(p=>p.name));
-          const loaded=[];
           for await (const entry of handle.values()){
             if(entry.kind==='file'&&nameSet.has(entry.name)){
               try{
@@ -604,34 +704,62 @@ async function loadProject(name){
               }catch(err){}
             }
           }
-          photos=[...photos,...loaded];
-          memos=data.memos||[];
-          updateStats();renderList();
-          if(map)plotAll();
-          document.getElementById('exportBtn').disabled=false;
-          document.getElementById('exportBtn2').disabled=false;
-          document.getElementById('exportExcelBtn').disabled=false;
-          document.getElementById('exportXlsxBtn').disabled=false;
-          showToast(`「${name}」を読み込みました（写真${loaded.length}/${data.photos.length}枚を自動復元）`,'ok');
-          return;
         }
       }
-    }catch(e){ /* 失敗時は下の手動読込フォールバックへ */ }
+    }catch(e){}
   }
+  if(!loaded.length){
+    loaded=data.photos.map(p=>({...p,thumbUrl:null,file:null}));
+  }
+  loaded.forEach(p=>{p.projId=id;p.projGroup=data.group;p.projDateLabel=data.dateLabel;p.projLabel=label;p.projColor=color;});
 
-  // フォルダ紐付けがない、または非対応ブラウザの場合：従来通り手動再読込が必要
-  photos=data.photos.map(p=>({...p,thumbUrl:null,file:null}));
-  memos=data.memos||[];
-  updateStats();renderList();
-  showToast(`「${name}」を読み込みました（写真フォルダの紐付けがないため、写真の再読み込みが必要です）`,'ok');
+  photos=[...photos,...loaded];
+  memos=[...memos,...(data.memos||[])];
+
+  loadedProjectsMeta[id]={id,group:data.group,dateLabel:data.dateLabel,color,count:loaded.length,visible:true};
+  return{loaded:loaded.length,expected:data.photos.length};
 }
 
-function deleteProject(name,e){
+function renderLoadedProjectsSidebar(){
+  const section=document.getElementById('loaded-projects-section');
+  const list=document.getElementById('loaded-projects-list');
+  const ids=Object.keys(loadedProjectsMeta);
+  if(!ids.length){section.style.display='none';return;}
+  section.style.display='block';
+  list.innerHTML=ids.map(id=>{
+    const m=loadedProjectsMeta[id];
+    return `<div class="layer-row" onclick="toggleProjectVisibility('${id}')">
+      <div class="layer-dot" style="background:${m.color}"></div>
+      <span class="layer-name" title="${esc(m.group)} / ${esc(m.dateLabel)}">${esc(m.group)} / ${esc(m.dateLabel)}<br><span style="font-size:9px;color:var(--dim);">${m.count}枚</span></span>
+      <div class="layer-toggle ${m.visible?'on':''}" id="lyr-proj-${id}"></div>
+    </div>`;
+  }).join('');
+}
+
+function toggleProjectVisibility(id){
+  const m=loadedProjectsMeta[id];
+  if(!m)return;
+  m.visible=!m.visible;
+  const el=document.getElementById(`lyr-proj-${id}`);
+  if(el)el.classList.toggle('on',m.visible);
+  if(map){plotAll();}
+}
+
+function toggleAllProjectVisibility(show){
+  Object.values(loadedProjectsMeta).forEach(m=>m.visible=show);
+  renderLoadedProjectsSidebar();
+  if(map)plotAll();
+}
+
+function deleteProject(id,e){
   e.stopPropagation();
-  if(!confirm(`「${name}」を削除しますか？`))return;
   const projects=getProjects();
-  delete projects[name];
+  const p=projects[id];
+  if(!p)return;
+  if(!confirm(`「${p.group} / ${p.dateLabel}」を削除しますか？`))return;
+  delete projects[id];
   localStorage.setItem('fgm_projects',JSON.stringify(projects));
+  populateTagFilter();
   renderProjectList();
   showToast('削除しました','ok');
 }
@@ -684,8 +812,12 @@ function plotAll(){
 
   photos.forEach((photo,idx)=>{
     if(!photo.exif?.lat)return;
+    // 案件ごとの表示ON/OFFを反映（非表示に設定された案件はそもそも描画しない）
+    if(photo.projId && loadedProjectsMeta[photo.projId]?.visible===false)return;
+
     const pos={lat:photo.exif.lat,lng:photo.exif.lng};bounds.extend(pos);any=true;
-    const marker=new google.maps.Marker({position:pos,map:layers.photos?map:null,icon:{path:google.maps.SymbolPath.CIRCLE,fillColor:'#1A6EBF',fillOpacity:.9,strokeColor:'#fff',strokeWeight:2,scale:8},title:photo.name,zIndex:10});
+    const pinColor=photo.projColor||'#1A6EBF';
+    const marker=new google.maps.Marker({position:pos,map:layers.photos?map:null,icon:{path:google.maps.SymbolPath.CIRCLE,fillColor:pinColor,fillOpacity:.9,strokeColor:'#fff',strokeWeight:2,scale:8},title:displayLabel(photo),zIndex:10});
 
     let arrow=null;
     if(photo.exif.dir!==null){
@@ -693,26 +825,26 @@ function plotAll(){
       const dist=(arrowLen*0.0001)*Math.pow(2,15-zoom);
       const r=photo.exif.dir*Math.PI/180;
       const end={lat:pos.lat+dist*Math.cos(r),lng:pos.lng+dist*Math.sin(r)/Math.cos(pos.lat*Math.PI/180)};
-      arrow=new google.maps.Polyline({path:[pos,end],map:layers.arrows?map:null,strokeColor:'#C06010',strokeOpacity:1,strokeWeight:2.5,icons:[{icon:{path:google.maps.SymbolPath.FORWARD_CLOSED_ARROW,scale:3,fillColor:'#C06010',fillOpacity:1,strokeColor:'#C06010',strokeWeight:1},offset:'100%'}],zIndex:9});
+      arrow=new google.maps.Polyline({path:[pos,end],map:layers.arrows?map:null,strokeColor:pinColor,strokeOpacity:1,strokeWeight:2.5,icons:[{icon:{path:google.maps.SymbolPath.FORWARD_CLOSED_ARROW,scale:3,fillColor:pinColor,fillOpacity:1,strokeColor:pinColor,strokeWeight:1},offset:'100%'}],zIndex:9});
     }
 
     const d=photo.exif;
-    const noteHtml=photo.note?`<div style="padding:6px 12px;background:#FFFBF0;border-top:1px solid rgba(0,0,0,.06);font-size:11px;color:#5A4A00;white-space:pre-wrap;">${esc(photo.note)}</div>`:'';
-    const content=`<div style="background:#fff;color:#1A1E26;border:1px solid rgba(0,0,0,.12);border-radius:8px;padding:0;min-width:220px;max-width:260px;overflow:hidden;font-family:sans-serif;box-shadow:0 4px 16px rgba(0,0,0,.15);">
-      <div style="background:#F5F0E8;padding:8px 12px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(0,0,0,.08);">
-        <div style="font-size:12px;font-weight:700;color:#1A6EBF;">${photo.name}</div>
-        <div style="font-size:10px;color:#6A7888;">${d.dateTime?d.dateTime.substring(0,10).replace(/:/g,'/'):'—'}</div>
-      </div>
+    const projTag=photo.projLabel?`<span style="font-size:9px;background:${pinColor}18;color:${pinColor};border-radius:3px;padding:2px 6px;font-weight:700;">${esc(photo.projGroup)} ${esc(photo.projDateLabel)}</span>`:'';
+    // 情報の主従を明確化：メモを主役（太字・大きめ）、日時/GPSは補助情報（小さく・グレー）
+    const memoHtml=photo.note
+      ?`<div style="padding:9px 12px;background:#fff;font-size:14px;font-weight:700;color:#1A1E26;line-height:1.5;white-space:pre-wrap;">${esc(photo.note)}</div>`
+      :`<div style="padding:9px 12px;background:#fff;font-size:12px;color:#9AAABB;">(メモなし)</div>`;
+    const content=`<div style="background:#fff;color:#1A1E26;border:1px solid rgba(0,0,0,.12);border-radius:8px;padding:0;min-width:230px;max-width:270px;overflow:hidden;font-family:sans-serif;box-shadow:0 4px 16px rgba(0,0,0,.15);">
       <div style="position:relative;">
-        ${photo.thumbUrl?`<img src="${photo.thumbUrl}" style="width:100%;height:120px;object-fit:cover;display:block;cursor:zoom-in;" onclick="openLightbox(${idx})">`:'<div style="width:100%;height:80px;background:#EDE8DE;display:flex;align-items:center;justify-content:center;color:#9AAABB;font-size:11px;">写真なし</div>'}
+        ${photo.thumbUrl?`<img src="${photo.thumbUrl}" style="width:100%;height:130px;object-fit:cover;display:block;cursor:zoom-in;" onclick="openLightbox(${idx})">`:'<div style="width:100%;height:80px;background:#EDE8DE;display:flex;align-items:center;justify-content:center;color:#9AAABB;font-size:11px;">写真なし</div>'}
         ${d.dir!==null?buildCompassSVG(d.dir,true):''}
-        ${d.dir!==null?`<div style="position:absolute;bottom:8px;left:8px;background:rgba(255,255,255,.88);border-radius:3px;padding:2px 6px;font-size:10px;font-weight:700;color:#C06010;">${d.dir.toFixed(0)}° ${dirName(d.dir)}</div>`:''}
-        <button onclick="openEditModal(${idx})" style="position:absolute;top:6px;right:6px;background:rgba(255,255,255,.88);border:none;border-radius:3px;padding:3px 7px;font-size:9px;color:#6A7888;cursor:pointer;font-family:inherit;">✏️ メモ編集</button>
+        ${d.dir!==null?`<div style="position:absolute;bottom:8px;left:8px;background:rgba(255,255,255,.9);border-radius:3px;padding:2px 6px;font-size:10px;font-weight:700;color:#C06010;">${d.dir.toFixed(0)}° ${dirName(d.dir)}</div>`:''}
+        <button onclick="openEditModal(${idx})" style="position:absolute;top:6px;right:6px;background:rgba(255,255,255,.9);border:none;border-radius:3px;padding:3px 7px;font-size:9px;color:#6A7888;cursor:pointer;font-family:inherit;">✏️ メモ編集</button>
       </div>
-      ${noteHtml}
-      <div style="padding:8px 12px;display:flex;flex-direction:column;gap:4px;background:#FDFAF5;">
-        <div style="display:flex;justify-content:space-between;font-size:11px;"><span style="color:#6A7888;">撮影日時</span><span>${d.dateTime||'—'}</span></div>
-        <div style="display:flex;justify-content:space-between;font-size:11px;"><span style="color:#6A7888;">GPS</span><span style="font-size:10px;font-family:monospace;">${d.lat.toFixed(5)}, ${d.lng.toFixed(5)}</span></div>
+      ${memoHtml}
+      <div style="padding:7px 12px;display:flex;flex-direction:column;gap:3px;background:#FAFAF8;border-top:1px solid rgba(0,0,0,.06);">
+        ${projTag?`<div>${projTag}</div>`:''}
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:#9AAABB;"><span>${d.dateTime||'—'}</span><span style="font-family:monospace;">${d.lat.toFixed(5)}, ${d.lng.toFixed(5)}</span></div>
       </div>
     </div>`;
     const iw=new google.maps.InfoWindow({content});
@@ -720,7 +852,7 @@ function plotAll(){
     markers.push({marker,arrow,iw,idx});
   });
 
-  const routePoints=photos.filter(p=>p.exif?.lat).sort((a,b)=>(a.exif?.dateTime||'').localeCompare(b.exif?.dateTime||'')).map(p=>({lat:p.exif.lat,lng:p.exif.lng}));
+  const routePoints=photos.filter(p=>p.exif?.lat&&(!p.projId||loadedProjectsMeta[p.projId]?.visible!==false)).sort((a,b)=>(a.exif?.dateTime||'').localeCompare(b.exif?.dateTime||'')).map(p=>({lat:p.exif.lat,lng:p.exif.lng}));
   if(routePoints.length>=2&&layers.route){
     routeLine=new google.maps.Polyline({path:routePoints,map:map,strokeColor:'#2A7DD4',strokeOpacity:0.5,strokeWeight:2,zIndex:8});
   }
@@ -795,7 +927,7 @@ function updateMarkerVisibility(){
     m.marker.setMap(layers.photos?map:null);
     if(m.arrow)m.arrow.setMap(layers.arrows?map:null);
     if(showThumb&&layers.photos){const ph=photos[m.idx];if(ph?.thumbUrl)m.marker.setIcon({url:ph.thumbUrl,scaledSize:new google.maps.Size(60,45),anchor:new google.maps.Point(30,22)});}
-    else m.marker.setIcon({path:google.maps.SymbolPath.CIRCLE,fillColor:'#1A6EBF',fillOpacity:.9,strokeColor:'#fff',strokeWeight:2,scale:8});
+    else{const ph=photos[m.idx];m.marker.setIcon({path:google.maps.SymbolPath.CIRCLE,fillColor:ph?.projColor||'#1A6EBF',fillOpacity:.9,strokeColor:'#fff',strokeWeight:2,scale:8});}
   });
   kmlMarkers.forEach(m=>m.marker?.setMap(layers.kml?map:null));
   if(routeLine)routeLine.setMap(layers.route?map:null);
@@ -818,14 +950,28 @@ function updateArrows(){
   });
 }
 
+function timeOnly(dateTime){
+  if(!dateTime)return '--:--';
+  const m=dateTime.match(/(\d{2}):(\d{2})(?::\d{2})?$/);
+  return m?`${m[1]}:${m[2]}`:'--:--';
+}
+
 function renderList(){
   const list=document.getElementById('photo-list');list.innerHTML='';let count=0;
   const gf=document.getElementById('gpsFilter').value;
   photos.forEach((p,idx)=>{
     if(gf==='gps'&&!p.exif?.lat)return;if(gf==='nogps'&&p.exif?.lat)return;count++;
     const item=document.createElement('div');item.className='list-item';item.dataset.idx=idx;
+    const color=p.projColor||'var(--cyan)';
+    item.style.borderLeft=`3px solid ${color}`;
     const thumb=p.thumbUrl?`<img class="li-thumb" src="${p.thumbUrl}" loading="lazy"/>`:`<div class="li-thumb" style="display:flex;align-items:center;justify-content:center;font-size:16px;">🖼</div>`;
-    item.innerHTML=`${thumb}<div class="li-info"><div class="li-name" title="${p.name}">${p.name}</div>${p.exif?.lat?`<div class="li-meta">${p.exif.lat.toFixed(5)}, ${p.exif.lng.toFixed(5)}</div>`:`<div class="li-nogps">GPS なし</div>`}${p.exif?.dir!=null?`<div class="li-dir">↑ ${p.exif.dir.toFixed(0)}°（${dirName(p.exif.dir)}）</div>`:''}</div><button class="li-del" onclick="deletePhoto(${idx},event)" title="削除">×</button>`;
+    const memoText=p.note?p.note.trim():'(メモなし)';
+    const projChip=p.projDateLabel?`<span style="font-size:9px;background:${color}18;color:${color};border-radius:3px;padding:0 4px;margin-left:5px;">${esc(p.projDateLabel)}</span>`:'';
+    item.innerHTML=`${thumb}<div class="li-info">
+      <div style="font-size:12px;font-weight:700;color:var(--text);"><span class="mono">${timeOnly(p.exif?.dateTime)}</span> ${projChip}</div>
+      <div style="font-size:11.5px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${esc(memoText)}">${esc(memoText)}</div>
+      ${p.exif?.lat?'':'<div class="li-nogps">GPS なし</div>'}
+    </div><button class="li-del" onclick="deletePhoto(${idx},event)" title="削除">×</button>`;
     item.addEventListener('click',()=>focusPhoto(idx));list.appendChild(item);
   });
   memos.forEach((memo,mi)=>{
@@ -858,10 +1004,36 @@ function setPreview(photo){const img=document.getElementById('preview-img'),info
 function updateStats(){document.getElementById('stat-photos').textContent=photos.length;document.getElementById('stat-gps').textContent=photos.filter(p=>p.exif?.lat!==null).length;document.getElementById('stat-memo').textContent=memos.length;}
 function applyFilter(){renderList();}
 
+// KML等の「表示ラベル」用に、ファイル名ではなく人が読みやすい短い文言を作る
+// （実際のファイル名は変更しない。あくまで地図上のラベル表示だけを対象とする）
+function displayLabel(p){
+  if(p.note){
+    const t=p.note.trim();
+    return t.length>24?t.slice(0,24)+'…':t;
+  }
+  if(p.exif?.dateTime){
+    // "YYYY:MM:DD HH:MM:SS" → "MM/DD HH:MM"
+    const m=p.exif.dateTime.match(/(\d{4}):(\d{2}):(\d{2}) (\d{2}):(\d{2})/);
+    if(m)return `${m[2]}/${m[3]} ${m[4]}:${m[5]}`;
+  }
+  return p.name;
+}
+
+// 非表示にしているプロジェクトがある場合、出力対象を選べるようにする
+function getExportPhotos(){
+  const hasHidden=Object.values(loadedProjectsMeta).some(m=>!m.visible);
+  if(hasHidden){
+    const onlyVisible=confirm('非表示にしているプロジェクトがあります。\n「OK」＝今表示中のプロジェクトのみ出力\n「キャンセル」＝読み込んだ全プロジェクトを出力');
+    if(onlyVisible)return photos.filter(p=>!p.projId||loadedProjectsMeta[p.projId]?.visible!==false);
+  }
+  return photos;
+}
+
 function exportKML(){
-  const pts=photos.filter(p=>p.exif?.lat!==null);
+  const target=getExportPhotos();
+  const pts=target.filter(p=>p.exif?.lat!==null);
   if(!pts.length){showToast('GPS付き写真がありません','err');return;}
-  const pms=pts.map(p=>`<Placemark><name>${esc(p.name)}</name><ExtendedData><Data name="撮影日時"><value>${esc(p.exif.dateTime||'')}</value></Data><Data name="撮影方向"><value>${p.exif.dir!=null?p.exif.dir.toFixed(1)+'°（'+dirName(p.exif.dir)+'）':''}</value></Data><Data name="メモ"><value>${esc(p.note||'')}</value></Data></ExtendedData><Point><coordinates>${p.exif.lng.toFixed(8)},${p.exif.lat.toFixed(8)},${p.exif.alt||0}</coordinates></Point></Placemark>`).join('');
+  const pms=pts.map(p=>`<Placemark><name>${esc(displayLabel(p))}</name><ExtendedData><Data name="案件"><value>${esc(p.projLabel||'未分類')}</value></Data><Data name="ファイル名"><value>${esc(p.name)}</value></Data><Data name="撮影日時"><value>${esc(p.exif.dateTime||'')}</value></Data><Data name="撮影方向"><value>${p.exif.dir!=null?p.exif.dir.toFixed(1)+'°（'+dirName(p.exif.dir)+'）':''}</value></Data><Data name="メモ"><value>${esc(p.note||'')}</value></Data></ExtendedData><Point><coordinates>${p.exif.lng.toFixed(8)},${p.exif.lat.toFixed(8)},${p.exif.alt||0}</coordinates></Point></Placemark>`).join('');
   const kml=`<?xml version="1.0" encoding="UTF-8"?><kml xmlns="http://www.opengis.net/kml/2.2"><Document><name>撮影済みポイント（${new Date().toLocaleDateString('ja-JP')}）</name>${pms}</Document></kml>`;
   const blob=new Blob([kml],{type:'application/vnd.google-earth.kml+xml'});
   const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`field_gps_${new Date().toISOString().slice(0,10)}.kml`;a.click();URL.revokeObjectURL(url);
@@ -869,11 +1041,12 @@ function exportKML(){
 }
 
 function exportExcel(){
-  if(!photos.length){showToast('写真がありません','err');return;}
+  const target=getExportPhotos();
+  if(!target.length){showToast('写真がありません','err');return;}
   const BOM='\uFEFF';
-  const header=['No.','ファイル名','撮影日時','緯度','経度','撮影方向(°)','撮影方向','メモ'];
-  const rows=photos.map((p,i)=>[
-    i+1,p.name,p.exif?.dateTime||'',
+  const header=['No.','案件','ファイル名','撮影日時','緯度','経度','撮影方向(°)','撮影方向','メモ'];
+  const rows=target.map((p,i)=>[
+    i+1,p.projLabel||'未分類',p.name,p.exif?.dateTime||'',
     p.exif?.lat!=null?p.exif.lat.toFixed(6):'',
     p.exif?.lng!=null?p.exif.lng.toFixed(6):'',
     p.exif?.dir!=null?p.exif.dir.toFixed(1):'',
@@ -883,30 +1056,33 @@ function exportExcel(){
   const csv=BOM+[header,...rows].map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
   const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
   const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`field_gps_${new Date().toISOString().slice(0,10)}.csv`;a.click();URL.revokeObjectURL(url);
-  showToast(`CSV出力完了（${photos.length}件）`,'ok');
+  showToast(`CSV出力完了（${target.length}件）`,'ok');
 }
 
 function exportXlsx(){
-  if(!photos.length){showToast('写真がありません','err');return;}
+  const target=getExportPhotos();
+  if(!target.length){showToast('写真がありません','err');return;}
   showToast('Excel出力中...','ok');
   if(typeof ExcelJS==='undefined'){
     const s=document.createElement('script');
     s.src='https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js';
-    s.onload=()=>_doExportXlsx();
+    s.onload=()=>_doExportXlsx(target);
     s.onerror=()=>showToast('ライブラリ読み込みエラー','err');
     document.head.appendChild(s);
   } else {
-    _doExportXlsx();
+    _doExportXlsx(target);
   }
 }
 
-async function _doExportXlsx(){
+async function _doExportXlsx(target){
+  target=target||photos;
   try{
     const wb=new ExcelJS.Workbook();
     const ws=wb.addWorksheet('点検記録');
     ws.columns=[
       {header:'No.',key:'no',width:5},
       {header:'写真',key:'photo',width:20},
+      {header:'案件',key:'proj',width:20},
       {header:'ファイル名',key:'name',width:25},
       {header:'撮影日時',key:'dt',width:18},
       {header:'緯度',key:'lat',width:12},
@@ -917,9 +1093,9 @@ async function _doExportXlsx(){
     ];
     ws.getRow(1).font={bold:true};
 
-    photos.forEach((p,i)=>{
+    target.forEach((p,i)=>{
       ws.addRow({
-        no:i+1,photo:'',name:p.name,dt:p.exif?.dateTime||'',
+        no:i+1,photo:'',proj:p.projLabel||'未分類',name:p.name,dt:p.exif?.dateTime||'',
         lat:p.exif?.lat!=null?Number(p.exif.lat.toFixed(6)):'',
         lng:p.exif?.lng!=null?Number(p.exif.lng.toFixed(6)):'',
         dirDeg:p.exif?.dir!=null?Number(p.exif.dir.toFixed(1)):'',
@@ -929,8 +1105,8 @@ async function _doExportXlsx(){
       ws.getRow(i+2).height=65;
     });
 
-    for(let i=0;i<photos.length;i++){
-      const p=photos[i];
+    for(let i=0;i<target.length;i++){
+      const p=target[i];
       if(!p.thumbUrl)continue;
       try{
         const resp=await fetch(p.thumbUrl);
@@ -947,7 +1123,7 @@ async function _doExportXlsx(){
     const a=document.createElement('a');
     a.href=url;a.download=`field_gps_${new Date().toISOString().slice(0,10)}.xlsx`;a.click();
     URL.revokeObjectURL(url);
-    showToast(`Excel出力完了（${photos.length}件）`,'ok');
+    showToast(`Excel出力完了（${target.length}件）`,'ok');
   }catch(err){
     showToast('Excel出力に失敗しました','err');
   }
@@ -958,6 +1134,7 @@ function clearAll(){
   markers.forEach(m=>{m.marker?.setMap(null);m.arrow?.setMap(null);m.iw?.close();});markers=[];
   if(routeLine){routeLine.setMap(null);routeLine=null;}
   photos.forEach(p=>{if(p.thumbUrl)URL.revokeObjectURL(p.thumbUrl);});photos=[];memos=[];
+  loadedProjectsMeta={};renderLoadedProjectsSidebar();
   if(activeIW){activeIW.close();activeIW=null;}
   updateStats();renderList();
   document.getElementById('exportBtn').disabled=true;
