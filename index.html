@@ -433,8 +433,31 @@ function openFeedbackMail(kind){
   else location.href = FEEDBACK_MAILTO; // 既定のメールソフト(インストール済みのOutlook/Windowsメール等)に委ねる
 }
 
-// ▼開発用バージョン表示（リリース時はこの1行と、上のHTML内のdev-version-tag divを削除するだけでOK）
-document.getElementById('dev-version-tag').textContent = 'v0.9.6 (更新: 2026-07-25 09:59)';
+// ▼開発用バージョン表示（GitHub上のindex.html最新コミットから自動取得。リリース時はこの関数呼び出しと
+//   上のHTML内のdev-version-tag divを削除するだけでOK。手動でのバージョン番号記入は不要）
+(async function loadDevVersionTag(){
+  const tagEl = document.getElementById('dev-version-tag');
+  if (!tagEl) return;
+  tagEl.textContent = '更新情報取得中…';
+  try {
+    const res = await fetch('https://api.github.com/repos/mandeendoh-glitch/field-gps-mapper/commits?path=index.html&per_page=1');
+    if (!res.ok) throw new Error('GitHub API error: ' + res.status);
+    const data = await res.json();
+    if (Array.isArray(data) && data[0]) {
+      const sha = data[0].sha.slice(0, 7);
+      const d = new Date(data[0].commit.committer.date);
+      const pad = (n) => String(n).padStart(2, '0');
+      const dateStr = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+      tagEl.textContent = `更新: ${dateStr} (${sha})`;
+      tagEl.title = data[0].commit.message || '';
+    } else {
+      tagEl.textContent = '';
+    }
+  } catch (e) {
+    // API取得に失敗しても操作の妨げにならないよう、表示自体を静かに消すだけにする
+    tagEl.textContent = '';
+  }
+})();
 // ▲開発用バージョン表示ここまで
 let map=null, markers=[], kmlMarkers=[], photos=[], memos=[], activeIW=null, routeLine=null;
 let layers={photos:true,arrows:true,kml:true,memos:true,route:true};
