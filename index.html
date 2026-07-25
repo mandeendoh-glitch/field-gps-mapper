@@ -216,7 +216,6 @@
         <span class="tb-item-label" onclick="event.stopPropagation();toggleMenu(this.parentElement)">ヘルプ</span>
         <div class="tb-dropdown">
           <div class="tb-dd-item" onclick="showHelp()">❓ 使い方</div>
-          <div class="tb-dd-item" onclick="location.href=FEEDBACK_MAILTO">✉️ ご意見・不具合報告</div>
         </div>
       </div>
       <div style="display:flex;align-items:center;gap:6px;padding:0 10px;border-right:1px solid var(--border);height:100%;">
@@ -226,6 +225,17 @@
           <option value="nogps">GPSなしのみ</option>
         </select>
         <button class="btn-sm" onclick="clearAll()" style="background:#FBEAEA;color:var(--red);border-color:rgba(192,48,48,.3);">🗑 クリア</button>
+        <div class="tb-item" id="feedbackItem" style="height:auto;padding:0;border-right:none;margin-left:14px;position:relative;">
+          <button class="tb-item-label btn-sm" onclick="event.stopPropagation();toggleMenu(this.parentElement)"
+            style="background:#E8F0FA;color:var(--accent);border-color:rgba(42,125,212,.35);">✉️ ご意見</button>
+          <div class="tb-dropdown" style="top:32px;left:0;min-width:220px;">
+            <div style="padding:8px 14px 4px;font-size:10.5px;color:var(--dim);">送信に使うメールを選択</div>
+            <div class="tb-dd-item" onclick="openFeedbackMail('gmail')">📧 Gmailで開く</div>
+            <div class="tb-dd-item" onclick="openFeedbackMail('outlook')">📨 Outlook(Web)で開く</div>
+            <div class="tb-dd-sep"></div>
+            <div class="tb-dd-item" onclick="openFeedbackMail('default')" style="white-space:normal;line-height:1.5;">🖥 既定のメールソフトで開く（インストール済みのOutlook等）</div>
+          </div>
+        </div>
       </div>
     </div>
     <div class="tb-spacer"></div>
@@ -414,6 +424,14 @@
 <script>
 const API_KEY = 'AIzaSyCxFFQxa-0PtBYfJ9gXWkur2wiszMwk7S0';
 const FEEDBACK_MAILTO = 'mailto:syamemo.info@gmail.com?subject=%E5%86%99%E3%83%A1%E3%83%A2deMAP%20%E3%83%95%E3%82%A3%E3%83%BC%E3%83%89%E3%83%90%E3%83%83%E3%82%AF&body=%E2%96%A0%E4%BD%BF%E7%94%A8%E7%92%B0%E5%A2%83%EF%BC%88%E4%BE%8B%EF%BC%9AWindows%20/%20Mac%E3%80%81Chrome%20/%20Edge%20%E3%81%AA%E3%81%A9%EF%BC%89%EF%BC%9A%0A%0A%0A%E2%96%A0%E3%81%94%E6%84%8F%E8%A6%8B%E3%83%BB%E4%B8%8D%E5%85%B7%E5%90%88%E3%83%BB%E8%A6%81%E6%9C%9B%E3%81%AA%E3%81%A9%EF%BC%9A%0A%0A%0A%0A%EF%BC%88%E3%81%93%E3%81%AE%E3%81%BE%E3%81%BE%E9%80%81%E4%BF%A1%E3%81%97%E3%81%A6%E3%81%84%E3%81%9F%E3%81%A0%E3%81%84%E3%81%A6%E6%A7%8B%E3%81%84%E3%81%BE%E3%81%9B%E3%82%93%E3%80%82%E3%81%94%E5%8D%94%E5%8A%9B%E3%81%82%E3%82%8A%E3%81%8C%E3%81%A8%E3%81%86%E3%81%94%E3%81%96%E3%81%84%E3%81%BE%E3%81%99%EF%BC%81%EF%BC%89';
+const FEEDBACK_GMAIL_URL = 'https://mail.google.com/mail/?view=cm&fs=1&to=syamemo.info@gmail.com&su=%E5%86%99%E3%83%A1%E3%83%A2deMAP%20%E3%83%95%E3%82%A3%E3%83%BC%E3%83%89%E3%83%90%E3%83%83%E3%82%AF&body=%E2%96%A0%E4%BD%BF%E7%94%A8%E7%92%B0%E5%A2%83%EF%BC%88%E4%BE%8B%EF%BC%9AWindows%20/%20Mac%E3%80%81Chrome%20/%20Edge%20%E3%81%AA%E3%81%A9%EF%BC%89%EF%BC%9A%0A%0A%0A%E2%96%A0%E3%81%94%E6%84%8F%E8%A6%8B%E3%83%BB%E4%B8%8D%E5%85%B7%E5%90%88%E3%83%BB%E8%A6%81%E6%9C%9B%E3%81%AA%E3%81%A9%EF%BC%9A%0A%0A%0A%0A%EF%BC%88%E3%81%93%E3%81%AE%E3%81%BE%E3%81%BE%E9%80%81%E4%BF%A1%E3%81%97%E3%81%A6%E3%81%84%E3%81%9F%E3%81%A0%E3%81%84%E3%81%A6%E6%A7%8B%E3%81%84%E3%81%BE%E3%81%9B%E3%82%93%E3%80%82%E3%81%94%E5%8D%94%E5%8A%9B%E3%81%82%E3%82%8A%E3%81%8C%E3%81%A8%E3%81%86%E3%81%94%E3%81%96%E3%81%84%E3%81%BE%E3%81%99%EF%BC%81%EF%BC%89';
+const FEEDBACK_OUTLOOK_URL = 'https://outlook.office.com/mail/deeplink/compose?to=syamemo.info@gmail.com&subject=%E5%86%99%E3%83%A1%E3%83%A2deMAP%20%E3%83%95%E3%82%A3%E3%83%BC%E3%83%89%E3%83%90%E3%83%83%E3%82%AF&body=%E2%96%A0%E4%BD%BF%E7%94%A8%E7%92%B0%E5%A2%83%EF%BC%88%E4%BE%8B%EF%BC%9AWindows%20/%20Mac%E3%80%81Chrome%20/%20Edge%20%E3%81%AA%E3%81%A9%EF%BC%89%EF%BC%9A%0A%0A%0A%E2%96%A0%E3%81%94%E6%84%8F%E8%A6%8B%E3%83%BB%E4%B8%8D%E5%85%B7%E5%90%88%E3%83%BB%E8%A6%81%E6%9C%9B%E3%81%AA%E3%81%A9%EF%BC%9A%0A%0A%0A%0A%EF%BC%88%E3%81%93%E3%81%AE%E3%81%BE%E3%81%BE%E9%80%81%E4%BF%A1%E3%81%97%E3%81%A6%E3%81%84%E3%81%9F%E3%81%A0%E3%81%84%E3%81%A6%E6%A7%8B%E3%81%84%E3%81%BE%E3%81%9B%E3%82%93%E3%80%82%E3%81%94%E5%8D%94%E5%8A%9B%E3%81%82%E3%82%8A%E3%81%8C%E3%81%A8%E3%81%86%E3%81%94%E3%81%96%E3%81%84%E3%81%BE%E3%81%99%EF%BC%81%EF%BC%89';
+function openFeedbackMail(kind){
+  closeAllMenus();
+  if (kind === 'gmail') window.open(FEEDBACK_GMAIL_URL, '_blank');
+  else if (kind === 'outlook') window.open(FEEDBACK_OUTLOOK_URL, '_blank');
+  else location.href = FEEDBACK_MAILTO; // 既定のメールソフト(インストール済みのOutlook/Windowsメール等)に委ねる
+}
 
 // ▼開発用バージョン表示（リリース時はこの1行と、上のHTML内のdev-version-tag divを削除するだけでOK）
 document.getElementById('dev-version-tag').textContent = 'v0.9.6 (更新: 2026-07-25 09:59)';
