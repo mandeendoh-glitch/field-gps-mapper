@@ -206,6 +206,9 @@
           <div class="tb-dd-item" onclick="exportKML()">⬇ KML出力</div>
           <div class="tb-dd-item" onclick="exportExcel()">📊 CSV出力</div>
           <div class="tb-dd-item" onclick="exportXlsx()">📸 写真付きExcel出力</div>
+          <div class="tb-dd-sep"></div>
+          <div class="tb-dd-item" onclick="printReport()">🖨 点検レポート印刷</div>
+          <div class="tb-dd-item" onclick="captureScreenPrint()">📷 画面キャプチャして印刷</div>
         </div>
       </div>
       <div class="tb-item">
@@ -271,6 +274,8 @@
     <button class="btn-sm btn-green" onclick="exportKML()" id="exportBtn" disabled>⬇ KML出力</button>
     <button class="btn-sm btn-green" onclick="exportExcel()" id="exportExcelBtn" disabled style="background:#EAF5EE;color:var(--green);border-color:rgba(26,128,64,.3);">📊 CSV出力</button>
     <button class="btn-sm btn-green" onclick="exportXlsx()" id="exportXlsxBtn" disabled style="background:#EAF5EE;color:var(--green);border-color:rgba(26,128,64,.3);">📸 写真付きExcel出力</button>
+    <button class="btn-sm" onclick="printReport()" id="printBtn" disabled style="background:#F0F0F0;color:var(--dim);border-color:var(--border2);">🖨 印刷</button>
+    <button class="btn-sm" onclick="captureScreenPrint()" id="captureBtn" style="background:#F0F0F0;color:var(--dim);border-color:var(--border2);">📷 画面を印刷</button>
   </div>
   <div id="body">
     <div id="left">
@@ -745,6 +750,7 @@ async function loadSelectedProjects(){
   document.getElementById('exportBtn').disabled=false;
   document.getElementById('exportExcelBtn').disabled=false;
   document.getElementById('exportXlsxBtn').disabled=false;
+  document.getElementById('printBtn').disabled=false;
   showToast(`${checked.length}件のプロジェクトを読み込みました（写真 ${totalLoaded}/${totalExpected}枚）`,'ok');
 }
 
@@ -861,6 +867,7 @@ async function handlePhotos(files){
   document.getElementById('exportBtn').disabled=false;
   document.getElementById('exportExcelBtn').disabled=false;
   document.getElementById('exportXlsxBtn').disabled=false;
+  document.getElementById('printBtn').disabled=false;
   showToast(`${res.length}枚読込（GPS付き:${res.filter(p=>p.exif?.lat!==null).length}枚）`,'ok');
 }
 
@@ -1208,6 +1215,132 @@ async function _doExportXlsx(target){
   }
 }
 
+// ── 点検レポート印刷 ──────────────────────────
+// 地図そのもの(Google Maps)は最新のWebGL描画方式のためブラウザ印刷と相性が悪く、
+// そのまま印刷すると地図部分が白抜けすることが多い。そのため、印刷は
+// 「写真＋GPS・方角・メモを整理した一覧レポート」として別ウィンドウで生成する方式にする。
+function printReport(){
+  const target=getExportPhotos();
+  const pts=target.filter(p=>p.exif?.lat!==null);
+  if(!pts.length){showToast('GPS付き写真がありません','err');return;}
+
+  const win=window.open('','_blank');
+  if(!win){showToast('ポップアップがブロックされました。ブラウザの設定をご確認ください','err');return;}
+
+  const rows=pts.map((p,i)=>{
+    const d=p.exif;
+    const dirTxt=d.dir!=null?`${d.dir.toFixed(0)}°（${dirName(d.dir)}）`:'—';
+    const gpsTxt=`${d.lat.toFixed(6)}, ${d.lng.toFixed(6)}`;
+    const memoTxt=p.note?esc(p.note):'（メモなし）';
+    const imgTag=p.thumbUrl?`<img src="${p.thumbUrl}" class="ph">`:'<div class="ph noph">写真なし</div>';
+    return `<div class="item">
+      <div class="idx">No.${i+1}</div>
+      ${imgTag}
+      <div class="info">
+        <div class="memo">${memoTxt}</div>
+        <table>
+          <tr><th>案件</th><td>${esc(p.projLabel||'未分類')}</td></tr>
+          <tr><th>撮影日時</th><td>${esc(d.dateTime||'—')}</td></tr>
+          <tr><th>GPS座標</th><td class="mono">${gpsTxt}</td></tr>
+          <tr><th>撮影方向</th><td>${dirTxt}</td></tr>
+          <tr><th>ファイル名</th><td class="mono small">${esc(p.name)}</td></tr>
+        </table>
+      </div>
+    </div>`;
+  }).join('');
+
+  win.document.write(`<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">
+  <title>点検レポート ${new Date().toLocaleDateString('ja-JP')}</title>
+  <style>
+    body{font-family:-apple-system,'Hiragino Sans','Yu Gothic UI',sans-serif;color:#1A1E26;margin:0;padding:24px;background:#fff;}
+    h1{font-size:18px;margin:0 0 4px;}
+    .sub{font-size:12px;color:#6A7888;margin-bottom:20px;}
+    .item{display:flex;gap:14px;border:1px solid #ddd;border-radius:6px;padding:12px;margin-bottom:12px;page-break-inside:avoid;align-items:flex-start;}
+    .idx{font-size:11px;font-weight:700;color:#fff;background:#1A6EBF;border-radius:3px;padding:2px 8px;flex-shrink:0;}
+    .ph{width:150px;height:112px;object-fit:cover;border-radius:4px;border:1px solid #ddd;flex-shrink:0;}
+    .noph{display:flex;align-items:center;justify-content:center;background:#EEE;color:#999;font-size:11px;}
+    .info{flex:1;min-width:0;}
+    .memo{font-size:14px;font-weight:700;margin-bottom:6px;white-space:pre-wrap;}
+    table{border-collapse:collapse;font-size:11px;width:100%;}
+    th{text-align:left;color:#6A7888;font-weight:400;padding:2px 8px 2px 0;white-space:nowrap;width:80px;vertical-align:top;}
+    td{padding:2px 0;}
+    .mono{font-family:'SF Mono','Consolas',monospace;}
+    .small{font-size:10px;color:#9AAABB;}
+    @media print{ body{padding:0;} .item{break-inside:avoid;} }
+    .toolbar{margin-bottom:16px;}
+    .toolbar button{padding:8px 16px;font-size:13px;border-radius:5px;border:1px solid #ccc;background:#1A6EBF;color:#fff;cursor:pointer;}
+    @media print{ .toolbar{display:none;} }
+  </style></head><body>
+  <div class="toolbar"><button onclick="window.print()">🖨 この画面を印刷する</button></div>
+  <h1>写メモdeMAP 点検記録レポート</h1>
+  <div class="sub">出力日時：${new Date().toLocaleString('ja-JP')}　／　${pts.length}件</div>
+  ${rows}
+  </body></html>`);
+  win.document.close();
+  showToast(`印刷用レポートを開きました（${pts.length}件）`,'ok');
+}
+
+// ── 画面キャプチャ印刷 ──────────────────────────
+// 地図(WebGL)はブラウザ印刷やcanvas直接取得と相性が悪いため、
+// ブラウザ標準の「画面キャプチャAPI」で今見えている状態をそのまま1枚の画像として撮影する方式。
+// 地図上のピン配置がそのまま見えるので、現場に持ち出す野帳や社内打ち合わせ資料に向いている。
+async function captureScreenPrint(){
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia){
+    showToast('この機能はお使いのブラウザでは利用できません（Chrome/Edge推奨）','err');
+    return;
+  }
+  let stream;
+  try{
+    stream=await navigator.mediaDevices.getDisplayMedia({
+      video:{displaySurface:'browser'},
+      preferCurrentTab:true,     // Chrome系では「このタブ」を自動選択候補にできる(未対応ブラウザでは無視される)
+      selfBrowserSurface:'include'
+    });
+  }catch(err){
+    showToast('画面キャプチャがキャンセルされました','err');
+    return;
+  }
+  try{
+    const track=stream.getVideoTracks()[0];
+    const video=document.createElement('video');
+    video.srcObject=stream;
+    video.muted=true;
+    await video.play();
+    await new Promise(r=>setTimeout(r,200)); // 最初のフレームが安定するまで少し待つ
+    const canvas=document.createElement('canvas');
+    canvas.width=video.videoWidth;
+    canvas.height=video.videoHeight;
+    canvas.getContext('2d').drawImage(video,0,0);
+    track.stop();
+    stream.getTracks().forEach(t=>t.stop());
+
+    const dataUrl=canvas.toDataURL('image/png');
+    const win=window.open('','_blank');
+    if(!win){showToast('ポップアップがブロックされました。ブラウザの設定をご確認ください','err');return;}
+    win.document.write(`<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">
+    <title>画面キャプチャ ${new Date().toLocaleDateString('ja-JP')}</title>
+    <style>
+      body{font-family:-apple-system,'Hiragino Sans','Yu Gothic UI',sans-serif;margin:0;padding:20px;background:#fff;text-align:center;}
+      h1{font-size:16px;margin:0 0 4px;text-align:left;}
+      .sub{font-size:11px;color:#6A7888;margin-bottom:14px;text-align:left;}
+      img{max-width:100%;border:1px solid #ddd;border-radius:4px;}
+      .toolbar{margin-bottom:14px;text-align:left;}
+      .toolbar button{padding:8px 16px;font-size:13px;border-radius:5px;border:1px solid #ccc;background:#1A6EBF;color:#fff;cursor:pointer;}
+      @media print{ .toolbar{display:none;} body{padding:0;} img{border:none;} }
+    </style></head><body>
+    <div class="toolbar"><button onclick="window.print()">🖨 この画面を印刷する</button></div>
+    <h1>写メモdeMAP 画面キャプチャ</h1>
+    <div class="sub">出力日時：${new Date().toLocaleString('ja-JP')}</div>
+    <img src="${dataUrl}" alt="画面キャプチャ">
+    </body></html>`);
+    win.document.close();
+    showToast('画面キャプチャを取得しました','ok');
+  }catch(err){
+    stream.getTracks().forEach(t=>t.stop());
+    showToast('画面キャプチャに失敗しました','err');
+  }
+}
+
 function clearAll(){
   if(photos.length>0&&!confirm('全データをクリアしますか？'))return;
   markers.forEach(m=>{m.marker?.setMap(null);m.arrow?.setMap(null);m.iw?.close();});markers=[];
@@ -1219,6 +1352,7 @@ function clearAll(){
   document.getElementById('exportBtn').disabled=true;
   document.getElementById('exportExcelBtn').disabled=true;
   document.getElementById('exportXlsxBtn').disabled=true;
+  document.getElementById('printBtn').disabled=true;
   document.getElementById('preview-img').style.display='none';
   document.getElementById('preview-info').style.display='none';
   document.getElementById('preview-empty').style.display='flex';
