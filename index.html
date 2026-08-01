@@ -1388,6 +1388,76 @@ async function captureScreenPrint(){
 }
 
 // ── MAP＋一覧の出力（現在表示中の範囲・写真だけを対象） ──────────
+// 対象の写真に、番号付きの一時ピン(案件の色を保った丸マーカー)を適用する。復元用データを返す。
+function applyNumberedPins(inView){
+  const numByPhoto=new Map();
+  inView.forEach((p,i)=>numByPhoto.set(p,i+1));
+  const affectedMarkers=markers.filter(m=>numByPhoto.has(photos[m.idx]));
+  const savedLabels=affectedMarkers.map(m=>m.marker.getLabel ? m.marker.getLabel() : null);
+  const savedIcons=affectedMarkers.map(m=>m.marker.getIcon ? m.marker.getIcon() : null);
+  affectedMarkers.forEach(m=>{
+    const num=numByPhoto.get(photos[m.idx]);
+    const ph=photos[m.idx];
+    m.marker.setIcon({path:google.maps.SymbolPath.CIRCLE,fillColor:ph?.projColor||'#1A6EBF',fillOpacity:.95,strokeColor:'#fff',strokeWeight:2,scale:12});
+    m.marker.setLabel({text:String(num),color:'#fff',fontSize:'11px',fontWeight:'700'});
+  });
+  return {affectedMarkers,savedLabels,savedIcons};
+}
+function restoreNumberedPins(pinState){
+  pinState.affectedMarkers.forEach((m,i)=>{
+    m.marker.setLabel(pinState.savedLabels[i]);
+    if(pinState.savedIcons[i]) m.marker.setIcon(pinState.savedIcons[i]);
+  });
+}
+
+// 地図部分(#map)だけを切り出した画面キャプチャを取得する。
+// アプリの上部メニュー・右側の写真一覧は#mapの外側にあるため、この切り出しで自動的に除外される。
+// 自作のUI部品(地図種別ボタン・座標バー)とGoogle純正のフルスクリーンボタンも、キャプチャの瞬間だけ非表示にする。
+async function captureMapCropped(){
+  if(!(navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia)) return null;
+  const mapTypeEl=document.getElementById('map-type');
+  const coordsEl=document.getElementById('coords-bar');
+  const prevMapTypeDisplay=mapTypeEl.style.display;
+  const prevCoordsDisplay=coordsEl.style.display;
+  mapTypeEl.style.display='none';
+  coordsEl.style.display='none';
+  map.setOptions({fullscreenControl:false});
+  await new Promise(r=>setTimeout(r,100));
+
+  let dataUrl=null;
+  try{
+    const stream=await navigator.mediaDevices.getDisplayMedia({
+      video:{displaySurface:'browser'}, preferCurrentTab:true, selfBrowserSurface:'include'
+    });
+    const track=stream.getVideoTracks()[0];
+    const video=document.createElement('video');
+    video.srcObject=stream; video.muted=true;
+    await video.play();
+    await new Promise(r=>setTimeout(r,200));
+
+    const scaleX=video.videoWidth/window.innerWidth;
+    const scaleY=video.videoHeight/window.innerHeight;
+    const mapEl=document.getElementById('map');
+    const rect=mapEl.getBoundingClientRect();
+
+    const cropCanvas=document.createElement('canvas');
+    cropCanvas.width=Math.max(1,Math.round(rect.width*scaleX));
+    cropCanvas.height=Math.max(1,Math.round(rect.height*scaleY));
+    cropCanvas.getContext('2d').drawImage(
+      video,
+      rect.left*scaleX, rect.top*scaleY, rect.width*scaleX, rect.height*scaleY,
+      0, 0, cropCanvas.width, cropCanvas.height
+    );
+    track.stop(); stream.getTracks().forEach(t=>t.stop());
+    dataUrl=cropCanvas.toDataURL('image/png');
+  }catch(err){ /* キャンセルされた場合はnullのまま返す */ }
+
+  mapTypeEl.style.display=prevMapTypeDisplay;
+  coordsEl.style.display=prevCoordsDisplay;
+  map.setOptions({fullscreenControl:true});
+  return dataUrl;
+}
+
 // ── 写真付きExcel出力：形式選択モーダル ──────────────
 function openXlsxChoiceModal(){
   if(!photos.length){showToast('先に写真を読み込んでください','err');return;}
@@ -1413,52 +1483,16 @@ async function exportMapListXlsx(){
 
   if(!inView.length){showToast('表示範囲内にGPS付きの写真がありません','err');return;}
 
+  const pinState=applyNumberedPins(inView);
+  await new Promise(r=>setTimeout(r,120)); // 表示反映を待つ
+
   let mapDataUrl=null;
   if(navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia){
     showToast('地図画像を取得中...','ok');
-    // 自作のUI部品(地図種別ボタン・座標バー)とGoogle純正のフルスクリーンボタンを一時的に隠す
-    const mapTypeEl=document.getElementById('map-type');
-    const coordsEl=document.getElementById('coords-bar');
-    const prevMapTypeDisplay=mapTypeEl.style.display;
-    const prevCoordsDisplay=coordsEl.style.display;
-    mapTypeEl.style.display='none';
-    coordsEl.style.display='none';
-    map.setOptions({fullscreenControl:false});
-    await new Promise(r=>setTimeout(r,100));
-
-    try{
-      const stream=await navigator.mediaDevices.getDisplayMedia({
-        video:{displaySurface:'browser'}, preferCurrentTab:true, selfBrowserSurface:'include'
-      });
-      const track=stream.getVideoTracks()[0];
-      const video=document.createElement('video');
-      video.srcObject=stream; video.muted=true;
-      await video.play();
-      await new Promise(r=>setTimeout(r,200));
-
-      // キャプチャ映像の解像度と、実際のCSSピクセルのスケール比を求め、地図部分だけ切り出す
-      // (アプリの上部メニュー・右側の写真リストは#mapの外側にあるため、この切り出しで自動的に除外される)
-      const scaleX=video.videoWidth/window.innerWidth;
-      const scaleY=video.videoHeight/window.innerHeight;
-      const mapEl=document.getElementById('map');
-      const rect=mapEl.getBoundingClientRect();
-
-      const cropCanvas=document.createElement('canvas');
-      cropCanvas.width=Math.max(1,Math.round(rect.width*scaleX));
-      cropCanvas.height=Math.max(1,Math.round(rect.height*scaleY));
-      cropCanvas.getContext('2d').drawImage(
-        video,
-        rect.left*scaleX, rect.top*scaleY, rect.width*scaleX, rect.height*scaleY,
-        0, 0, cropCanvas.width, cropCanvas.height
-      );
-      track.stop(); stream.getTracks().forEach(t=>t.stop());
-      mapDataUrl=cropCanvas.toDataURL('image/png');
-    }catch(err){ /* キャンセルされた場合は地図なしで一覧のみのExcelにする */ }
-
-    mapTypeEl.style.display=prevMapTypeDisplay;
-    coordsEl.style.display=prevCoordsDisplay;
-    map.setOptions({fullscreenControl:true});
+    mapDataUrl=await captureMapCropped();
   }
+
+  restoreNumberedPins(pinState);
 
   showToast('Excelを作成中...','ok');
   if(typeof ExcelJS==='undefined'){
@@ -1544,7 +1578,7 @@ async function exportMapListXlsx(){
     const blob=new Blob([buffer],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
     const url=URL.createObjectURL(blob);
     const a=document.createElement('a');
-    a.href=url;a.download=`写真付き報告書_${new Date().toISOString().slice(0,10)}.xlsx`;a.click();
+    a.href=url;a.download=`MAP付き写真台帳_${new Date().toISOString().slice(0,10)}.xlsx`;a.click();
     URL.revokeObjectURL(url);
     showToast(`MAP＋一覧のExcelを出力しました（${inView.length}件）`,'ok');
   }catch(err){
@@ -1576,38 +1610,12 @@ async function runExportMapWithList(){
 
   if(!inView.length){showToast('表示範囲内にGPS付きの写真がありません','err');return;}
 
-  // 対象の写真に、番号付きの一時ラベルを重ねて表示する
-  const numByPhoto = new Map();
-  inView.forEach((p,i)=>numByPhoto.set(p, i+1));
-  const affectedMarkers = markers.filter(m=>numByPhoto.has(photos[m.idx]));
-  const savedLabels = affectedMarkers.map(m=>m.marker.getLabel ? m.marker.getLabel() : null);
-  affectedMarkers.forEach(m=>{
-    const num = numByPhoto.get(photos[m.idx]);
-    m.marker.setLabel({text:String(num), color:'#fff', fontSize:'11px', fontWeight:'700'});
-  });
-  await new Promise(r=>setTimeout(r,120)); // ラベル反映を待つ
+  const pinState=applyNumberedPins(inView);
+  await new Promise(r=>setTimeout(r,120)); // 表示反映を待つ
 
-  let dataUrl=null;
-  if(navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia){
-    try{
-      const stream=await navigator.mediaDevices.getDisplayMedia({
-        video:{displaySurface:'browser'}, preferCurrentTab:true, selfBrowserSurface:'include'
-      });
-      const track=stream.getVideoTracks()[0];
-      const video=document.createElement('video');
-      video.srcObject=stream; video.muted=true;
-      await video.play();
-      await new Promise(r=>setTimeout(r,200));
-      const canvas=document.createElement('canvas');
-      canvas.width=video.videoWidth; canvas.height=video.videoHeight;
-      canvas.getContext('2d').drawImage(video,0,0);
-      track.stop(); stream.getTracks().forEach(t=>t.stop());
-      dataUrl=canvas.toDataURL('image/png');
-    }catch(err){ /* キャンセルされた場合は地図画像なしで一覧のみ出力する */ }
-  }
+  const dataUrl=await captureMapCropped();
 
-  // 一時ラベルを元に戻す
-  affectedMarkers.forEach((m,i)=>m.marker.setLabel(savedLabels[i]));
+  restoreNumberedPins(pinState);
 
   const rows = inView.map((p,i)=>{
     const d=p.exif;
