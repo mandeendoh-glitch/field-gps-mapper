@@ -1002,7 +1002,7 @@ function updateMarkerVisibility(){
   markers.forEach(m=>{
     if(!m.marker)return;
     m.marker.setMap(map); // OFF時も完全に消さず、常に地図上には残す(簡略ピンとして)
-    if(m.arrow)m.arrow.setMap(layers.arrows&&layers.photos?map:null); // 方向矢印は簡略表示時は非表示
+    if(m.arrow)m.arrow.setMap(layers.arrows?map:null); // 方向矢印は「撮影方向」設定だけで独立して制御
     const ph=photos[m.idx];
     if(!layers.photos){
       // 簡略ピン：案件の色は保ったまま、小さく控えめに常時表示(ズームしてもサムネイル化しない)
