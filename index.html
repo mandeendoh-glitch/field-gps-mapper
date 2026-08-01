@@ -10,25 +10,28 @@
   :root {
     --bg:#F5F0E8;--surface:#EDE8DE;--panel:#EAE5DB;--panel2:#F9F6F0;
     --border:rgba(0,0,0,0.10);--border2:rgba(0,0,0,0.16);
-    --accent:#2A7DD4;--cyan:#1A6EBF;--orange:#C06010;--amber:#9A7000;
+    --accent:#1A6EBF;--cyan:#1A6EBF;--orange:#C06010;--amber:#9A7000;
     --purple:#6858C0;--green:#1A8040;--red:#C03030;
     --text:#1A1E26;--dim:#6A7888;--dim2:#9AAABB;
     --font:-apple-system,'Hiragino Sans','Yu Gothic UI',sans-serif;
     --mono:'SF Mono','Consolas',monospace;--shadow:0 1px 4px rgba(0,0,0,0.12);
   }
   *{margin:0;padding:0;box-sizing:border-box;}
+  .ic{opacity:.85;}
+  button:disabled .ic{opacity:.4;}
   html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:var(--font);font-size:13px;}
   #app{display:flex;flex-direction:column;height:100vh;}
-  #topbar{height:42px;flex-shrink:0;background:var(--panel);border-bottom:1px solid var(--border);display:flex;align-items:center;box-shadow:var(--shadow);position:relative;z-index:1000;}
-  .tb-logo{display:flex;align-items:center;gap:8px;padding:0 16px;height:100%;border-right:1px solid var(--border);font-size:13px;font-weight:700;color:var(--cyan);letter-spacing:.04em;white-space:nowrap;}
-  .tb-menu{display:flex;height:100%;position:relative;}
-  .tb-item{padding:0 13px;height:100%;display:flex;align-items:center;font-size:12px;color:var(--dim);cursor:pointer;border-right:1px solid var(--border);transition:background .15s,color .15s;position:relative;}
+  #topbar{height:46px;flex-shrink:0;background:var(--panel2);border-bottom:1px solid var(--border);display:flex;align-items:center;position:relative;z-index:1000;}
+  .tb-logo{display:flex;align-items:center;gap:8px;padding:0 16px;height:100%;font-size:13px;font-weight:700;color:var(--cyan);letter-spacing:.04em;white-space:nowrap;}
+  .tb-menu{display:flex;height:100%;position:relative;align-items:center;flex-shrink:0;overflow-x:auto;scrollbar-width:none;}
+  .tb-menu::-webkit-scrollbar{display:none;}
+  .tb-item{padding:0 12px;height:100%;display:flex;align-items:center;font-size:12px;color:var(--dim);cursor:pointer;transition:background .15s,color .15s;position:relative;border-radius:7px;white-space:nowrap;flex-shrink:0;}
   .tb-item-label{display:block;}
-  .tb-item:hover{background:rgba(0,0,0,.04);color:var(--text);}
-  .tb-dropdown{display:none;position:absolute;top:42px;left:0;background:white;border:1px solid var(--border2);border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,.15);min-width:160px;z-index:9999;}
+  .tb-item:hover{background:rgba(0,0,0,.045);color:var(--text);}
+  .tb-dropdown{display:none;position:absolute;top:46px;left:0;background:white;border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 24px rgba(26,30,38,.14);min-width:180px;z-index:9999;padding:6px;}
   .tb-item.open .tb-dropdown{display:block;}
-  .tb-dd-item{padding:8px 16px;font-size:12px;color:var(--text);cursor:pointer;white-space:nowrap;}
-  .tb-dd-item:hover{background:#F5F0E8;}
+  .tb-dd-item{padding:9px 12px;font-size:12px;color:var(--text);cursor:pointer;white-space:nowrap;border-radius:7px;display:flex;align-items:center;gap:8px;}
+  .tb-dd-item:hover{background:var(--panel2);}
   .tb-dd-sep{height:1px;background:var(--border);margin:4px 0;}
   .tb-spacer{flex:1;}
   .tb-stats{display:flex;align-items:center;gap:14px;padding:0 16px;}
@@ -36,14 +39,8 @@
   .tb-stat-dot{width:7px;height:7px;border-radius:50%;}
   .tb-stat-num{font-weight:700;font-variant-numeric:tabular-nums;color:var(--text);}
   .tb-stat-lbl{color:var(--dim);}
-  #toolbar{height:38px;flex-shrink:0;background:var(--panel2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;padding:0 12px;z-index:200;}
-  .btn-load{height:26px;padding:0 12px;background:var(--cyan);color:white;border:none;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer;transition:background .15s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
-  .btn-load:hover{background:#1560A8;}
-  .btn-sm{height:26px;padding:0 13px;background:white;color:var(--text);border:1px solid var(--border2);border-radius:5px;font-size:11px;cursor:pointer;white-space:nowrap;transition:background .15s;box-shadow:0 1px 2px rgba(0,0,0,.08);}
+  .btn-sm{height:26px;padding:0 13px;background:white;color:var(--text);border:1px solid var(--border2);border-radius:5px;font-size:11px;cursor:pointer;white-space:nowrap;transition:background .15s;box-shadow:0 1px 2px rgba(0,0,0,.08);display:inline-flex;align-items:center;gap:5px;}
   .btn-sm:hover{background:#F0EBE0;}
-  .btn-green{background:#EAF5EE;color:var(--green);border-color:rgba(26,128,64,.3);}
-  .btn-green:hover{background:#D8EDDF;}
-  .btn-green:disabled{opacity:.45;cursor:not-allowed;}
   #toolbar .sep{width:1px;height:18px;background:var(--border);margin:0 4px;}
   #browser-banner{background:#FFF6E0;border-bottom:1px solid #E8D090;padding:7px 16px;font-size:11.5px;color:#7A5A00;display:flex;align-items:center;justify-content:space-between;gap:12px;z-index:190;}
   #browser-banner.hide{display:none;}
@@ -51,14 +48,14 @@
   #browser-banner button{flex-shrink:0;background:none;border:none;color:#7A5A00;font-size:16px;cursor:pointer;line-height:1;padding:2px 6px;}
   #browser-banner button:hover{color:#4A3600;}
   #body{display:flex;flex:1;overflow:hidden;}
-  #left{width:185px;flex-shrink:0;background:var(--panel);border-right:1px solid var(--border);display:none;flex-direction:column;overflow:hidden;position:relative;transition:width .18s ease;}
-  #left.collapsed{width:0;border-right:none;}
+  #left{width:195px;flex-shrink:0;background:var(--panel2);border-right:1px solid var(--border);display:none;flex-direction:column;overflow:hidden;position:relative;transition:width .18s ease;padding:8px;}
+  #left.collapsed{width:0;border-right:none;padding:0;}
   #left-collapse-btn{position:absolute;top:8px;right:-14px;width:22px;height:22px;border-radius:50%;background:white;border:1px solid var(--border2);box-shadow:0 1px 4px rgba(0,0,0,.15);font-size:10px;color:var(--dim);cursor:pointer;z-index:60;display:flex;align-items:center;justify-content:center;}
   #left.collapsed #left-collapse-btn{transform:rotate(180deg);}
-  .panel-section{border-bottom:1px solid var(--border);}
-  .panel-section-title{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--dim);padding:9px 12px 5px;}
-  .layer-row{display:flex;align-items:center;gap:8px;padding:5px 12px;cursor:pointer;transition:background .12s;}
-  .layer-row:hover{background:rgba(0,0,0,.04);}
+  .panel-section{border-radius:12px;}
+  .panel-section-title{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--dim);padding:6px 6px 6px;}
+  .layer-row{display:flex;align-items:center;gap:8px;padding:7px 8px;cursor:pointer;transition:background .12s;border-radius:9px;}
+  .layer-row:hover{background:rgba(0,0,0,.045);}
   .layer-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
   .layer-name{font-size:12px;flex:1;color:var(--text);}
   .layer-toggle{width:30px;height:16px;border-radius:8px;background:var(--dim2);position:relative;cursor:pointer;transition:background .2s;flex-shrink:0;box-shadow:inset 0 1px 2px rgba(0,0,0,.15);}
@@ -72,7 +69,7 @@
   .out-btn{width:100%;height:30px;background:white;border:1px solid var(--border2);border-radius:5px;color:var(--dim);font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:all .15s;box-shadow:0 1px 2px rgba(0,0,0,.07);}
   .out-btn:hover{background:#F0EBE0;color:var(--text);}
   .out-btn:disabled{opacity:.45;cursor:not-allowed;}
-  .out-btn.primary{background:#E8F0FA;color:var(--accent);border-color:rgba(42,125,212,.3);}
+  .out-btn.primary{background:#E8F0FA;color:var(--accent);border-color:rgba(26,110,191,.3);}
   .out-btn.primary:hover{background:#D8E5F5;}
   #map-wrap{flex:1;position:relative;background:#E8E0D0;}
   #map{width:100%;height:100%;}
@@ -92,57 +89,52 @@
   .mt-btn.active{background:var(--cyan);color:white;border-color:var(--cyan);}
   .mt-btn:hover:not(.active){background:white;color:var(--text);}
   #coords-bar{position:absolute;bottom:0;left:0;right:0;height:22px;background:rgba(245,240,232,.92);border-top:1px solid var(--border);display:flex;align-items:center;padding:0 10px;gap:16px;font-size:10px;color:var(--dim);font-family:var(--mono);z-index:50;}
-  #right{width:215px;flex-shrink:0;background:var(--panel);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
-  #list-header{height:34px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 12px;border-bottom:1px solid var(--border);background:var(--panel2);font-size:11px;font-weight:700;color:var(--dim);letter-spacing:.04em;text-transform:uppercase;}
+  #right{width:225px;flex-shrink:0;background:var(--panel2);display:flex;flex-direction:column;overflow:hidden;}
+  #list-header{height:40px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 14px;font-size:11px;font-weight:700;color:var(--dim);letter-spacing:.04em;text-transform:uppercase;}
   #list-count{font-size:10px;color:var(--dim2);font-weight:400;}
-  #photo-list{flex:1;overflow-y:auto;background:var(--panel2);}
+  #photo-list{flex:1;overflow-y:auto;background:var(--panel2);padding:8px;}
   #photo-list::-webkit-scrollbar{width:4px;}
   #photo-list::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
-  .list-item{display:flex;align-items:center;gap:8px;padding:7px 10px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s;}
-  .list-item:hover{background:rgba(0,0,0,.04);}
-  .list-item.active{background:rgba(26,110,191,.10);border-left:2px solid var(--cyan);}
-  .li-thumb{width:38px;height:30px;border-radius:4px;object-fit:cover;flex-shrink:0;background:var(--surface);border:1px solid var(--border);}
+  .list-item{display:flex;align-items:center;gap:10px;padding:9px;border-radius:10px;cursor:pointer;transition:background .12s;margin-bottom:2px;}
+  .list-item:hover{background:rgba(0,0,0,.045);}
+  .list-item:hover .li-del{opacity:1;}
+  .list-item.active{background:rgba(26,110,191,.09);}
+  .li-thumb{width:52px;height:52px;border-radius:9px;object-fit:cover;flex-shrink:0;background:var(--surface);}
   .li-info{flex:1;min-width:0;}
-  .li-name{font-size:11px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text);}
-  .li-meta{font-size:10px;color:var(--dim);margin-top:1px;font-family:var(--mono);}
+  .li-name{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text);line-height:1.3;}
+  .li-meta{font-size:10px;color:var(--dim2);margin-top:3px;font-family:var(--mono);}
   .li-dir{font-size:10px;color:var(--orange);margin-top:1px;}
   .li-nogps{font-size:10px;color:var(--red);margin-top:1px;}
-  .li-del{width:18px;height:18px;border:none;background:none;color:var(--dim2);cursor:pointer;font-size:14px;flex-shrink:0;border-radius:3px;display:flex;align-items:center;justify-content:center;}
-  .li-del:hover{background:rgba(192,48,48,.1);color:var(--red);}
+  .li-del{width:22px;height:22px;border:none;background:none;color:var(--dim2);cursor:pointer;font-size:14px;flex-shrink:0;border-radius:6px;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .12s, background .12s;}
+  .li-del:hover{background:rgba(192,48,48,.12);color:var(--red);}
   .list-memo{padding:6px 10px;border-bottom:1px solid var(--border);background:rgba(154,112,0,.06);cursor:pointer;transition:background .12s;}
   .list-memo:hover{background:rgba(154,112,0,.11);}
   .list-memo .memo-tag{font-size:9px;font-weight:700;color:var(--amber);letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px;}
   .list-memo .memo-text{font-size:11px;color:var(--text);line-height:1.4;}
   .list-memo .memo-time{font-size:9px;color:var(--dim);margin-top:2px;}
-  #preview-panel{height:145px;flex-shrink:0;border-top:2px solid var(--border2);position:relative;background:#E0DACC;overflow:hidden;}
-  #preview-img{width:100%;height:100%;object-fit:cover;display:none;}
-  #preview-info{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.55);padding:6px 10px;}
-  #preview-name{font-size:11px;font-weight:700;color:white;}
-  #preview-sub{font-size:10px;color:rgba(255,255,255,.7);margin-top:1px;}
-  #preview-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--dim2);}
-  #project-modal,#settings-modal,#help-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1000;align-items:center;justify-content:center;}
-  #project-modal.show,#settings-modal.show,#help-modal.show{display:flex;}
-  .modal-box{background:white;border-radius:10px;padding:20px;width:360px;box-shadow:0 8px 32px rgba(0,0,0,.2);max-height:80vh;overflow-y:auto;}
-  .modal-box h3{font-size:14px;font-weight:700;color:var(--text);margin-bottom:14px;}
-  .modal-input{width:100%;height:32px;border:1px solid var(--border2);border-radius:5px;padding:0 10px;font-size:12px;outline:none;margin-bottom:10px;}
+  #project-modal,#settings-modal,#help-modal,#maplist-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1000;align-items:center;justify-content:center;}
+  #project-modal.show,#settings-modal.show,#help-modal.show,#maplist-modal.show{display:flex;}
+  .modal-box{background:white;border-radius:14px;padding:22px;width:360px;box-shadow:0 12px 40px rgba(26,30,38,.18);max-height:80vh;overflow-y:auto;}
+  .modal-box h3{font-size:14px;font-weight:700;color:var(--text);margin-bottom:16px;}
+  .modal-input{width:100%;height:34px;border:1px solid var(--border2);border-radius:8px;padding:0 12px;font-size:12px;outline:none;margin-bottom:10px;}
   .modal-input:focus{border-color:var(--cyan);}
-  .project-list{max-height:200px;overflow-y:auto;border:1px solid var(--border);border-radius:5px;margin-bottom:10px;}
-  .project-item{padding:8px 12px;border-bottom:1px solid var(--border);cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:12px;}
-  .project-item:hover{background:#F5F0E8;}
+  .project-list{max-height:200px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;margin-bottom:10px;}
+  .project-item{padding:9px 12px;border-bottom:1px solid var(--border);cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:12px;}
+  .project-item:hover{background:var(--panel2);}
   .project-item-del{color:var(--red);cursor:pointer;font-size:14px;padding:0 4px;}
   .modal-btns{display:flex;gap:8px;justify-content:flex-end;}
-  .modal-btn{height:28px;padding:0 14px;border-radius:5px;font-size:11px;cursor:pointer;}
+  .modal-btn{height:30px;padding:0 15px;border-radius:8px;font-size:11px;cursor:pointer;}
   .modal-btn-cancel{background:white;border:1px solid var(--border2);}
   .modal-btn-ok{background:var(--cyan);color:white;border:none;font-weight:700;}
   #edit-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1000;align-items:center;justify-content:center;}
   #edit-modal.show{display:flex;}
-  .edit-box{background:white;border-radius:10px;padding:20px;width:320px;box-shadow:0 8px 32px rgba(0,0,0,.2);}
+  .edit-box{background:white;border-radius:14px;padding:22px;width:320px;box-shadow:0 12px 40px rgba(26,30,38,.18);}
   .edit-box h3{font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px;}
   .edit-box textarea{width:100%;height:80px;border:1px solid var(--border2);border-radius:5px;padding:8px;font-size:12px;font-family:var(--font);resize:vertical;outline:none;}
   .edit-box textarea:focus{border-color:var(--cyan);}
   .edit-btns{display:flex;gap:8px;margin-top:10px;justify-content:flex-end;}
-  .edit-btn-cancel{height:28px;padding:0 14px;background:white;border:1px solid var(--border2);border-radius:5px;font-size:11px;cursor:pointer;}
-  .edit-btn-save{height:28px;padding:0 14px;background:var(--cyan);color:white;border:none;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer;}
+  .edit-btn-cancel{height:30px;padding:0 15px;background:white;border:1px solid var(--border2);border-radius:8px;font-size:11px;cursor:pointer;}
+  .edit-btn-save{height:30px;padding:0 15px;background:var(--cyan);color:white;border:none;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;}
   #toast{position:fixed;bottom:20px;right:20px;background:white;border:1px solid var(--border2);border-radius:8px;padding:9px 16px;font-size:12px;color:var(--text);box-shadow:0 4px 16px rgba(0,0,0,.18);transform:translateY(50px);opacity:0;transition:all .3s;z-index:9999;max-width:280px;}
   #toast.show{transform:translateY(0);opacity:1;}
   #toast.ok{border-left:3px solid var(--green);}
@@ -171,30 +163,34 @@
       </svg>
       写メモdeMAP
     </div>
+    <div style="padding:0 14px;">
+      <button onclick="document.getElementById('photoInput').click()" style="height:30px;padding:0 16px;background:var(--cyan);color:white;border:none;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap;box-shadow:0 1px 3px rgba(0,0,0,.15);">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg>
+        写真を読み込む
+      </button>
+      <input type="file" id="photoInput" multiple accept="image/jpeg,image/jpg" style="display:none" onchange="handlePhotos(this.files)"/>
+      <input type="file" id="kmlInput" accept=".kml,.kmz" style="display:none" onchange="handleKML(this.files[0])"/>
+    </div>
     <!-- ▼テスト版ラベル（正式リリース時はこのdiv1つを削除するだけでOK） -->
     <div id="test-badge" style="font-size:10px;font-weight:700;color:var(--orange);background:rgba(192,96,16,.1);border:1px solid rgba(192,96,16,.3);border-radius:10px;padding:2px 9px;margin-left:8px;white-space:nowrap;">テスト版</div>
     <!-- ▲テスト版ラベルここまで -->
-    <!-- ▼開発用バージョン表示（リリース時はこのdiv1つを削除するだけでOK） -->
-    <div id="dev-version-tag" style="font-size:10px;color:var(--dim2);padding:0 10px;white-space:nowrap;font-family:var(--mono);"></div>
-    <!-- ▲開発用バージョン表示ここまで -->
     <div class="tb-menu">
       <div class="tb-item">
         <span class="tb-item-label" onclick="event.stopPropagation();toggleMenu(this.parentElement)">ファイル</span>
         <div class="tb-dropdown">
-          <div class="tb-dd-item" onclick="document.getElementById('photoInput').click()">📁 写真を読み込む</div>
-          <div class="tb-dd-item" onclick="document.getElementById('kmlInput').click()">📂 KMLを読み込む</div>
+          <div class="tb-dd-item" onclick="document.getElementById('kmlInput').click()"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2H3z"/><path d="M3 7l1.5 11A2 2 0 0 0 6.5 20h11a2 2 0 0 0 2-2L21 9H3"/></svg> KMLを読み込む</div>
           <div class="tb-dd-sep"></div>
-          <div class="tb-dd-item" onclick="showProjectModal()">📁 プロジェクト管理</div>
-          <div class="tb-dd-item" onclick="saveProject()">💾 プロジェクトを保存</div>
-          <div class="tb-dd-item" onclick="loadProjectList()">📂 プロジェクトを開く</div>
+          <div class="tb-dd-item" onclick="showProjectModal()"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg> プロジェクト管理</div>
+          <div class="tb-dd-item" onclick="saveProject()"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> プロジェクトを保存</div>
+          <div class="tb-dd-item" onclick="loadProjectList()"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2H3z"/><path d="M3 7l1.5 11A2 2 0 0 0 6.5 20h11a2 2 0 0 0 2-2L21 9H3"/></svg> プロジェクトを開く</div>
           <div class="tb-dd-sep"></div>
-          <div class="tb-dd-item" onclick="clearAll()">🗑 クリア</div>
+          <div class="tb-dd-item" onclick="clearAll()"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> クリア</div>
         </div>
       </div>
       <div class="tb-item">
         <span class="tb-item-label" onclick="event.stopPropagation();toggleMenu(this.parentElement)">表示</span>
         <div class="tb-dropdown">
-          <div class="tb-dd-item" onclick="toggleLayer('photos')">撮影ポイント ON/OFF</div>
+          <div class="tb-dd-item" onclick="toggleLayer('photos')">写真の詳細表示 ON/OFF</div>
           <div class="tb-dd-item" onclick="toggleLayer('arrows')">撮影方向 ON/OFF</div>
           <div class="tb-dd-item" onclick="toggleLayer('route')">作業動線 ON/OFF</div>
           <div class="tb-dd-item" onclick="toggleLayer('memos')">しゃべメモ ON/OFF</div>
@@ -203,42 +199,44 @@
       <div class="tb-item">
         <span class="tb-item-label" onclick="event.stopPropagation();toggleMenu(this.parentElement)">出力</span>
         <div class="tb-dropdown">
-          <div class="tb-dd-item" onclick="exportKML()">⬇ KML出力</div>
-          <div class="tb-dd-item" onclick="exportExcel()">📊 CSV出力</div>
-          <div class="tb-dd-item" onclick="exportXlsx()">📸 写真付きExcel出力</div>
+          <div class="tb-dd-item" onclick="exportKML()"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><path d="M12 3v12"/><polyline points="7 10 12 15 17 10"/><path d="M5 21h14"/></svg> KML出力</div>
+          <div class="tb-dd-item" onclick="exportExcel()"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg> CSV出力</div>
+          <div class="tb-dd-item" onclick="exportXlsx()"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> 写真付きExcel出力</div>
+          <div class="tb-dd-item" onclick="exportGovernmentLedger()"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg> 工事写真台帳（国交省準拠）</div>
           <div class="tb-dd-sep"></div>
-          <div class="tb-dd-item" onclick="printReport()">🖨 点検レポート印刷</div>
-          <div class="tb-dd-item" onclick="captureScreenPrint()">📷 画面キャプチャして印刷</div>
+          <div class="tb-dd-item" onclick="printReport()"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> 点検レポート印刷</div>
+          <div class="tb-dd-item" onclick="captureScreenPrint()"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> 画面キャプチャして印刷</div>
+          <div class="tb-dd-item" onclick="openMaplistModal()"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg> 表示中の範囲で出力（地図＋一覧）</div>
         </div>
       </div>
       <div class="tb-item">
         <span class="tb-item-label" onclick="event.stopPropagation();toggleMenu(this.parentElement)">設定</span>
         <div class="tb-dropdown">
-          <div class="tb-dd-item" onclick="showSettings()">⚙ 表示設定</div>
+          <div class="tb-dd-item" onclick="showSettings()"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> 表示設定</div>
         </div>
       </div>
       <div class="tb-item">
         <span class="tb-item-label" onclick="event.stopPropagation();toggleMenu(this.parentElement)">ヘルプ</span>
         <div class="tb-dropdown">
-          <div class="tb-dd-item" onclick="showHelp()">❓ 使い方</div>
+          <div class="tb-dd-item" onclick="showHelp()"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> 使い方</div>
         </div>
       </div>
-      <div style="display:flex;align-items:center;gap:6px;padding:0 10px;border-right:1px solid var(--border);height:100%;">
-        <select class="filter-select" id="gpsFilter" onchange="applyFilter()" style="height:26px;width:auto;">
+      <div style="display:flex;align-items:center;gap:8px;padding:0 12px;height:100%;">
+        <select class="filter-select" id="gpsFilter" onchange="applyFilter()" style="height:28px;width:auto;">
           <option value="">GPS:すべて表示</option>
           <option value="gps">GPS付きのみ</option>
           <option value="nogps">GPSなしのみ</option>
         </select>
-        <button class="btn-sm" onclick="clearAll()" style="background:#FBEAEA;color:var(--red);border-color:rgba(192,48,48,.3);">🗑 クリア</button>
-        <div class="tb-item" id="feedbackItem" style="height:auto;padding:0;border-right:none;margin-left:14px;position:relative;">
+        <button class="btn-sm" onclick="clearAll()" style="background:#FBEAEA;color:var(--red);border-color:rgba(192,48,48,.3);"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> クリア</button>
+        <div class="tb-item" id="feedbackItem" style="height:auto;padding:0;position:relative;">
           <button class="tb-item-label btn-sm" onclick="event.stopPropagation();toggleMenu(this.parentElement)"
-            style="background:#E8F0FA;color:var(--accent);border-color:rgba(42,125,212,.35);">✉️ ご意見</button>
-          <div class="tb-dropdown" style="top:32px;left:0;min-width:220px;">
+            style="background:#E8F0FA;color:var(--accent);border-color:rgba(26,110,191,.35);"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/><polyline points="22 6 12 13 2 6"/></svg> ご意見</button>
+          <div class="tb-dropdown" style="top:34px;left:0;min-width:220px;">
             <div style="padding:8px 14px 4px;font-size:10.5px;color:var(--dim);">送信に使うメールを選択</div>
-            <div class="tb-dd-item" onclick="openFeedbackMail('gmail')">📧 Gmailで開く</div>
-            <div class="tb-dd-item" onclick="openFeedbackMail('outlook')">📨 Outlook(Web)で開く</div>
+            <div class="tb-dd-item" onclick="openFeedbackMail('gmail')"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/><polyline points="22 6 12 13 2 6"/></svg> Gmailで開く</div>
+            <div class="tb-dd-item" onclick="openFeedbackMail('outlook')"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/><polyline points="22 6 12 13 2 6"/></svg> Outlook(Web)で開く</div>
             <div class="tb-dd-sep"></div>
-            <div class="tb-dd-item" onclick="openFeedbackMail('default')" style="white-space:normal;line-height:1.5;">🖥 既定のメールソフトで開く（インストール済みのOutlook等）</div>
+            <div class="tb-dd-item" onclick="openFeedbackMail('default')" style="white-space:normal;line-height:1.5;"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg> 既定のメールソフトで開く（インストール済みのOutlook等）</div>
           </div>
         </div>
       </div>
@@ -263,19 +261,8 @@
     </div>
   </div>
   <div id="browser-banner">
-    <span>⚠️ プロジェクトのフォルダ自動読込は<b>Google Chrome / Microsoft Edge</b>でのみ動作します(Safari・Firefoxでは写真の手動再選択が必要です)。フォルダの場所やファイル名を変更すると、自動読込できなくなります。</span>
+    <span><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> プロジェクトのフォルダ自動読込は<b>Google Chrome / Microsoft Edge</b>でのみ動作します(Safari・Firefoxでは写真の手動再選択が必要です)。フォルダの場所やファイル名を変更すると、自動読込できなくなります。</span>
     <button onclick="closeBrowserBanner()" title="閉じる">×</button>
-  </div>
-  <div id="toolbar">
-    <button class="btn-sm" onclick="document.getElementById('photoInput').click()" style="background:#E8F0FA;color:var(--accent);border-color:rgba(42,125,212,.35);font-weight:700;">📁 写真を読み込む</button>
-    <input type="file" id="photoInput" multiple accept="image/jpeg,image/jpg" style="display:none" onchange="handlePhotos(this.files)"/>
-    <input type="file" id="kmlInput" accept=".kml,.kmz" style="display:none" onchange="handleKML(this.files[0])"/>
-    <div class="sep"></div>
-    <button class="btn-sm btn-green" onclick="exportKML()" id="exportBtn" disabled>⬇ KML出力</button>
-    <button class="btn-sm btn-green" onclick="exportExcel()" id="exportExcelBtn" disabled style="background:#EAF5EE;color:var(--green);border-color:rgba(26,128,64,.3);">📊 CSV出力</button>
-    <button class="btn-sm btn-green" onclick="exportXlsx()" id="exportXlsxBtn" disabled style="background:#EAF5EE;color:var(--green);border-color:rgba(26,128,64,.3);">📸 写真付きExcel出力</button>
-    <button class="btn-sm" onclick="printReport()" id="printBtn" disabled style="background:#F0F0F0;color:var(--dim);border-color:var(--border2);">🖨 印刷</button>
-    <button class="btn-sm" onclick="captureScreenPrint()" id="captureBtn" style="background:#F0F0F0;color:var(--dim);border-color:var(--border2);">📷 画面を印刷</button>
   </div>
   <div id="body">
     <div id="left">
@@ -293,7 +280,7 @@
     </div>
     <div id="map-wrap">
       <div id="map-placeholder">
-        <div class="ph-icon">🗺</div>
+        <div class="ph-icon"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg></div>
         <p>写真をドロップすると地図が表示されます</p>
       </div>
       <div id="map"></div>
@@ -311,6 +298,10 @@
       <div id="coords-bar">
         <span id="coord-ll">—</span>
         <span id="coord-zoom">ズーム —</span>
+        <span style="flex:1;"></span>
+        <!-- ▼開発用バージョン表示（リリース時はこのspan1つを削除するだけでOK） -->
+        <span id="dev-version-tag" style="font-family:var(--mono);"></span>
+        <!-- ▲開発用バージョン表示ここまで -->
       </div>
     </div>
     <div id="right">
@@ -319,20 +310,12 @@
         <span id="list-count">0件</span>
       </div>
       <div id="photo-list"></div>
-      <div id="preview-panel">
-        <img id="preview-img" alt="プレビュー"/>
-        <div id="preview-info" style="display:none">
-          <div id="preview-name"></div>
-          <div id="preview-sub"></div>
-        </div>
-        <div id="preview-empty">写真を選択するとプレビュー表示</div>
-      </div>
     </div>
   </div>
 </div>
 <div id="project-modal">
   <div class="modal-box" style="width:420px;">
-    <h3>📁 プロジェクト管理</h3>
+    <h3><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg> プロジェクト管理</h3>
     <div style="font-size:11px;color:var(--dim);margin-bottom:4px;">案件名</div>
     <input type="text" id="project-group-input" class="modal-input" placeholder="例：水島橋梁点検"/>
     <div style="font-size:11px;color:var(--dim);margin-bottom:4px;">日付ラベル(省略可・空欄なら今日の日付)</div>
@@ -341,7 +324,7 @@
     <input type="text" id="project-tags-input" class="modal-input" placeholder="例：配筋, 要確認"/>
 
     <div style="display:flex;gap:8px;margin:6px 0 12px;">
-      <input type="text" id="project-search-input" class="modal-input" placeholder="🔍 案件名で検索" style="margin-bottom:0;flex:2;" oninput="renderProjectList()"/>
+      <input type="text" id="project-search-input" class="modal-input" placeholder="<svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> 案件名で検索" style="margin-bottom:0;flex:2;" oninput="renderProjectList()"/>
       <select id="project-tag-filter" class="modal-input" style="margin-bottom:0;flex:1;" onchange="renderProjectList()">
         <option value="">タグ:すべて</option>
       </select>
@@ -350,7 +333,7 @@
     <div style="font-size:11px;color:var(--dim);margin-bottom:6px;">保存済みプロジェクト(チェックして複数選択できます)</div>
     <div class="project-list" id="project-list" style="max-height:260px;"></div>
     <div class="modal-btns" style="justify-content:space-between;margin-top:10px;">
-      <button class="modal-btn" style="background:#E8F0FA;color:var(--accent);border:1px solid rgba(42,125,212,.3);font-weight:700;" onclick="loadSelectedProjects()">🗺 選択したものを地図に重ねて表示</button>
+      <button class="modal-btn" style="background:#E8F0FA;color:var(--accent);border:1px solid rgba(26,110,191,.3);font-weight:700;" onclick="loadSelectedProjects()"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg> 選択したものを地図に重ねて表示</button>
       <div style="display:flex;gap:8px;">
         <button class="modal-btn modal-btn-cancel" onclick="closeProjectModal()">閉じる</button>
         <button class="modal-btn modal-btn-ok" onclick="createProject()">新規作成・保存</button>
@@ -360,7 +343,7 @@
 </div>
 <div id="settings-modal">
   <div class="modal-box">
-    <h3>⚙ 表示設定</h3>
+    <h3><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> 表示設定</h3>
     <div style="font-size:12px;color:var(--dim);margin-bottom:12px;">サムネイル表示ズームレベル</div>
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
       <input type="range" id="thumb-zoom" min="10" max="24" value="18" style="flex:1;" oninput="document.getElementById('thumb-zoom-val').textContent=this.value"/>
@@ -379,9 +362,26 @@
     </div>
   </div>
 </div>
+<div id="maplist-modal">
+  <div class="modal-box" style="width:380px;">
+    <h3><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg> MAP＋一覧の出力</h3>
+    <div style="font-size:12.5px;color:var(--text);line-height:1.7;background:var(--panel2);border-radius:8px;padding:10px 12px;margin-bottom:14px;">
+      <svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;color:var(--amber);"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      現在、<b>地図に表示されている範囲・写真だけ</b>が出力されます。ズームや表示位置を調整してから出力してください。
+    </div>
+    <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;margin-bottom:16px;cursor:pointer;">
+      <input type="checkbox" id="maplistDirCheck" checked style="width:16px;height:16px;">
+      撮影方向を一覧に含める
+    </label>
+    <div class="modal-btns">
+      <button class="modal-btn modal-btn-cancel" onclick="closeMaplistModal()">キャンセル</button>
+      <button class="modal-btn modal-btn-ok" onclick="runExportMapWithList()">この内容で出力する</button>
+    </div>
+  </div>
+</div>
 <div id="help-modal">
   <div class="modal-box" style="width:440px;max-height:82vh;">
-    <h3>❓ 使い方・基本の流れ</h3>
+    <h3><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> 使い方・基本の流れ</h3>
     <div style="font-size:12.5px;color:var(--text);line-height:1.8;">
       <div style="margin-bottom:14px;">
         <div style="font-weight:700;color:var(--orange);margin-bottom:3px;">① しゃべメモで現場を記録</div>
@@ -405,7 +405,7 @@
       </div>
     </div>
     <div style="font-size:11px;color:var(--dim);border-top:1px dashed var(--border);margin-top:12px;padding-top:10px;">
-      💡 「プロジェクト保存」時に写真フォルダを紐付けておくと、次回そのプロジェクトを開いたときに自動で写真を読み込めます（<b>Google Chrome / Microsoft Edge限定</b>）。
+      <svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a6 6 0 0 0-4 10.5c.7.7 1 1.3 1 2.5h6c0-1.2.3-1.8 1-2.5A6 6 0 0 0 12 2z"/></svg> 「プロジェクト保存」時に写真フォルダを紐付けておくと、次回そのプロジェクトを開いたときに自動で写真を読み込めます（<b>Google Chrome / Microsoft Edge限定</b>）。
     </div>
     <div class="modal-btns" style="margin-top:14px;">
       <button class="modal-btn modal-btn-ok" onclick="closeHelp()">閉じる</button>
@@ -414,7 +414,7 @@
 </div>
 <div id="edit-modal">
   <div class="edit-box">
-    <h3>📝 メモを編集</h3>
+    <h3><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> メモを編集</h3>
     <div id="edit-photo-name" style="font-size:11px;color:var(--dim);margin-bottom:8px;"></div>
     <textarea id="edit-textarea" placeholder="損傷メモを入力してください..."></textarea>
     <div class="edit-btns">
@@ -716,7 +716,7 @@ function renderProjectList(){
     const color=assignProjectColor(gname);
     const groupHead=document.createElement('div');
     groupHead.style.cssText='display:flex;align-items:center;gap:6px;padding:7px 10px;background:#F5F0E8;font-size:11px;font-weight:700;border-bottom:1px solid var(--border);';
-    groupHead.innerHTML=`<span style="width:8px;height:8px;border-radius:50%;background:${color};flex-shrink:0;"></span>📁 ${esc(gname)} <span style="color:var(--dim);font-weight:400;">(${items.length}件)</span>`;
+    groupHead.innerHTML=`<span style="width:8px;height:8px;border-radius:50%;background:${color};flex-shrink:0;"></span><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg> ${esc(gname)} <span style="color:var(--dim);font-weight:400;">(${items.length}件)</span>`;
     list.appendChild(groupHead);
     items.forEach(p=>{
       const item=document.createElement('div');item.className='project-item';
@@ -747,10 +747,6 @@ async function loadSelectedProjects(){
   }
   updateStats();renderList();renderLoadedProjectsSidebar();
   if(map)plotAll();
-  document.getElementById('exportBtn').disabled=false;
-  document.getElementById('exportExcelBtn').disabled=false;
-  document.getElementById('exportXlsxBtn').disabled=false;
-  document.getElementById('printBtn').disabled=false;
   showToast(`${checked.length}件のプロジェクトを読み込みました（写真 ${totalLoaded}/${totalExpected}枚）`,'ok');
 }
 
@@ -864,10 +860,6 @@ async function handlePhotos(files){
   setProgress(1,'完了');await new Promise(r=>setTimeout(r,250));showProgress(false);
   photos=[...photos,...res];updateStats();renderList();
   if(map)plotAll();
-  document.getElementById('exportBtn').disabled=false;
-  document.getElementById('exportExcelBtn').disabled=false;
-  document.getElementById('exportXlsxBtn').disabled=false;
-  document.getElementById('printBtn').disabled=false;
   showToast(`${res.length}枚読込（GPS付き:${res.filter(p=>p.exif?.lat!==null).length}枚）`,'ok');
 }
 
@@ -903,7 +895,7 @@ function plotAll(){
 
     const pos={lat:photo.exif.lat,lng:photo.exif.lng};bounds.extend(pos);any=true;
     const pinColor=photo.projColor||'#1A6EBF';
-    const marker=new google.maps.Marker({position:pos,map:layers.photos?map:null,icon:{path:google.maps.SymbolPath.CIRCLE,fillColor:pinColor,fillOpacity:.9,strokeColor:'#fff',strokeWeight:2,scale:8},title:displayLabel(photo),zIndex:10});
+    const marker=new google.maps.Marker({position:pos,map:map,icon:{path:google.maps.SymbolPath.CIRCLE,fillColor:pinColor,fillOpacity:.9,strokeColor:'#fff',strokeWeight:2,scale:8},title:displayLabel(photo),zIndex:10});
 
     let arrow=null;
     if(photo.exif.dir!==null){
@@ -925,7 +917,7 @@ function plotAll(){
         ${photo.thumbUrl?`<img src="${photo.thumbUrl}" style="width:100%;height:130px;object-fit:cover;display:block;cursor:zoom-in;" onclick="openLightbox(${idx})">`:'<div style="width:100%;height:80px;background:#EDE8DE;display:flex;align-items:center;justify-content:center;color:#9AAABB;font-size:11px;">写真なし</div>'}
         ${d.dir!==null?buildCompassSVG(d.dir,true):''}
         ${d.dir!==null?`<div style="position:absolute;bottom:8px;left:8px;background:rgba(255,255,255,.9);border-radius:3px;padding:2px 6px;font-size:10px;font-weight:700;color:#C06010;">${d.dir.toFixed(0)}° ${dirName(d.dir)}</div>`:''}
-        <button onclick="openEditModal(${idx})" style="position:absolute;top:6px;right:6px;background:rgba(255,255,255,.9);border:none;border-radius:3px;padding:3px 7px;font-size:9px;color:#6A7888;cursor:pointer;font-family:inherit;">✏️ メモ編集</button>
+        <button onclick="openEditModal(${idx})" style="position:absolute;top:6px;right:6px;background:rgba(255,255,255,.9);border:none;border-radius:3px;padding:3px 7px;font-size:9px;color:#6A7888;cursor:pointer;font-family:inherit;"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> メモ編集</button>
       </div>
       ${memoHtml}
       <div style="padding:7px 12px;display:flex;flex-direction:column;gap:3px;background:#FAFAF8;border-top:1px solid rgba(0,0,0,.06);">
@@ -1010,10 +1002,17 @@ function updateMarkerVisibility(){
   const zoom=map?map.getZoom():15,showThumb=zoom>=thumbZoom;
   markers.forEach(m=>{
     if(!m.marker)return;
-    m.marker.setMap(layers.photos?map:null);
-    if(m.arrow)m.arrow.setMap(layers.arrows?map:null);
-    if(showThumb&&layers.photos){const ph=photos[m.idx];if(ph?.thumbUrl)m.marker.setIcon({url:ph.thumbUrl,scaledSize:new google.maps.Size(60,45),anchor:new google.maps.Point(30,22)});}
-    else{const ph=photos[m.idx];m.marker.setIcon({path:google.maps.SymbolPath.CIRCLE,fillColor:ph?.projColor||'#1A6EBF',fillOpacity:.9,strokeColor:'#fff',strokeWeight:2,scale:8});}
+    m.marker.setMap(map); // OFF時も完全に消さず、常に地図上には残す(簡略ピンとして)
+    if(m.arrow)m.arrow.setMap(layers.arrows&&layers.photos?map:null); // 方向矢印は簡略表示時は非表示
+    const ph=photos[m.idx];
+    if(!layers.photos){
+      // 簡略ピン：案件の色は保ったまま、小さく控えめに常時表示(ズームしてもサムネイル化しない)
+      m.marker.setIcon({path:google.maps.SymbolPath.CIRCLE,fillColor:ph?.projColor||'#1A6EBF',fillOpacity:.85,strokeColor:'#fff',strokeWeight:1.5,scale:4});
+    }else if(showThumb){
+      if(ph?.thumbUrl)m.marker.setIcon({url:ph.thumbUrl,scaledSize:new google.maps.Size(60,45),anchor:new google.maps.Point(30,22)});
+    }else{
+      m.marker.setIcon({path:google.maps.SymbolPath.CIRCLE,fillColor:ph?.projColor||'#1A6EBF',fillOpacity:.9,strokeColor:'#fff',strokeWeight:2,scale:8});
+    }
   });
   kmlMarkers.forEach(m=>m.marker?.setMap(layers.kml?map:null));
   if(routeLine)routeLine.setMap(layers.route?map:null);
@@ -1050,12 +1049,12 @@ function renderList(){
     const item=document.createElement('div');item.className='list-item';item.dataset.idx=idx;
     const color=p.projColor||'var(--cyan)';
     item.style.borderLeft=`3px solid ${color}`;
-    const thumb=p.thumbUrl?`<img class="li-thumb" src="${p.thumbUrl}" loading="lazy"/>`:`<div class="li-thumb" style="display:flex;align-items:center;justify-content:center;font-size:16px;">🖼</div>`;
+    const thumb=p.thumbUrl?`<img class="li-thumb" src="${p.thumbUrl}" loading="lazy"/>`:`<div class="li-thumb" style="display:flex;align-items:center;justify-content:center;font-size:16px;"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>`;
     const memoText=p.note?p.note.trim():'(メモなし)';
     const projChip=p.projDateLabel?`<span style="font-size:9px;background:${color}18;color:${color};border-radius:3px;padding:0 4px;margin-left:5px;">${esc(p.projDateLabel)}</span>`:'';
     item.innerHTML=`${thumb}<div class="li-info">
-      <div style="font-size:11px;font-weight:600;color:var(--dim);"><span class="mono">${timeOnly(p.exif?.dateTime)}</span> ${projChip}</div>
-      <div style="font-size:12px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px;" title="${esc(memoText)}">${esc(memoText)}</div>
+      <div style="font-size:10.5px;font-weight:600;color:var(--dim2);"><span class="mono">${timeOnly(p.exif?.dateTime)}</span> ${projChip}</div>
+      <div style="font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;" title="${esc(memoText)}">${esc(memoText)}</div>
       ${p.exif?.lat?'':'<div class="li-nogps">GPS なし</div>'}
     </div><button class="li-del" onclick="deletePhoto(${idx},event)" title="削除">×</button>`;
     item.addEventListener('click',()=>focusPhoto(idx));list.appendChild(item);
@@ -1086,7 +1085,7 @@ function focusPhoto(idx){
   highlightItem(idx);setPreview(p);
 }
 function highlightItem(idx){document.querySelectorAll('.list-item').forEach(el=>el.classList.remove('active'));const el=document.querySelector(`.list-item[data-idx="${idx}"]`);if(el){el.classList.add('active');el.scrollIntoView({block:'nearest'});}}
-function setPreview(photo){const img=document.getElementById('preview-img'),info=document.getElementById('preview-info'),empty=document.getElementById('preview-empty');if(photo.thumbUrl){img.src=photo.thumbUrl;img.style.display='block';img.style.cursor='zoom-in';img.onclick=()=>openLightboxUrl(photo.thumbUrl);info.style.display='block';empty.style.display='none';document.getElementById('preview-name').textContent=photo.name;const d=photo.exif;document.getElementById('preview-sub').textContent=[d?.dir!=null?`${d.dir.toFixed(0)}°（${dirName(d.dir)}）`:'',d?.dateTime||''].filter(Boolean).join(' · ');}}
+function setPreview(photo){ /* プレビューパネルは廃止。地図ポップアップに一本化したため何もしない */ }
 function updateStats(){document.getElementById('stat-photos').textContent=photos.length;document.getElementById('stat-gps').textContent=photos.filter(p=>p.exif?.lat!==null).length;document.getElementById('stat-memo').textContent=memos.length;}
 function applyFilter(){renderList();}
 
@@ -1160,6 +1159,37 @@ function exportXlsx(){
   }
 }
 
+// ── 画像リサイズ・圧縮（写真付きExcel出力・国交省準拠台帳で共通利用） ──
+// スマホの元写真(1200万画素超)をそのまま埋め込むとExcelが数百MB化しクラッシュするため、
+// 長辺を一定サイズまで縮小・再圧縮してから埋め込む
+async function resizeImageForExcel(blob, maxDim=1600, quality=0.85){
+  return new Promise((resolve,reject)=>{
+    const img=new Image();
+    const url=URL.createObjectURL(blob);
+    img.onload=()=>{
+      const w=img.naturalWidth, h=img.naturalHeight;
+      const scale=Math.min(1, maxDim/Math.max(w,h));
+      const outW=Math.max(1,Math.round(w*scale)), outH=Math.max(1,Math.round(h*scale));
+      const canvas=document.createElement('canvas');
+      canvas.width=outW; canvas.height=outH;
+      canvas.getContext('2d').drawImage(img,0,0,outW,outH);
+      canvas.toBlob((outBlob)=>{
+        URL.revokeObjectURL(url);
+        if(!outBlob){reject(new Error('resize failed'));return;}
+        outBlob.arrayBuffer().then(buf=>resolve({buffer:buf,width:outW,height:outH})).catch(reject);
+      },'image/jpeg',quality);
+    };
+    img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error('image load failed'));};
+    img.src=url;
+  });
+}
+
+// 最大枠(px)に、縦横比を維持したまま収まるサイズを計算する(はみ出しも間延びも防ぐ「contain」方式)
+function fitContain(natW,natH,maxW,maxH){
+  const scale=Math.min(maxW/natW,maxH/natH);
+  return {width:Math.max(1,Math.round(natW*scale)),height:Math.max(1,Math.round(natH*scale))};
+}
+
 async function _doExportXlsx(target){
   target=target||photos;
   try{
@@ -1188,7 +1218,7 @@ async function _doExportXlsx(target){
         dirName:p.exif?.dir!=null?dirName(p.exif.dir):'',
         note:p.note||''
       });
-      ws.getRow(i+2).height=65;
+      ws.getRow(i+2).height=82;
     });
 
     for(let i=0;i<target.length;i++){
@@ -1196,10 +1226,11 @@ async function _doExportXlsx(target){
       if(!p.thumbUrl)continue;
       try{
         const resp=await fetch(p.thumbUrl);
-        const blob=await resp.blob();
-        const buf=await blob.arrayBuffer();
-        const imgId=wb.addImage({buffer:buf,extension:'jpeg'});
-        ws.addImage(imgId,{tl:{col:1,row:i+1},ext:{width:110,height:82}});
+        const srcBlob=await resp.blob();
+        const {buffer,width,height}=await resizeImageForExcel(srcBlob,1600,0.85);
+        const fit=fitContain(width,height,140,105); // 縦横比を保ったまま枠に収める
+        const imgId=wb.addImage({buffer,extension:'jpeg'});
+        ws.addImage(imgId,{tl:{col:1,row:i+1},ext:{width:fit.width,height:fit.height}});
       }catch(err){ /* 個別の画像取得失敗はスキップし、他のデータは残す */ }
     }
 
@@ -1271,7 +1302,7 @@ function printReport(){
     .toolbar button{padding:8px 16px;font-size:13px;border-radius:5px;border:1px solid #ccc;background:#1A6EBF;color:#fff;cursor:pointer;}
     @media print{ .toolbar{display:none;} }
   </style></head><body>
-  <div class="toolbar"><button onclick="window.print()">🖨 この画面を印刷する</button></div>
+  <div class="toolbar"><button onclick="window.print()"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> この画面を印刷する</button></div>
   <h1>写メモdeMAP 点検記録レポート</h1>
   <div class="sub">出力日時：${new Date().toLocaleString('ja-JP')}　／　${pts.length}件</div>
   ${rows}
@@ -1328,7 +1359,7 @@ async function captureScreenPrint(){
       .toolbar button{padding:8px 16px;font-size:13px;border-radius:5px;border:1px solid #ccc;background:#1A6EBF;color:#fff;cursor:pointer;}
       @media print{ .toolbar{display:none;} body{padding:0;} img{border:none;} }
     </style></head><body>
-    <div class="toolbar"><button onclick="window.print()">🖨 この画面を印刷する</button></div>
+    <div class="toolbar"><button onclick="window.print()"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> この画面を印刷する</button></div>
     <h1>写メモdeMAP 画面キャプチャ</h1>
     <div class="sub">出力日時：${new Date().toLocaleString('ja-JP')}</div>
     <img src="${dataUrl}" alt="画面キャプチャ">
@@ -1341,6 +1372,216 @@ async function captureScreenPrint(){
   }
 }
 
+// ── MAP＋一覧の出力（現在表示中の範囲・写真だけを対象） ──────────
+function openMaplistModal(){
+  if(!map){showToast('先に写真を読み込んでください','err');return;}
+  document.getElementById('maplist-modal').classList.add('show');
+}
+function closeMaplistModal(){
+  document.getElementById('maplist-modal').classList.remove('show');
+}
+
+async function runExportMapWithList(){
+  const includeDir = document.getElementById('maplistDirCheck').checked;
+  closeMaplistModal();
+
+  const bounds = map.getBounds();
+  if(!bounds){showToast('地図の読み込みが完了していません','err');return;}
+
+  // 現在の地図表示範囲内・非表示プロジェクトを除いた写真だけを対象にする
+  const inView = photos
+    .filter(p=>p.exif?.lat!=null)
+    .filter(p=>!p.projId || loadedProjectsMeta[p.projId]?.visible!==false)
+    .filter(p=>bounds.contains({lat:p.exif.lat,lng:p.exif.lng}))
+    .sort((a,b)=>(a.exif?.dateTime||'').localeCompare(b.exif?.dateTime||''));
+
+  if(!inView.length){showToast('表示範囲内にGPS付きの写真がありません','err');return;}
+
+  // 対象の写真に、番号付きの一時ラベルを重ねて表示する
+  const numByPhoto = new Map();
+  inView.forEach((p,i)=>numByPhoto.set(p, i+1));
+  const affectedMarkers = markers.filter(m=>numByPhoto.has(photos[m.idx]));
+  const savedLabels = affectedMarkers.map(m=>m.marker.getLabel ? m.marker.getLabel() : null);
+  affectedMarkers.forEach(m=>{
+    const num = numByPhoto.get(photos[m.idx]);
+    m.marker.setLabel({text:String(num), color:'#fff', fontSize:'11px', fontWeight:'700'});
+  });
+  await new Promise(r=>setTimeout(r,120)); // ラベル反映を待つ
+
+  let dataUrl=null;
+  if(navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia){
+    try{
+      const stream=await navigator.mediaDevices.getDisplayMedia({
+        video:{displaySurface:'browser'}, preferCurrentTab:true, selfBrowserSurface:'include'
+      });
+      const track=stream.getVideoTracks()[0];
+      const video=document.createElement('video');
+      video.srcObject=stream; video.muted=true;
+      await video.play();
+      await new Promise(r=>setTimeout(r,200));
+      const canvas=document.createElement('canvas');
+      canvas.width=video.videoWidth; canvas.height=video.videoHeight;
+      canvas.getContext('2d').drawImage(video,0,0);
+      track.stop(); stream.getTracks().forEach(t=>t.stop());
+      dataUrl=canvas.toDataURL('image/png');
+    }catch(err){ /* キャンセルされた場合は地図画像なしで一覧のみ出力する */ }
+  }
+
+  // 一時ラベルを元に戻す
+  affectedMarkers.forEach((m,i)=>m.marker.setLabel(savedLabels[i]));
+
+  const rows = inView.map((p,i)=>{
+    const d=p.exif;
+    const dirTxt = includeDir && d.dir!=null ? `${d.dir.toFixed(0)}°（${dirName(d.dir)}）` : '';
+    const memoTxt = p.note ? esc(p.note) : '（メモなし）';
+    const imgTag = p.thumbUrl ? `<img src="${p.thumbUrl}" class="ph">` : '<div class="ph noph">写真なし</div>';
+    return `<div class="item">
+      <div class="idx">No.${i+1}</div>
+      ${imgTag}
+      <div class="info">
+        <div class="memo">${memoTxt}</div>
+        <div class="meta">${esc(d.dateTime||'—')}${dirTxt?`　／　${dirTxt}`:''}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  const win=window.open('','_blank');
+  if(!win){showToast('ポップアップがブロックされました。ブラウザの設定をご確認ください','err');return;}
+  win.document.write(`<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">
+  <title>MAP＋一覧 ${new Date().toLocaleDateString('ja-JP')}</title>
+  <style>
+    body{font-family:-apple-system,'Hiragino Sans','Yu Gothic UI',sans-serif;color:#1A1E26;margin:0;padding:24px;background:#fff;}
+    h1{font-size:16px;margin:0 0 4px;}
+    .sub{font-size:11px;color:#6A7888;margin-bottom:16px;}
+    .mapimg{max-width:100%;border:1px solid #ddd;border-radius:6px;margin-bottom:20px;}
+    .item{display:flex;gap:12px;border:1px solid #ddd;border-radius:6px;padding:10px;margin-bottom:10px;page-break-inside:avoid;align-items:flex-start;}
+    .idx{font-size:11px;font-weight:700;color:#fff;background:#1A6EBF;border-radius:3px;padding:2px 8px;flex-shrink:0;}
+    .ph{width:64px;height:64px;object-fit:cover;border-radius:5px;border:1px solid #ddd;flex-shrink:0;}
+    .noph{display:flex;align-items:center;justify-content:center;background:#EEE;color:#999;font-size:10px;}
+    .info{flex:1;min-width:0;}
+    .memo{font-size:13px;font-weight:700;margin-bottom:4px;white-space:pre-wrap;}
+    .meta{font-size:10.5px;color:#6A7888;}
+    .toolbar{margin-bottom:16px;}
+    .toolbar button{padding:8px 16px;font-size:13px;border-radius:5px;border:1px solid #ccc;background:#1A6EBF;color:#fff;cursor:pointer;}
+    @media print{ .toolbar{display:none;} body{padding:0;} }
+  </style></head><body>
+  <div class="toolbar"><button onclick="window.print()">この画面を印刷する</button></div>
+  <h1>写メモdeMAP MAP＋一覧</h1>
+  <div class="sub">出力日時：${new Date().toLocaleString('ja-JP')}　／　${inView.length}件（現在の表示範囲内）</div>
+  ${dataUrl?`<img src="${dataUrl}" class="mapimg" alt="地図キャプチャ">`:''}
+  ${rows}
+  </body></html>`);
+  win.document.close();
+  showToast(`MAP＋一覧を出力しました（${inView.length}件）`,'ok');
+}
+
+// ── 工事写真台帳（国交省準拠フォーマット）出力 ──────────────
+// 国交省「デジタル写真管理情報基準」で一般的な、A4縦・1レコードごとに
+// 「写真＋工種／位置／撮影日時／摘要」を並べる台帳レイアウトで出力する。
+// 電子納品(PHOTO.XML等)そのものではなく、社内・提出前資料として使える体裁を目標とする。
+async function exportGovernmentLedger(){
+  const target=getExportPhotos().filter(p=>p.thumbUrl);
+  if(!target.length){showToast('写真付きの記録がありません（台帳には写真が必須です）','err');return;}
+  showToast('写真台帳を作成中...','ok');
+  if(typeof ExcelJS==='undefined'){
+    try{
+      await new Promise((resolve,reject)=>{
+        const s=document.createElement('script');
+        s.src='https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js';
+        s.onload=resolve; s.onerror=reject;
+        document.head.appendChild(s);
+      });
+    }catch(err){showToast('ライブラリ読み込みエラー','err');return;}
+  }
+  try{
+    const wb=new ExcelJS.Workbook();
+    const ws=wb.addWorksheet('写真台帳');
+    ws.pageSetup={paperSize:9,orientation:'portrait',fitToWidth:1,fitToHeight:0,
+      margins:{left:0.5,right:0.5,top:0.6,bottom:0.6,header:0.3,footer:0.3}};
+    ws.columns=[
+      {key:'a',width:32}, // 写真
+      {key:'b',width:9},  // 項目ラベル
+      {key:'c',width:42}, // 内容
+    ];
+
+    const PHOTO_MAX_W=205, PHOTO_MAX_H=150; // px、台帳1コマあたりの最大枠
+
+    ws.mergeCells('A1:C1');
+    const titleCell=ws.getCell('A1');
+    titleCell.value=`工事写真台帳　　工事名：${esc(target[0]?.projLabel||'（未設定）')}`;
+    titleCell.font={bold:true,size:13};
+    titleCell.alignment={vertical:'middle'};
+    ws.getRow(1).height=26;
+
+    let r=3;
+    for(let i=0;i<target.length;i++){
+      const p=target[i];
+      const startRow=r;
+
+      ws.getCell(r,2).value='写真No.';
+      ws.getCell(r,3).value=`No.${i+1}`;
+      ws.getRow(r).height=20; r++;
+
+      ws.getCell(r,2).value='工種';
+      ws.getCell(r,3).value=''; // 空欄・手入力用(様式・現場ごとに異なるため自動判定はしない)
+      ws.getRow(r).height=20; r++;
+
+      ws.getCell(r,2).value='位置(GPS)';
+      ws.getCell(r,3).value = p.exif?.lat!=null
+        ? `北緯${p.exif.lat.toFixed(6)}°　東経${p.exif.lng.toFixed(6)}°`
+        : '（GPS情報なし）';
+      ws.getRow(r).height=20; r++;
+
+      ws.getCell(r,2).value='撮影日時';
+      ws.getCell(r,3).value = p.exif?.dateTime || '';
+      ws.getRow(r).height=20; r++;
+
+      // 摘要：しゃべメモの音声テキスト(識別子・数値・メモを結合済み)をそのまま表示
+      let noteText=(p.note||'').trim();
+      const truncated = noteText.length>240;
+      if(truncated) noteText = noteText.slice(0,240);
+      const noteRowStart=r;
+      const noteRows = Math.max(2, Math.ceil((noteText.length||1)/16));
+      ws.mergeCells(noteRowStart,2,noteRowStart+noteRows-1,2);
+      ws.mergeCells(noteRowStart,3,noteRowStart+noteRows-1,3);
+      ws.getCell(noteRowStart,2).value='摘要';
+      ws.getCell(noteRowStart,2).alignment={vertical:'top'};
+      const noteCell=ws.getCell(noteRowStart,3);
+      noteCell.value = noteText + (truncated?'…':'');
+      noteCell.alignment = {wrapText:true,vertical:'top'};
+      for(let rr=noteRowStart; rr<noteRowStart+noteRows; rr++) ws.getRow(rr).height=18;
+      r += noteRows;
+
+      const endRow=r-1;
+      let totalPt=0;
+      for(let rr=startRow; rr<=endRow; rr++) totalPt += (ws.getRow(rr).height||15);
+      const boxHpx = Math.min(PHOTO_MAX_H, totalPt/0.75);
+
+      ws.mergeCells(startRow,1,endRow,1);
+      try{
+        const resp=await fetch(p.thumbUrl);
+        const srcBlob=await resp.blob();
+        const {buffer,width,height}=await resizeImageForExcel(srcBlob,1600,0.85);
+        const fit=fitContain(width,height,PHOTO_MAX_W,boxHpx);
+        const imgId=wb.addImage({buffer,extension:'jpeg'});
+        ws.addImage(imgId,{tl:{col:0,row:startRow-1},ext:{width:fit.width,height:fit.height}});
+      }catch(err){ /* 画像取得に失敗した場合はセルを空欄のまま残す */ }
+
+      r = endRow + 2; // レコード間に1行あける
+    }
+
+    const buffer=await wb.xlsx.writeBuffer();
+    const blob=new Blob([buffer],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;a.download=`工事写真台帳_${new Date().toISOString().slice(0,10)}.xlsx`;a.click();
+    URL.revokeObjectURL(url);
+    showToast(`写真台帳を出力しました（${target.length}件）`,'ok');
+  }catch(err){
+    showToast('台帳の出力に失敗しました','err');
+  }
+}
+
 function clearAll(){
   if(photos.length>0&&!confirm('全データをクリアしますか？'))return;
   markers.forEach(m=>{m.marker?.setMap(null);m.arrow?.setMap(null);m.iw?.close();});markers=[];
@@ -1349,13 +1590,6 @@ function clearAll(){
   loadedProjectsMeta={};renderLoadedProjectsSidebar();
   if(activeIW){activeIW.close();activeIW=null;}
   updateStats();renderList();
-  document.getElementById('exportBtn').disabled=true;
-  document.getElementById('exportExcelBtn').disabled=true;
-  document.getElementById('exportXlsxBtn').disabled=true;
-  document.getElementById('printBtn').disabled=true;
-  document.getElementById('preview-img').style.display='none';
-  document.getElementById('preview-info').style.display='none';
-  document.getElementById('preview-empty').style.display='flex';
 }
 
 function showProgress(v){document.getElementById('progress').classList.toggle('show',v);}
