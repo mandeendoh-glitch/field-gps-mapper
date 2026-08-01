@@ -1390,24 +1390,47 @@ async function captureScreenPrint(){
 // ── MAP＋一覧の出力（現在表示中の範囲・写真だけを対象） ──────────
 // 対象の写真に、番号付きの一時ピン(案件の色を保った丸マーカー)を適用する。復元用データを返す。
 function applyNumberedPins(inView){
+  const EXPORT_RED='#C03030';
   const numByPhoto=new Map();
   inView.forEach((p,i)=>numByPhoto.set(p,i+1));
   const affectedMarkers=markers.filter(m=>numByPhoto.has(photos[m.idx]));
   const savedLabels=affectedMarkers.map(m=>m.marker.getLabel ? m.marker.getLabel() : null);
   const savedIcons=affectedMarkers.map(m=>m.marker.getIcon ? m.marker.getIcon() : null);
-  affectedMarkers.forEach(m=>{
-    const num=numByPhoto.get(photos[m.idx]);
-    const ph=photos[m.idx];
-    m.marker.setIcon({path:google.maps.SymbolPath.CIRCLE,fillColor:ph?.projColor||'#1A6EBF',fillOpacity:.95,strokeColor:'#fff',strokeWeight:2,scale:12});
-    m.marker.setLabel({text:String(num),color:'#fff',fontSize:'11px',fontWeight:'700'});
+  const savedArrows=affectedMarkers.map(m=>{
+    if(!m.arrow) return null;
+    return {strokeColor:m.arrow.get('strokeColor'), icons:JSON.parse(JSON.stringify(m.arrow.get('icons')||[]))};
   });
-  return {affectedMarkers,savedLabels,savedIcons};
+  affectedMarkers.forEach((m,i)=>{
+    const num=numByPhoto.get(photos[m.idx]);
+    m.marker.setIcon({path:google.maps.SymbolPath.CIRCLE,fillColor:EXPORT_RED,fillOpacity:.95,strokeColor:'#fff',strokeWeight:2,scale:12});
+    m.marker.setLabel({text:String(num),color:'#fff',fontSize:'11px',fontWeight:'700'});
+    if(m.arrow){
+      const icons=(m.arrow.get('icons')||[]).map(ic=>({...ic, icon:{...ic.icon, fillColor:EXPORT_RED, strokeColor:EXPORT_RED}}));
+      m.arrow.setOptions({strokeColor:EXPORT_RED, icons});
+    }
+  });
+  // 導線(移動順を結ぶ線)は、矢印と見分けやすいよう出力時だけ破線にする
+  let savedRoute=null;
+  if(routeLine){
+    savedRoute={strokeOpacity:routeLine.get('strokeOpacity'), icons:JSON.parse(JSON.stringify(routeLine.get('icons')||[]))};
+    routeLine.setOptions({
+      strokeOpacity:0,
+      icons:[{icon:{path:'M 0,-1 0,1',strokeOpacity:1,scale:3},offset:'0',repeat:'12px'}]
+    });
+  }
+  return {affectedMarkers,savedLabels,savedIcons,savedArrows,savedRoute};
 }
 function restoreNumberedPins(pinState){
   pinState.affectedMarkers.forEach((m,i)=>{
     m.marker.setLabel(pinState.savedLabels[i]);
     if(pinState.savedIcons[i]) m.marker.setIcon(pinState.savedIcons[i]);
+    if(m.arrow && pinState.savedArrows[i]){
+      m.arrow.setOptions({strokeColor:pinState.savedArrows[i].strokeColor, icons:pinState.savedArrows[i].icons});
+    }
   });
+  if(routeLine && pinState.savedRoute){
+    routeLine.setOptions({strokeOpacity:pinState.savedRoute.strokeOpacity, icons:pinState.savedRoute.icons});
+  }
 }
 
 // 地図部分(#map)だけを切り出した画面キャプチャを取得する。
