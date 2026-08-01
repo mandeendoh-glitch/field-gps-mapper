@@ -111,8 +111,8 @@
   .list-memo .memo-tag{font-size:9px;font-weight:700;color:var(--amber);letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px;}
   .list-memo .memo-text{font-size:11px;color:var(--text);line-height:1.4;}
   .list-memo .memo-time{font-size:9px;color:var(--dim);margin-top:2px;}
-  #project-modal,#settings-modal,#help-modal,#maplist-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1000;align-items:center;justify-content:center;}
-  #project-modal.show,#settings-modal.show,#help-modal.show,#maplist-modal.show{display:flex;}
+  #project-modal,#settings-modal,#help-modal,#maplist-modal,#xlsxchoice-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1000;align-items:center;justify-content:center;}
+  #project-modal.show,#settings-modal.show,#help-modal.show,#maplist-modal.show,#xlsxchoice-modal.show{display:flex;}
   .modal-box{background:white;border-radius:14px;padding:22px;width:360px;box-shadow:0 12px 40px rgba(26,30,38,.18);max-height:80vh;overflow-y:auto;}
   .modal-box h3{font-size:14px;font-weight:700;color:var(--text);margin-bottom:16px;}
   .modal-input{width:100%;height:34px;border:1px solid var(--border2);border-radius:8px;padding:0 12px;font-size:12px;outline:none;margin-bottom:10px;}
@@ -200,8 +200,7 @@
         <div class="tb-dropdown">
           <div class="tb-dd-item" onclick="exportKML()"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><path d="M12 3v12"/><polyline points="7 10 12 15 17 10"/><path d="M5 21h14"/></svg> KML出力</div>
           <div class="tb-dd-item" onclick="exportExcel()"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg> CSV出力</div>
-          <div class="tb-dd-item" onclick="exportXlsx()"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> 写真付きExcel出力</div>
-          <div class="tb-dd-item" onclick="exportGovernmentLedger()"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg> 工事写真台帳（国交省準拠）</div>
+          <div class="tb-dd-item" onclick="openXlsxChoiceModal()"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> 写真付きExcel出力</div>
           <div class="tb-dd-sep"></div>
           <div class="tb-dd-item" onclick="printReport()"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> 点検レポート印刷</div>
           <div class="tb-dd-item" onclick="captureScreenPrint()"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> 画面キャプチャして印刷</div>
@@ -358,6 +357,23 @@
     <div class="modal-btns">
       <button class="modal-btn modal-btn-cancel" onclick="closeSettingsModal()">キャンセル</button>
       <button class="modal-btn modal-btn-ok" onclick="applySettings()">適用</button>
+    </div>
+  </div>
+</div>
+<div id="xlsxchoice-modal">
+  <div class="modal-box" style="width:360px;">
+    <h3><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> 写真付きExcel出力</h3>
+    <div style="font-size:12px;color:var(--dim);margin-bottom:14px;">形式を選んでください</div>
+    <button class="modal-btn modal-btn-ok" style="width:100%;justify-content:flex-start;text-align:left;padding:12px 14px;height:auto;margin-bottom:8px;display:block;" onclick="closeXlsxChoiceModal();exportGovernmentLedger();">
+      <b>工事写真台帳（国交省準拠）</b><br>
+      <span style="font-weight:400;font-size:11px;opacity:.85;">写真＋工種／位置／撮影日時／摘要を並べた台帳形式</span>
+    </button>
+    <button class="modal-btn modal-btn-ok" style="width:100%;justify-content:flex-start;text-align:left;padding:12px 14px;height:auto;margin-bottom:14px;display:block;background:var(--green);" onclick="closeXlsxChoiceModal();exportMapListXlsx();">
+      <b>MAP＋一覧</b><br>
+      <span style="font-weight:400;font-size:11px;opacity:.85;">上部に地図、下部に写真一覧を1枚のExcelにまとめた形式</span>
+    </button>
+    <div class="modal-btns">
+      <button class="modal-btn modal-btn-cancel" onclick="closeXlsxChoiceModal()">キャンセル</button>
     </div>
   </div>
 </div>
@@ -1372,6 +1388,170 @@ async function captureScreenPrint(){
 }
 
 // ── MAP＋一覧の出力（現在表示中の範囲・写真だけを対象） ──────────
+// ── 写真付きExcel出力：形式選択モーダル ──────────────
+function openXlsxChoiceModal(){
+  if(!photos.length){showToast('先に写真を読み込んでください','err');return;}
+  document.getElementById('xlsxchoice-modal').classList.add('show');
+}
+function closeXlsxChoiceModal(){
+  document.getElementById('xlsxchoice-modal').classList.remove('show');
+}
+
+// ── MAP＋一覧（Excel）出力 ──────────────────────────
+// 上部にA4縦の最大幅に収まる地図画像(アプリのメニュー・サイドバーは含めない)、
+// その下に写真一覧(No./写真/案件/ファイル名/撮影日時/メモ)を1枚のExcelにまとめる。
+async function exportMapListXlsx(){
+  if(!map){showToast('先に写真を読み込んでください','err');return;}
+  const bounds=map.getBounds();
+  if(!bounds){showToast('地図の読み込みが完了していません','err');return;}
+
+  const inView=photos
+    .filter(p=>p.exif?.lat!=null)
+    .filter(p=>!p.projId || loadedProjectsMeta[p.projId]?.visible!==false)
+    .filter(p=>bounds.contains({lat:p.exif.lat,lng:p.exif.lng}))
+    .sort((a,b)=>(a.exif?.dateTime||'').localeCompare(b.exif?.dateTime||''));
+
+  if(!inView.length){showToast('表示範囲内にGPS付きの写真がありません','err');return;}
+
+  let mapDataUrl=null;
+  if(navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia){
+    showToast('地図画像を取得中...','ok');
+    // 自作のUI部品(地図種別ボタン・座標バー)とGoogle純正のフルスクリーンボタンを一時的に隠す
+    const mapTypeEl=document.getElementById('map-type');
+    const coordsEl=document.getElementById('coords-bar');
+    const prevMapTypeDisplay=mapTypeEl.style.display;
+    const prevCoordsDisplay=coordsEl.style.display;
+    mapTypeEl.style.display='none';
+    coordsEl.style.display='none';
+    map.setOptions({fullscreenControl:false});
+    await new Promise(r=>setTimeout(r,100));
+
+    try{
+      const stream=await navigator.mediaDevices.getDisplayMedia({
+        video:{displaySurface:'browser'}, preferCurrentTab:true, selfBrowserSurface:'include'
+      });
+      const track=stream.getVideoTracks()[0];
+      const video=document.createElement('video');
+      video.srcObject=stream; video.muted=true;
+      await video.play();
+      await new Promise(r=>setTimeout(r,200));
+
+      // キャプチャ映像の解像度と、実際のCSSピクセルのスケール比を求め、地図部分だけ切り出す
+      // (アプリの上部メニュー・右側の写真リストは#mapの外側にあるため、この切り出しで自動的に除外される)
+      const scaleX=video.videoWidth/window.innerWidth;
+      const scaleY=video.videoHeight/window.innerHeight;
+      const mapEl=document.getElementById('map');
+      const rect=mapEl.getBoundingClientRect();
+
+      const cropCanvas=document.createElement('canvas');
+      cropCanvas.width=Math.max(1,Math.round(rect.width*scaleX));
+      cropCanvas.height=Math.max(1,Math.round(rect.height*scaleY));
+      cropCanvas.getContext('2d').drawImage(
+        video,
+        rect.left*scaleX, rect.top*scaleY, rect.width*scaleX, rect.height*scaleY,
+        0, 0, cropCanvas.width, cropCanvas.height
+      );
+      track.stop(); stream.getTracks().forEach(t=>t.stop());
+      mapDataUrl=cropCanvas.toDataURL('image/png');
+    }catch(err){ /* キャンセルされた場合は地図なしで一覧のみのExcelにする */ }
+
+    mapTypeEl.style.display=prevMapTypeDisplay;
+    coordsEl.style.display=prevCoordsDisplay;
+    map.setOptions({fullscreenControl:true});
+  }
+
+  showToast('Excelを作成中...','ok');
+  if(typeof ExcelJS==='undefined'){
+    try{
+      await new Promise((resolve,reject)=>{
+        const s=document.createElement('script');
+        s.src='https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js';
+        s.onload=resolve; s.onerror=reject;
+        document.head.appendChild(s);
+      });
+    }catch(err){showToast('ライブラリ読み込みエラー','err');return;}
+  }
+
+  try{
+    const wb=new ExcelJS.Workbook();
+    const ws=wb.addWorksheet('点検記録');
+    ws.pageSetup={paperSize:9,orientation:'portrait',fitToWidth:1,fitToHeight:0,
+      margins:{left:0.4,right:0.4,top:0.5,bottom:0.5,header:0.3,footer:0.3}};
+    // 添付いただいたレイアウトの通り: No. / 写真 / 案件 / ファイル名 / 撮影日時 / メモ の6列構成
+    ws.columns=[
+      {key:'no',width:5},{key:'photo',width:20},{key:'proj',width:14},
+      {key:'name',width:26},{key:'dt',width:16},{key:'note',width:36},
+    ];
+
+    let r=1;
+    ws.mergeCells('A1:F1');
+    const titleCell=ws.getCell('A1');
+    titleCell.value=`案件名：${esc(inView[0]?.projLabel||'（未分類）')}`;
+    titleCell.font={bold:true,size:13};
+    titleCell.alignment={vertical:'middle'};
+    ws.getRow(1).height=24;
+    r=2;
+
+    const A4_USABLE_PX=700; // A4縦・余白を除いた使用可能幅の目安(96dpi換算)
+    if(mapDataUrl){
+      const img=new Image();
+      await new Promise(res=>{ img.onload=res; img.onerror=res; img.src=mapDataUrl; });
+      if(img.naturalWidth){
+        const fit=fitContain(img.naturalWidth,img.naturalHeight,A4_USABLE_PX,480);
+        const mapRowSpan=Math.max(2,Math.ceil(fit.height/18));
+        ws.mergeCells(r,1,r+mapRowSpan-1,6);
+        for(let rr=r; rr<r+mapRowSpan; rr++) ws.getRow(rr).height=18;
+        const resp=await fetch(mapDataUrl);
+        const buf=await resp.arrayBuffer();
+        const imgId=wb.addImage({buffer:buf,extension:'png'});
+        ws.addImage(imgId,{tl:{col:0,row:r-1},ext:{width:fit.width,height:fit.height}});
+        r += mapRowSpan+1;
+      }
+    }
+
+    const headRow=r;
+    ['No.','写真','案件','ファイル名','撮影日時','メモ'].forEach((h,i)=>{
+      const c=ws.getCell(headRow,i+1); c.value=h; c.font={bold:true};
+    });
+    ws.getRow(headRow).height=18;
+    r++;
+
+    for(let i=0;i<inView.length;i++){
+      const p=inView[i];
+      const rowIdx=r;
+      ws.getCell(rowIdx,1).value=i+1;
+      ws.getCell(rowIdx,3).value=p.projLabel||'未分類';
+      ws.getCell(rowIdx,4).value=p.name;
+      ws.getCell(rowIdx,5).value=p.exif?.dateTime||'';
+      ws.getCell(rowIdx,6).value=p.note||'';
+      ws.getCell(rowIdx,6).alignment={wrapText:true,vertical:'top'};
+      ws.getRow(rowIdx).height=62;
+
+      if(p.thumbUrl){
+        try{
+          const resp=await fetch(p.thumbUrl);
+          const srcBlob=await resp.blob();
+          const {buffer,width,height}=await resizeImageForExcel(srcBlob,1600,0.85);
+          const fit=fitContain(width,height,110,80);
+          const imgId=wb.addImage({buffer,extension:'jpeg'});
+          ws.addImage(imgId,{tl:{col:1,row:rowIdx-1},ext:fit});
+        }catch(err){ /* 画像取得失敗時はセルを空欄のまま残す */ }
+      }
+      r++;
+    }
+
+    const buffer=await wb.xlsx.writeBuffer();
+    const blob=new Blob([buffer],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;a.download=`写真付き報告書_${new Date().toISOString().slice(0,10)}.xlsx`;a.click();
+    URL.revokeObjectURL(url);
+    showToast(`MAP＋一覧のExcelを出力しました（${inView.length}件）`,'ok');
+  }catch(err){
+    showToast('出力に失敗しました','err');
+  }
+}
+
 function openMaplistModal(){
   if(!map){showToast('先に写真を読み込んでください','err');return;}
   document.getElementById('maplist-modal').classList.add('show');
