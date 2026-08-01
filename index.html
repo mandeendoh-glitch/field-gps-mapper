@@ -192,7 +192,7 @@
           <div class="tb-dd-item" onclick="toggleLayer('photos')">写真の詳細表示 ON/OFF</div>
           <div class="tb-dd-item" onclick="toggleLayer('arrows')">撮影方向 ON/OFF</div>
           <div class="tb-dd-item" onclick="toggleLayer('route')">作業動線 ON/OFF</div>
-          <div class="tb-dd-item" onclick="toggleLayer('memos')">しゃべメモ ON/OFF</div>
+          <div class="tb-dd-item" onclick="toggleLayer('memos')">写メモVoice ON/OFF</div>
         </div>
       </div>
       <div class="tb-item">
@@ -399,8 +399,8 @@
     <h3><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> 使い方・基本の流れ</h3>
     <div style="font-size:12.5px;color:var(--text);line-height:1.8;">
       <div style="margin-bottom:14px;">
-        <div style="font-weight:700;color:var(--orange);margin-bottom:3px;">① しゃべメモで現場を記録</div>
-        <div style="color:var(--dim);">スマホの「しゃべメモ」アプリで写真とメモを記録し、「データを保存する」でZIP形式のファイルを書き出します。</div>
+        <div style="font-weight:700;color:var(--orange);margin-bottom:3px;">① 写メモVoiceで現場を記録</div>
+        <div style="color:var(--dim);">スマホの「写メモVoice」アプリで写真とメモを記録し、「データを保存する」でZIP形式のファイルを書き出します。</div>
       </div>
       <div style="margin-bottom:14px;">
         <div style="font-weight:700;color:var(--orange);margin-bottom:3px;">② ZIPをこのPCに転送</div>
@@ -523,7 +523,7 @@ function parseEXIF(buf){
   const alt=gps[6]?(Array.isArray(gps[6])?gps[6][0]:gps[6]):null;
   let dir=gps[0x11]!==undefined?(Array.isArray(gps[0x11])?gps[0x11][0]:gps[0x11]):null;
 
-  // Exifサブ IFD（UserComment等）を読み取り、しゃべメモのメモ内容を復元する
+  // Exifサブ IFD（UserComment等）を読み取り、写メモVoiceのメモ内容を復元する
   let exifSub={};
   if(ifd0[0x8769]!==undefined){
     try{ exifSub=readIFD(ifd0[0x8769]); }catch(e){}
@@ -1076,7 +1076,7 @@ function renderList(){
   });
   memos.forEach((memo,mi)=>{
     const item=document.createElement('div');item.className='list-memo';
-    item.innerHTML=`<div class="memo-tag">しゃべメモ</div><div class="memo-text">${memo.text}</div><div class="memo-time">${memo.time}</div>`;
+    item.innerHTML=`<div class="memo-tag">写メモVoice</div><div class="memo-text">${memo.text}</div><div class="memo-time">${memo.time}</div>`;
     list.appendChild(item);count++;
   });
   document.getElementById('list-count').textContent=`${count}件`;
@@ -1746,7 +1746,7 @@ async function exportGovernmentLedger(){
       ws.getCell(r,3).value = p.exif?.dateTime || '';
       ws.getRow(r).height=20; r++;
 
-      // 摘要：しゃべメモの音声テキスト(識別子・数値・メモを結合済み)をそのまま表示
+      // 摘要：写メモVoiceの音声テキスト(識別子・数値・メモを結合済み)をそのまま表示
       let noteText=(p.note||'').trim();
       const truncated = noteText.length>240;
       if(truncated) noteText = noteText.slice(0,240);
