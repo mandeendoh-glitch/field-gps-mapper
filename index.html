@@ -1,4 +1,4 @@
-ｄ<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -37,29 +37,6 @@
   #spotlight-badge .sb-title{font-size:12.5px;font-weight:800;}
   #spotlight-badge .sb-sub{font-size:10.5px;color:var(--dim);margin-top:1px;}
   #spotlight-badge .sb-arrow{font-size:16px;color:var(--dim2);flex-shrink:0;}
-
-  #right-toggle{display:none;}
-
-  /* ── スマホ幅ではサイドバー（写真リスト）を既定で折りたたみ、地図をフル幅にする ── */
-  @media (max-width:700px){
-    #right{position:fixed;top:54px;right:0;bottom:0;width:82vw;max-width:320px;z-index:900;
-      box-shadow:-4px 0 20px rgba(0,0,0,.25);transform:translateX(100%);transition:transform .22s ease;}
-    #right.open{transform:translateX(0);}
-    #right-toggle{
-      display:flex;position:fixed;right:12px;bottom:14px;z-index:901;
-      width:44px;height:44px;border-radius:50%;background:var(--accent);color:#fff;
-      align-items:center;justify-content:center;font-size:18px;box-shadow:0 4px 14px rgba(0,0,0,.3);border:none;
-    }
-    #right-toggle .count-badge{position:absolute;top:-4px;right:-4px;background:var(--orange);color:#fff;font-size:9px;font-weight:800;border-radius:8px;padding:1px 5px;min-width:14px;text-align:center;}
-    /* 上部メニューは横スクロールではなく、折り返して複数行に収め、常時すべて見える状態にする */
-    #topbar{flex-wrap:wrap;height:auto;min-height:44px;padding:4px 6px;row-gap:2px;}
-    .tb-menu{height:auto;flex-wrap:wrap;row-gap:2px;width:100%;flex-basis:100%;}
-    .tb-item{height:auto;padding:4px 8px;}
-    .tb-dropdown{top:100%;}
-    .tb-logo{height:auto;padding:2px 8px;}
-    .tb-logo img{height:32px;}
-    #topbar > div[style*="padding:0 10px"]{flex-wrap:wrap;row-gap:4px;}
-  }
   .tb-logo{display:flex;align-items:center;padding:0 16px;height:100%;white-space:nowrap;}
   .tb-logo img{height:44px;width:auto;display:block;}
   .tb-menu{display:flex;height:100%;position:relative;align-items:center;flex-shrink:0;}
@@ -129,6 +106,28 @@
   .mt-btn:hover:not(.active){background:white;color:var(--text);}
   #coords-bar{position:absolute;bottom:0;left:0;right:0;height:22px;background:rgba(245,240,232,.92);border-top:1px solid var(--border);display:flex;align-items:center;padding:0 10px;gap:16px;font-size:10px;color:var(--dim);font-family:var(--mono);z-index:50;}
   #right{width:225px;flex-shrink:0;background:var(--panel2);display:flex;flex-direction:column;overflow:hidden;}
+  #right-toggle{display:none;}
+
+  /* ── スマホ幅ではサイドバー（写真リスト）を既定で折りたたみ、地図をフル幅にする ── */
+  @media (max-width:700px){
+    #right{position:fixed;top:54px;right:0;bottom:0;width:82vw;max-width:320px;z-index:900;
+      box-shadow:-4px 0 20px rgba(0,0,0,.25);transform:translateX(100%);transition:transform .22s ease;}
+    #right.open{transform:translateX(0);}
+    #right-toggle{
+      display:flex;position:fixed;right:12px;bottom:14px;z-index:901;
+      width:44px;height:44px;border-radius:50%;background:var(--accent);color:#fff;
+      align-items:center;justify-content:center;font-size:18px;box-shadow:0 4px 14px rgba(0,0,0,.3);border:none;
+    }
+    #right-toggle .count-badge{position:absolute;top:-4px;right:-4px;background:var(--orange);color:#fff;font-size:9px;font-weight:800;border-radius:8px;padding:1px 5px;min-width:14px;text-align:center;}
+    /* 上部メニューは横スクロールではなく、折り返して複数行に収め、常時すべて見える状態にする */
+    #topbar{flex-wrap:wrap;height:auto;min-height:44px;padding:4px 6px;row-gap:2px;}
+    .tb-menu{height:auto;flex-wrap:wrap;row-gap:2px;width:100%;flex-basis:100%;}
+    .tb-item{height:auto;padding:4px 8px;}
+    .tb-dropdown{top:100%;} /* 折り返しで各項目の縦位置が変わるため、固定値ではなく相対位置に */
+    .tb-logo{height:auto;padding:2px 8px;}
+    #topbar > div[style*="padding:0 10px"]{flex-wrap:wrap;row-gap:4px;}
+    .tb-logo img{height:32px;}
+  }
   #list-header{height:40px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 14px;font-size:11px;font-weight:700;color:var(--dim);letter-spacing:.04em;text-transform:uppercase;}
   #list-count{font-size:10px;color:var(--dim2);font-weight:400;}
   #photo-list{flex:1;overflow-y:auto;background:var(--panel2);padding:8px;}
@@ -151,8 +150,12 @@
   .list-memo .memo-tag{font-size:9px;font-weight:700;color:var(--amber);letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px;}
   .list-memo .memo-text{font-size:11px;color:var(--text);line-height:1.4;}
   .list-memo .memo-time{font-size:9px;color:var(--dim);margin-top:2px;}
-  #project-modal,#settings-modal,#help-modal,#maplist-modal,#xlsxchoice-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1000;align-items:center;justify-content:center;}
-  #project-modal.show,#settings-modal.show,#help-modal.show,#maplist-modal.show,#xlsxchoice-modal.show{display:flex;}
+  #project-modal,#settings-modal,#help-modal,#maplist-modal,#xlsxchoice-modal,#order-modal,#prohibited-add-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1000;align-items:center;justify-content:center;}
+  /* 受注案件モーダルは、開いている間もマップをクリックしてエリアを選べるようにするため、
+     背景オーバーレイのクリックを透過させ、パネル本体にだけクリックを効かせる（右側に寄せて表示） */
+  #order-modal{background:transparent;pointer-events:none;justify-content:flex-end;align-items:flex-start;padding:16px;}
+  #order-modal .modal-box{pointer-events:auto;box-shadow:0 8px 30px rgba(0,0,0,.35);}
+  #project-modal.show,#settings-modal.show,#help-modal.show,#maplist-modal.show,#xlsxchoice-modal.show,#order-modal.show,#prohibited-add-modal.show{display:flex;}
   .modal-box{background:white;border-radius:14px;padding:22px;width:360px;box-shadow:0 12px 40px rgba(26,30,38,.18);max-height:80vh;overflow-y:auto;}
   .modal-box h3{font-size:14px;font-weight:700;color:var(--text);margin-bottom:16px;}
   .modal-input{width:100%;height:34px;border:1px solid var(--border2);border-radius:8px;padding:0 12px;font-size:12px;outline:none;margin-bottom:10px;}
@@ -203,6 +206,9 @@
       </select>
       <input type="file" id="photoInput" multiple accept="image/jpeg,image/jpg" style="display:none" onchange="handlePhotos(this.files)"/>
       <input type="file" id="kmlInput" accept=".kml,.kmz" style="display:none" onchange="handleKML(this.files[0])"/>
+      <input type="file" id="areaExcelInput" accept=".xlsx,.xls" style="display:none" onchange="handleAreaExcel(this.files[0])"/>
+      <input type="file" id="areaCsvInput" accept=".csv,.txt" style="display:none" onchange="handleAreaExcel(this.files[0])"/>
+      <input type="file" id="achievementImportInput" accept=".json" style="display:none" onchange="handleImportAchievement(this.files[0])"/>
     </div>
     <!-- ▼テスト版ラベル（正式リリース時はこのdiv1つを削除するだけでOK） -->
     <div id="test-badge" style="font-size:10px;font-weight:700;color:var(--orange);background:rgba(192,96,16,.1);border:1px solid rgba(192,96,16,.3);border-radius:10px;padding:2px 9px;margin-left:8px;white-space:nowrap;">テスト版</div>
@@ -211,11 +217,14 @@
       <div class="tb-item">
         <span class="tb-item-label" onclick="event.stopPropagation();toggleMenu(this.parentElement)">ファイル</span>
         <div class="tb-dropdown">
-          <div class="tb-dd-item" onclick="document.getElementById('kmlInput').click()"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2H3z"/><path d="M3 7l1.5 11A2 2 0 0 0 6.5 20h11a2 2 0 0 0 2-2L21 9H3"/></svg> KMLを読み込む</div>
+          <div class="tb-dd-item" onclick="document.getElementById('kmlInput').click()"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2H3z"/><path d="M3 7l1.5 11A2 2 0 0 0 6.5 20h11a2 2 0 0 0 2-2L21 9H3"/></svg> KML/KMZを読み込む（境界線）</div>
+          <div class="tb-dd-item" onclick="document.getElementById('areaExcelInput').click()"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="9" x2="9" y2="21"/></svg> 世帯データ（Excel）を読み込む</div>
+          <div class="tb-dd-item" onclick="document.getElementById('areaCsvInput').click()"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="10" y1="12" x2="14" y2="12"/><line x1="10" y1="16" x2="14" y2="16"/></svg> 世帯データ（CSV）を読み込む</div>
+          <div class="tb-dd-item" onclick="openOrderModal()"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg> 受注案件・配布計画を管理</div>
+          <div class="tb-dd-item" onclick="toggleAddProhibitedMode()"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg> 配達禁止・苦情マーカーを地図で追加</div>
           <div class="tb-dd-sep"></div>
-          <div class="tb-dd-item" onclick="showProjectModal()"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg> プロジェクト管理</div>
-          <div class="tb-dd-item" onclick="saveProject()"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> プロジェクトを保存</div>
-          <div class="tb-dd-item" onclick="loadProjectList()"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2H3z"/><path d="M3 7l1.5 11A2 2 0 0 0 6.5 20h11a2 2 0 0 0 2-2L21 9H3"/></svg> プロジェクトを開く</div>
+          <div class="tb-dd-item" onclick="showProjectModal('load')"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2H3z"/><path d="M3 7l1.5 11A2 2 0 0 0 6.5 20h11a2 2 0 0 0 2-2L21 9H3"/></svg> プロジェクトを開く</div>
+          <div class="tb-dd-item" onclick="showProjectModal('save')"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> プロジェクトを保存</div>
           <div class="tb-dd-sep"></div>
           <div class="tb-dd-item" onclick="clearAll()"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> クリア</div>
         </div>
@@ -227,6 +236,8 @@
           <div class="tb-dd-item" onclick="toggleLayer('arrows')">撮影方向 ON/OFF</div>
           <div class="tb-dd-item" onclick="toggleLayer('route')">作業動線 ON/OFF</div>
           <div class="tb-dd-item" onclick="toggleLayer('memos')">写メモVoice ON/OFF</div>
+          <div class="tb-dd-sep"></div>
+          <div class="tb-dd-item" onclick="toggleLayer('boundary')">町丁目境界 ON/OFF</div>
         </div>
       </div>
       <div class="tb-item">
@@ -236,7 +247,8 @@
           <div class="tb-dd-item" onclick="exportExcel()"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg> CSV出力</div>
           <div class="tb-dd-item" onclick="openXlsxChoiceModal()"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> 写真付きExcel出力</div>
           <div class="tb-dd-sep"></div>
-          <div class="tb-dd-item" onclick="printReport()"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> 点検レポート印刷</div>
+          <div class="tb-dd-item" onclick="printDeliveryReport()"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> 配布レポート印刷（実績・受注案件ごと）</div>
+          <div class="tb-dd-item" onclick="printOrderPlan()"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/><line x1="9" y1="11" x2="15" y2="11"/></svg> 配布計画書を印刷（提案・社内資料用）</div>
           <div class="tb-dd-item" onclick="captureScreenPrint()"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> 画面キャプチャして印刷</div>
           <div class="tb-dd-item" onclick="openMaplistModal()"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg> 表示中の範囲で出力（地図＋一覧）</div>
         </div>
@@ -351,32 +363,115 @@
 </div>
 <div id="project-modal">
   <div class="modal-box" style="width:420px;">
-    <h3><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg> プロジェクト管理</h3>
-    <div style="font-size:11px;color:var(--dim);margin-bottom:4px;">案件名</div>
-    <input type="text" id="project-group-input" class="modal-input" placeholder="例：水島橋梁点検"/>
-    <div style="font-size:11px;color:var(--dim);margin-bottom:4px;">日付ラベル(省略可・空欄なら今日の日付)</div>
-    <input type="text" id="project-date-input" class="modal-input" placeholder="例：7/16 または 上部工"/>
-    <div style="font-size:11px;color:var(--dim);margin-bottom:4px;">タグ(カンマ区切り・省略可)</div>
-    <input type="text" id="project-tags-input" class="modal-input" placeholder="例：配筋, 要確認"/>
+    <h3 id="project-modal-title">プロジェクトを開く</h3>
+
+    <div id="project-save-fields" style="display:none;">
+      <div id="project-overwrite-banner" style="display:none;background:#FDF0E0;color:var(--orange);border:1px solid rgba(192,96,16,.3);border-radius:6px;padding:6px 10px;font-size:11px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
+        <span id="project-overwrite-banner-text"></span>
+        <span style="cursor:pointer;font-weight:700;" onclick="clearProjectOverwriteTarget()">選択解除 ×</span>
+      </div>
+      <div style="font-size:11px;color:var(--dim);margin-bottom:4px;">案件名</div>
+      <input type="text" id="project-group-input" class="modal-input" placeholder="例：水島橋梁点検"/>
+      <div style="font-size:11px;color:var(--dim);margin-bottom:4px;">日付ラベル(省略可・空欄なら今日の日付)</div>
+      <input type="text" id="project-date-input" class="modal-input" placeholder="例：7/16 または 上部工"/>
+      <div style="font-size:11px;color:var(--dim);margin-bottom:4px;">タグ(カンマ区切り・省略可)</div>
+      <input type="text" id="project-tags-input" class="modal-input" placeholder="例：配筋, 要確認"/>
+    </div>
 
     <div style="display:flex;gap:8px;margin:6px 0 12px;">
-      <input type="text" id="project-search-input" class="modal-input" placeholder="<svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> 案件名で検索" style="margin-bottom:0;flex:2;" oninput="renderProjectList()"/>
+      <input type="text" id="project-search-input" class="modal-input" placeholder="🔍 案件名で検索" style="margin-bottom:0;flex:2;" oninput="renderProjectList()"/>
       <select id="project-tag-filter" class="modal-input" style="margin-bottom:0;flex:1;" onchange="renderProjectList()">
         <option value="">タグ:すべて</option>
       </select>
     </div>
 
-    <div style="font-size:11px;color:var(--dim);margin-bottom:6px;">保存済みプロジェクト(チェックして複数選択できます)</div>
+    <div id="project-list-hint" style="font-size:11px;color:var(--dim);margin-bottom:6px;">読み込みたい案件にチェックを入れてください(複数選択可)</div>
     <div class="project-list" id="project-list" style="max-height:260px;"></div>
     <div class="modal-btns" style="justify-content:space-between;margin-top:10px;">
-      <button class="modal-btn" style="background:#E8F0FA;color:var(--accent);border:1px solid rgba(26,110,191,.3);font-weight:700;" onclick="loadSelectedProjects()"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg> 選択したものを地図に重ねて表示</button>
+      <button class="modal-btn" id="project-load-btn" style="background:#E8F0FA;color:var(--accent);border:1px solid rgba(26,110,191,.3);font-weight:700;" onclick="loadSelectedProjects()"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg> 開く</button>
       <div style="display:flex;gap:8px;">
         <button class="modal-btn modal-btn-cancel" onclick="closeProjectModal()">閉じる</button>
-        <button class="modal-btn modal-btn-ok" onclick="createProject()">新規作成・保存</button>
+        <button class="modal-btn" id="project-overwrite-btn" style="display:none;background:#FDF0E0;color:var(--orange);font-weight:700;" onclick="overwriteSelectedProject()">選択案件に上書き保存</button>
+        <button class="modal-btn modal-btn-ok" id="project-create-btn" style="display:none;" onclick="createProject()">新規作成・保存</button>
       </div>
     </div>
   </div>
 </div>
+<div id="order-modal">
+  <div class="modal-box" style="width:560px;max-height:82vh;overflow-y:auto;">
+    <h3><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg> 受注案件・配布計画</h3>
+
+    <div style="font-size:11px;color:var(--dim);margin-bottom:6px;">保存済みの受注案件</div>
+    <div id="order-list" style="max-height:140px;overflow-y:auto;border:1px solid rgba(0,0,0,.1);border-radius:8px;margin-bottom:12px;"></div>
+    <div class="modal-btns" style="justify-content:flex-start;margin-bottom:14px;">
+      <button class="modal-btn" style="background:#E8F0FA;color:var(--accent);" onclick="createOrder()">＋ 新規案件を作成</button>
+      <button class="modal-btn" style="background:#FDF0E0;color:var(--orange);" onclick="duplicateCurrentOrder()">📄 選択中の案件を複製</button>
+    </div>
+
+    <div id="order-detail" style="display:none;border-top:1px solid rgba(0,0,0,.1);padding-top:12px;">
+      <div style="font-size:11px;color:var(--dim);margin-bottom:4px;">案件名</div>
+      <input type="text" id="order-name-input" class="modal-input" placeholder="例：A社_大森中一丁目_2026年8月" oninput="saveCurrentOrderMeta()"/>
+      <div style="display:flex;gap:8px;">
+        <div style="flex:1;">
+          <div style="font-size:11px;color:var(--dim);margin-bottom:4px;">受注社名</div>
+          <input type="text" id="order-client-input" class="modal-input" placeholder="例：A社" oninput="saveCurrentOrderMeta()"/>
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:11px;color:var(--dim);margin-bottom:4px;">配布回（月次ラベル）</div>
+          <input type="text" id="order-round-input" class="modal-input" placeholder="例：2026年8月" oninput="saveCurrentOrderMeta()"/>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <div style="flex:1;">
+          <div style="font-size:11px;color:var(--dim);margin-bottom:4px;">配布員ID</div>
+          <input type="text" id="order-distid-input" class="modal-input" placeholder="例：dist-001" oninput="saveCurrentOrderMeta()"/>
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:11px;color:var(--dim);margin-bottom:4px;">配布員名</div>
+          <input type="text" id="order-distname-input" class="modal-input" placeholder="例：田中太郎" oninput="saveCurrentOrderMeta()"/>
+        </div>
+      </div>
+
+      <div style="font-size:11px;color:var(--dim);margin:10px 0 6px;">対象エリア・計画配布枚数（チェックしたエリアが配達指示データに含まれます。枚数は総務省データ由来の初期値を上書きできます）</div>
+      <div id="order-selection-total" style="background:#E8F0FA;border:1px solid rgba(26,110,191,.25);border-radius:8px;padding:8px 12px;margin-bottom:8px;font-size:13px;font-weight:800;color:var(--accent);display:flex;justify-content:space-between;align-items:center;">
+        <span>選択中エリアの合計配布枚数</span><span id="order-selection-total-value">0 枚（0エリア）</span>
+      </div>
+      <div id="order-area-list" style="max-height:220px;overflow-y:auto;border:1px solid rgba(0,0,0,.1);border-radius:8px;"></div>
+      <div style="font-size:10px;color:var(--dim2);margin-top:4px;">※エリアが表示されない場合は、先にKML/KMZ（境界線）を読み込んでください。</div>
+
+      <div id="order-achievement-summary" style="font-size:11px;color:var(--dim);margin-top:10px;"></div>
+
+      <div class="modal-btns" style="justify-content:space-between;margin-top:14px;">
+        <button class="modal-btn" style="background:#E8F5E9;color:var(--green);font-weight:700;" onclick="exportInstructionPackage()"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> 配達指示データを書き出す</button>
+        <button class="modal-btn" style="background:#F0F0FA;color:var(--purple);font-weight:700;" onclick="document.getElementById('achievementImportInput').click()"><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> 実績データを読み込む</button>
+      </div>
+    </div>
+
+    <div class="modal-btns" style="margin-top:14px;">
+      <button class="modal-btn modal-btn-cancel" onclick="closeOrderModal()">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<div id="prohibited-add-modal">
+  <div class="modal-box" style="width:360px;">
+    <h3>配達禁止・苦情マーカーを追加</h3>
+    <div style="font-size:11px;color:var(--dim);margin-bottom:4px;">種別</div>
+    <select id="prohibited-type-select" class="modal-input">
+      <option value="配達禁止">配達禁止</option>
+      <option value="苦情あり">苦情あり</option>
+      <option value="要注意">要注意</option>
+    </select>
+    <div style="font-size:11px;color:var(--dim);margin-bottom:4px;">メモ</div>
+    <textarea id="prohibited-memo-input" class="modal-input" rows="3" placeholder="「チラシお断り」の張り紙あり、など"></textarea>
+    <div style="font-size:10px;color:var(--dim2);margin-bottom:8px;">この情報は受注案件に関係なく、今後すべての配達員・配達回で共通表示されます。</div>
+    <div class="modal-btns">
+      <button class="modal-btn modal-btn-cancel" onclick="closeProhibitedAddModal()">キャンセル</button>
+      <button class="modal-btn modal-btn-ok" onclick="confirmAddProhibitedMarker()">登録</button>
+    </div>
+  </div>
+</div>
+
 <div id="settings-modal">
   <div class="modal-box">
     <h3><svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0;"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> 表示設定</h3>
@@ -520,7 +615,12 @@ function openFeedbackMail(kind){
 })();
 // ▲開発用バージョン表示ここまで
 let map=null, markers=[], kmlMarkers=[], photos=[], memos=[], activeIW=null, routeLine=null;
-let layers={photos:true,arrows:true,kml:true,memos:true,route:true};
+let kmlAreas=[], areaExcelData=null, areaExcelLabel='';
+// ── 受注案件管理（エリア共通データとは別に、受注社ごとに配布計画・実績を持つ）──
+let orders={}, currentOrderId=null;
+// ── 配達禁止・苦情マーカー（受注案件に属さない、エリア共通の永続データ）──
+let prohibitedMarkersMaster={}, prohibitedMarkerMapObjs=[], addProhibitedMode=false;
+let layers={photos:true,arrows:true,kml:true,memos:true,route:true,boundary:true};
 let editTargetIdx = null;
 
 function parseEXIF(buf){
@@ -622,23 +722,35 @@ function applySpotlightFromUrl(){
 }
 
 function loadMap(){
-  const old=document.getElementById('_gm');if(old)old.remove();
-  window.initMap=()=>{
-    document.getElementById('map-placeholder').style.display='none';
-    document.getElementById('map-type').style.display='flex';
-    map=new google.maps.Map(document.getElementById('map'),{
-      center:{lat:34.384,lng:132.790},zoom:15,mapTypeId:'roadmap',
-      mapTypeControl:false,streetViewControl:false,fullscreenControl:true,
-    });
-    map.addListener('mousemove',e=>{document.getElementById('coord-ll').textContent=`${e.latLng.lat().toFixed(6)}°N  ${e.latLng.lng().toFixed(6)}°E`;});
-    map.addListener('zoom_changed',()=>{document.getElementById('coord-zoom').textContent=`ズーム ${map.getZoom()}`;updateMarkerVisibility();updateArrows();});
-    if(photos.length>0)plotAll();
-    applySpotlightFromUrl(); // SNS投稿等からのリンクで、特定地点へジャンプ＋説明を表示する
-  };
-  const s=document.createElement('script');s.id='_gm';
-  s.src=`https://maps.googleapis.com/maps/api/js?key=${API_KEY}&callback=initMap`;
-  s.onerror=()=>showToast('地図の読み込みに失敗しました','err');
-  document.head.appendChild(s);
+  if(map)return Promise.resolve();
+  if(loadMap._pending)return loadMap._pending;
+  loadMap._pending=new Promise((resolve)=>{
+    const old=document.getElementById('_gm');if(old)old.remove();
+    window.initMap=()=>{
+      document.getElementById('map-placeholder').style.display='none';
+      document.getElementById('map-type').style.display='flex';
+      map=new google.maps.Map(document.getElementById('map'),{
+        center:{lat:35.681,lng:139.767},zoom:11,mapTypeId:'roadmap',
+        mapTypeControl:false,streetViewControl:false,fullscreenControl:true,
+      });
+      map.addListener('mousemove',e=>{document.getElementById('coord-ll').textContent=`${e.latLng.lat().toFixed(6)}°N  ${e.latLng.lng().toFixed(6)}°E`;});
+      map.addListener('zoom_changed',()=>{document.getElementById('coord-zoom').textContent=`ズーム ${map.getZoom()}`;updateMarkerVisibility();updateArrows();});
+      map.addListener('click',(e)=>{
+        if(addProhibitedMode)openProhibitedAddModal(e.latLng.lat(),e.latLng.lng());
+      });
+      if(photos.length>0)plotAll();
+      loadProhibitedMarkersMaster();
+      renderProhibitedMarkersOnMap();
+      restoreKmlAreasFromStorage();
+      applySpotlightFromUrl(); // SNS投稿等からのリンクで、特定地点へジャンプ＋説明を表示する
+      resolve();
+    };
+    const s=document.createElement('script');s.id='_gm';
+    s.src=`https://maps.googleapis.com/maps/api/js?key=${API_KEY}&libraries=geometry&callback=initMap`;
+    s.onerror=()=>{showToast('地図の読み込みに失敗しました','err');resolve();};
+    document.head.appendChild(s);
+  });
+  return loadMap._pending;
 }
 
 function toggleLeftPanel(){
@@ -660,8 +772,19 @@ function applySettings(){
   showToast('設定を適用しました','ok');
 }
 
-function showProjectModal(){
+let projectModalMode='load';
+function showProjectModal(mode){
+  projectModalMode=mode||'load';
   populateTagFilter();
+  clearProjectOverwriteTarget();
+  const isSave=projectModalMode==='save';
+  document.getElementById('project-modal-title').textContent=isSave?'プロジェクトを保存':'プロジェクトを開く';
+  document.getElementById('project-save-fields').style.display=isSave?'block':'none';
+  document.getElementById('project-load-btn').style.display=isSave?'none':'inline-flex';
+  document.getElementById('project-create-btn').style.display=isSave?'inline-flex':'none';
+  document.getElementById('project-list-hint').textContent=isSave
+    ?'項目をクリックすると、その案件に上書き保存できます'
+    :'読み込みたい案件にチェックを入れてください(複数選択可)';
   renderProjectList();
   document.getElementById('project-modal').classList.add('show');
 }
@@ -734,6 +857,50 @@ function saveProject(){
   linkFolderToProject(id);
 }
 
+// 「保存済みプロジェクト」の項目名クリックで、その案件を上書き保存の対象として選択する
+let projectOverwriteTargetId=null;
+function selectProjectForOverwrite(id){
+  const projects=getProjects();
+  const p=projects[id];
+  if(!p)return;
+  projectOverwriteTargetId=id;
+  document.getElementById('project-group-input').value=p.group||'';
+  document.getElementById('project-date-input').value=p.dateLabel||'';
+  document.getElementById('project-tags-input').value=(p.tags||[]).join(', ');
+  document.getElementById('project-overwrite-banner').style.display='flex';
+  document.getElementById('project-overwrite-banner-text').textContent=`「${p.group} / ${p.dateLabel}」を選択中`;
+  document.getElementById('project-overwrite-btn').style.display='inline-flex';
+  renderProjectList();
+}
+function clearProjectOverwriteTarget(){
+  projectOverwriteTargetId=null;
+  document.getElementById('project-overwrite-banner').style.display='none';
+  document.getElementById('project-overwrite-btn').style.display='none';
+  document.getElementById('project-group-input').value='';
+  document.getElementById('project-date-input').value='';
+  document.getElementById('project-tags-input').value='';
+  renderProjectList();
+}
+function overwriteSelectedProject(){
+  if(!projectOverwriteTargetId){showToast('上書きする案件を選択してください','err');return;}
+  const group=document.getElementById('project-group-input').value.trim();
+  if(!group){showToast('案件名を入力してください','err');return;}
+  const dateLabel=document.getElementById('project-date-input').value.trim()||new Date().toLocaleDateString('ja-JP');
+  const tags=document.getElementById('project-tags-input').value.split(',').map(t=>t.trim()).filter(Boolean);
+  const projects=getProjects();
+  const existing=projects[projectOverwriteTargetId];
+  if(!existing){showToast('対象の案件が見つかりません','err');return;}
+  projects[projectOverwriteTargetId]={
+    ...existing, group, dateLabel, tags, date:new Date().toISOString(),
+    photos:photos.map(p=>({name:p.name,exif:p.exif,note:p.note})), memos
+  };
+  localStorage.setItem('fgm_projects',JSON.stringify(projects));
+  populateTagFilter();
+  clearProjectOverwriteTarget();
+  renderProjectList();
+  showToast(`「${group} / ${dateLabel}」に上書き保存しました`,'ok');
+}
+
 function createProject(){
   const group=document.getElementById('project-group-input').value.trim();
   if(!group){showToast('案件名を入力してください','err');return;}
@@ -747,6 +914,9 @@ function createProject(){
   document.getElementById('project-group-input').value='';
   document.getElementById('project-date-input').value='';
   document.getElementById('project-tags-input').value='';
+  projectOverwriteTargetId=null;
+  document.getElementById('project-overwrite-banner').style.display='none';
+  document.getElementById('project-overwrite-btn').style.display='none';
   populateTagFilter();
   renderProjectList();
   showToast(`「${group} / ${dateLabel}」を保存しました`,'ok');
@@ -754,7 +924,7 @@ function createProject(){
 }
 
 function loadProjectList(){
-  showProjectModal();
+  showProjectModal('load');
 }
 
 function getProjects(){
@@ -798,12 +968,17 @@ function renderProjectList(){
     list.appendChild(groupHead);
     items.forEach(p=>{
       const item=document.createElement('div');item.className='project-item';
+      const isOverwriteTarget=p.id===projectOverwriteTargetId;
+      if(isOverwriteTarget)item.style.cssText='background:#FDF0E0;border:1px solid rgba(192,96,16,.4);border-radius:6px;';
       const tagsHtml=(p.tags||[]).map(t=>`<span style="font-size:9px;background:#EEE;color:#666;border-radius:3px;padding:1px 5px;margin-right:3px;">${esc(t)}</span>`).join('');
+      const isSave=projectModalMode==='save';
+      const checkboxHtml=isSave?'':`<input type="checkbox" class="project-check" value="${p.id}" onclick="event.stopPropagation()">`;
+      const rowClickAttr=isSave?`onclick="selectProjectForOverwrite('${p.id}')"`:'';
       item.innerHTML=`
         <label style="display:flex;align-items:center;gap:8px;flex:1;cursor:pointer;">
-          <input type="checkbox" class="project-check" value="${p.id}" onclick="event.stopPropagation()">
-          <div>
-            <div style="font-weight:600;">${esc(p.dateLabel)}</div>
+          ${checkboxHtml}
+          <div ${rowClickAttr} style="${isSave?'cursor:pointer;':''}">
+            <div style="font-weight:600;">${esc(p.dateLabel)}${isOverwriteTarget?' <span style="color:var(--orange);font-size:10px;">（上書き対象）</span>':''}</div>
             <div style="font-size:10px;color:var(--dim);">${p.photos?.length||0}枚 ${tagsHtml}</div>
           </div>
         </label>
@@ -817,15 +992,22 @@ async function loadSelectedProjects(){
   const checked=[...document.querySelectorAll('.project-check:checked')].map(c=>c.value);
   if(!checked.length){showToast('プロジェクトを選択してください','err');return;}
   closeProjectModal();
-  if(!map)loadMap();
+  await loadMap();
+  const beforeCount=photos.length;
   let totalLoaded=0,totalExpected=0;
   for(const id of checked){
     const res=await loadProjectById(id);
     totalLoaded+=res.loaded;totalExpected+=res.expected;
   }
   updateStats();renderList();renderLoadedProjectsSidebar();
-  if(map)plotAll();
-  showToast(`${checked.length}件のプロジェクトを読み込みました（写真 ${totalLoaded}/${totalExpected}枚）`,'ok');
+  plotAll();
+  const newlyLoaded=photos.slice(beforeCount);
+  const hasGps=newlyLoaded.some(p=>p.exif?.lat);
+  if(newlyLoaded.length>0&&!hasGps){
+    showToast(`${checked.length}件読み込みました（写真 ${totalLoaded}/${totalExpected}枚／位置情報付きの写真が無いため地図は移動しません）`,'ok');
+  }else{
+    showToast(`${checked.length}件のプロジェクトを読み込みました（写真 ${totalLoaded}/${totalExpected}枚）`,'ok');
+  }
 }
 
 // 現在地図上に読み込まれているプロジェクトの一覧（表示ON/OFF管理用）
@@ -941,23 +1123,909 @@ async function handlePhotos(files){
   showToast(`${res.length}枚読込（GPS付き:${res.filter(p=>p.exif?.lat!==null).length}枚）`,'ok');
 }
 
+// KMLの<coordinates>本文（"lng,lat,alt lng,lat,alt ..."）をGoogle Maps用のLatLng配列に変換
+function parseKmlLinearRing(text){
+  return (text||'').trim().split(/\s+/).map(triplet=>{
+    const parts=triplet.split(',');
+    const lng=parseFloat(parts[0]), lat=parseFloat(parts[1]);
+    return {lat,lng};
+  }).filter(p=>!isNaN(p.lat)&&!isNaN(p.lng));
+}
+function computeCentroid(path){
+  let lat=0,lng=0;
+  path.forEach(p=>{lat+=p.lat;lng+=p.lng;});
+  return {lat:lat/path.length,lng:lng/path.length};
+}
+
+// PlacemarkのExtendedData/SchemaData/SimpleDataを{name:value}のオブジェクトに変換
+function extractExtendedData(pm){
+  const data={};
+  pm.querySelectorAll('ExtendedData SimpleData').forEach(sd=>{
+    const key=sd.getAttribute('name');
+    if(key)data[key]=sd.textContent?.trim()||'';
+  });
+  return data;
+}
+
+// 世帯数に応じた5段階の階級区分色（jSTAT MAP風、薄黄色→濃い赤）
+const AREA_COLOR_SCALE=[
+  {max:500, color:'#FFF7BC'},
+  {max:1000,color:'#FEC44F'},
+  {max:1500,color:'#FE9929'},
+  {max:2000,color:'#D95F0E'},
+  {max:Infinity,color:'#993404'}
+];
+function getAreaColor(setaiNum){
+  if(setaiNum===null||isNaN(setaiNum))return '#C9C2B4'; // データなし＝グレー
+  const hit=AREA_COLOR_SCALE.find(s=>setaiNum<=s.max);
+  return hit?hit.color:'#993404';
+}
+
+// KEY_CODEをキーにExcel実データ（読込済みの場合）を取得
+function lookupExcelArea(keyCode){
+  if(!areaExcelData||!keyCode)return null;
+  return areaExcelData[keyCode]||null;
+}
+
+// 境界ポリゴンのInfoWindow内容を構築（Excel内訳が読み込まれていれば追加表示、無くてもKMLのみで人口・世帯数を表示）
+function buildAreaInfoContent(area){
+  const setaiDisp=area.setai!==null?`${area.setai.toLocaleString()} 世帯`:'—';
+  const jinkoDisp=area.jinko!==null?`${area.jinko.toLocaleString()} 人`:'—';
+  const ex=lookupExcelArea(area.keyCode);
+  let exHtml='';
+  if(ex){
+    exHtml=`<div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(0,0,0,.08);font-size:11px;color:#1A1E26;">
+      <div style="font-weight:700;color:#C06010;margin-bottom:4px;">住宅の建て方別世帯数（e-Stat）</div>
+      <div style="display:grid;grid-template-columns:1fr auto;gap:2px 10px;">
+        <span style="color:#6A7888;">主世帯数</span><span style="font-weight:700;">${ex.total?.toLocaleString()??'—'}</span>
+        <span style="color:#6A7888;">一戸建</span><span>${ex.detached?.toLocaleString()??'—'}</span>
+        <span style="color:#6A7888;">長屋建</span><span>${ex.row?.toLocaleString()??'—'}</span>
+        <span style="color:#6A7888;">共同住宅計</span><span>${ex.apartment?.toLocaleString()??'—'}</span>
+        <span style="color:#9AAABB;font-size:10px;">　1-2階建</span><span style="font-size:10px;color:#9AAABB;">${ex.apt1_2?.toLocaleString()??'—'}</span>
+        <span style="color:#9AAABB;font-size:10px;">　3-5階建</span><span style="font-size:10px;color:#9AAABB;">${ex.apt3_5?.toLocaleString()??'—'}</span>
+        <span style="color:#9AAABB;font-size:10px;">　6-10階建</span><span style="font-size:10px;color:#9AAABB;">${ex.apt6_10?.toLocaleString()??'—'}</span>
+        <span style="color:#9AAABB;font-size:10px;">　11階建以上</span><span style="font-size:10px;color:#9AAABB;">${ex.apt11up?.toLocaleString()??'—'}</span>
+      </div>
+    </div>`;
+  }else if(areaExcelData){
+    exHtml=`<div style="margin-top:6px;font-size:10px;color:#9AAABB;">※このエリアはExcelデータに一致なし</div>`;
+  }
+  return `<div style="background:#fff;color:#1A1E26;padding:10px 14px;border-radius:6px;min-width:200px;max-width:260px;font-family:sans-serif;font-size:12px;border-left:3px solid ${area.color};">
+    <div style="font-weight:700;color:#1A1E26;margin-bottom:3px;font-size:13px;">${esc(area.name)}</div>
+    <div style="font-size:10px;color:#9AAABB;margin-bottom:6px;">${esc(area.cityName)}　国勢調査（令和2年）</div>
+    <div style="display:grid;grid-template-columns:1fr auto;gap:2px 10px;font-size:12px;">
+      <span style="color:#6A7888;">人口</span><span style="font-weight:700;">${jinkoDisp}</span>
+      <span style="color:#6A7888;">世帯数</span><span style="font-weight:700;">${setaiDisp}</span>
+    </div>
+    ${exHtml}
+  </div>`;
+}
+
+// KMZ（zip圧縮されたKML）展開用にJSZipを動的ロード
+function ensureJSZip(){
+  return new Promise((resolve,reject)=>{
+    if(typeof JSZip!=='undefined'){resolve();return;}
+    const s=document.createElement('script');
+    s.src='https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+    s.onload=resolve;
+    s.onerror=()=>reject(new Error('JSZip読み込みエラー'));
+    document.head.appendChild(s);
+  });
+}
+async function extractKmlFromKmz(file){
+  const buf=await file.arrayBuffer();
+  const zip=await JSZip.loadAsync(buf);
+  const kmlEntry=Object.values(zip.files).find(f=>!f.dir&&f.name.toLowerCase().endsWith('.kml'));
+  if(!kmlEntry)return null;
+  return await kmlEntry.async('string');
+}
+
 async function handleKML(file){
   if(!file)return;
-  const text=await file.text();
+  let text;
+  const isKmz=/\.kmz$/i.test(file.name);
+  if(isKmz){
+    showToast('KMZ展開中...','ok');
+    try{
+      await ensureJSZip();
+      text=await extractKmlFromKmz(file);
+    }catch(err){
+      console.error(err);
+      showToast('KMZの展開に失敗しました','err');
+      return;
+    }
+    if(!text){showToast('KMZ内にKMLファイルが見つかりません','err');return;}
+  }else{
+    text=await file.text();
+  }
   const doc=new DOMParser().parseFromString(text,'text/xml');
+  // 複数の区・市のKMLを順番に読み込んでも、既存の境界データを消さずに積み上げられるようにする
+  // （同じ町丁目コードが再度読み込まれた場合のみ、その区画を新しいデータで置き換える）
   kmlMarkers.forEach(m=>{m.marker?.setMap(null);m.iw?.close();});kmlMarkers=[];
+
   doc.querySelectorAll('Placemark').forEach(pm=>{
-    const name=pm.querySelector('name')?.textContent||'管理点';
-    const coords=pm.querySelector('Point coordinates')?.textContent?.trim();
-    if(!coords||!map)return;
-    const[lng,lat]=coords.split(',').map(Number);
-    if(isNaN(lat)||isNaN(lng))return;
-    const marker=new google.maps.Marker({position:{lat,lng},map:layers.kml?map:null,icon:{path:google.maps.SymbolPath.CIRCLE,fillColor:'#6858C0',fillOpacity:.85,strokeColor:'#fff',strokeWeight:2,scale:7},title:name,zIndex:5});
-    const iw=new google.maps.InfoWindow({content:`<div style="background:#fff;color:#1A1E26;padding:10px 14px;border-radius:6px;min-width:140px;font-family:sans-serif;font-size:12px;border-left:3px solid #6858C0;"><div style="font-weight:700;color:#6858C0;margin-bottom:3px;">${name}</div><div style="font-size:10px;color:#6A7888;">KML管理点</div></div>`});
-    marker.addListener('click',()=>{if(activeIW)activeIW.close();iw.open(map,marker);activeIW=iw;});
-    kmlMarkers.push({marker,iw});
+    const polygonEls=pm.querySelectorAll('Polygon');
+    if(polygonEls.length){
+      // 境界ポリゴン（jSTAT MAP等の町丁・字境界データ）
+      if(!map)return;
+      const paths=[];
+      polygonEls.forEach(poly=>{
+        const outerText=poly.querySelector('outerBoundaryIs LinearRing coordinates')?.textContent;
+        const outer=parseKmlLinearRing(outerText);
+        if(outer.length)paths.push(outer);
+        poly.querySelectorAll('innerBoundaryIs LinearRing coordinates').forEach(innerEl=>{
+          const inner=parseKmlLinearRing(innerEl.textContent);
+          if(inner.length)paths.push(inner);
+        });
+      });
+      if(!paths.length)return;
+
+      const ext=extractExtendedData(pm);
+      // KEY_CODEは数値扱いされ末尾ゼロが欠落することがある（例:「福富町西通」等）ため、
+      // PREF+CITY+S_AREAから再構成した値を優先し、無ければ元のKEY_CODEを使う
+      const rebuiltKeyCode=(ext.PREF&&ext.CITY&&ext.S_AREA)?(ext.PREF+ext.CITY.padStart(3,'0')+ext.S_AREA.padStart(6,'0')):'';
+      const keyCode=(rebuiltKeyCode&&rebuiltKeyCode.length===11)?rebuiltKeyCode:(ext.KEY_CODE||'');
+
+      // 同じ町丁目コードが既に読み込まれていれば、その古いデータだけを消して新しいものに置き換える
+      const existingIdx=kmlAreas.findIndex(a=>a.keyCode===keyCode);
+      if(existingIdx>=0){
+        const old=kmlAreas[existingIdx];
+        old.polygon?.setMap(null);old.label?.setMap(null);old.iw?.close();
+        kmlAreas.splice(existingIdx,1);
+      }
+
+      const name=ext.S_NAME||pm.querySelector('n,name')?.textContent||'（名称不明）';
+      const cityName=[ext.PREF_NAME,ext.CITY_NAME].filter(Boolean).join('');
+      const jinko=ext.JINKO!==undefined&&ext.JINKO!==''?Number(ext.JINKO):null;
+      const setai=ext.SETAI!==undefined&&ext.SETAI!==''?Number(ext.SETAI):null;
+
+      // 世帯数はExcelが読み込まれていればその主世帯数を優先、無ければKML自体のSETAIを使う
+      const exData=lookupExcelArea(keyCode);
+      const colorBasis=exData?.total??setai;
+      const color=getAreaColor(colorBasis);
+
+      const polygon=new google.maps.Polygon({
+        paths,
+        map:layers.boundary?map:null,
+        strokeColor:'#8080FF',strokeOpacity:.9,strokeWeight:1.5,
+        fillColor:color,fillOpacity:.45,
+        zIndex:2
+      });
+
+      const area={keyCode,name,cityName,jinko,setai,color,polygon,iw:null,label:null};
+      const iw=new google.maps.InfoWindow({content:buildAreaInfoContent(area)});
+      area.iw=iw;
+
+      // マップ上に常時、世帯数（受注案件編集中はその案件の計画枚数）を数字で表示する
+      const centroid=computeCentroid(paths[0]);
+      const label=new google.maps.Marker({
+        position:centroid, map:layers.boundary?map:null, zIndex:3,
+        icon:{path:google.maps.SymbolPath.CIRCLE,scale:0,fillOpacity:0,strokeOpacity:0},
+        label:{text:colorBasis!=null?String(colorBasis):'—',color:'#1A1E26',fontSize:'12px',fontWeight:'800'}
+      });
+      area.label=label;
+
+      polygon.addListener('click',(e)=>{
+        // 受注案件・配布計画モーダルを開いている間は、マップのエリアをクリックすることで
+        // 対象エリアの選択/解除ができる（地理感がなくても地図を見ながら選べるようにするため）
+        if(document.getElementById('order-modal').classList.contains('show')&&currentOrderId&&orders[currentOrderId]){
+          const o=orders[currentOrderId];
+          const nowChecked=!(o.areaKeyCodes||[]).includes(area.keyCode);
+          toggleOrderArea(area.keyCode,nowChecked);
+          renderOrderAreaList();
+          showToast(`${area.name}を${nowChecked?'対象に追加':'対象から除外'}しました`);
+          return;
+        }
+        if(activeIW)activeIW.close();
+        iw.setPosition(e.latLng);
+        iw.open(map);
+        activeIW=iw;
+      });
+      label.addListener('click',()=>google.maps.event.trigger(polygon,'click',{latLng:label.getPosition()}));
+      kmlAreas.push(area);
+    }else{
+      // 従来型：管理点（Point）
+      const name=pm.querySelector('name')?.textContent||'管理点';
+      const coords=pm.querySelector('Point coordinates')?.textContent?.trim();
+      if(!coords||!map)return;
+      const[lng,lat]=coords.split(',').map(Number);
+      if(isNaN(lat)||isNaN(lng))return;
+      const marker=new google.maps.Marker({position:{lat,lng},map:layers.kml?map:null,icon:{path:google.maps.SymbolPath.CIRCLE,fillColor:'#6858C0',fillOpacity:.85,strokeColor:'#fff',strokeWeight:2,scale:7},title:name,zIndex:5});
+      const iw=new google.maps.InfoWindow({content:`<div style="background:#fff;color:#1A1E26;padding:10px 14px;border-radius:6px;min-width:140px;font-family:sans-serif;font-size:12px;border-left:3px solid #6858C0;"><div style="font-weight:700;color:#6858C0;margin-bottom:3px;">${name}</div><div style="font-size:10px;color:#6A7888;">KML管理点</div></div>`});
+      marker.addListener('click',()=>{if(activeIW)activeIW.close();iw.open(map,marker);activeIW=iw;});
+      kmlMarkers.push({marker,iw});
+    }
   });
-  showToast(`KML読込完了（${kmlMarkers.length}地点）`,'ok');
+
+  // 境界ポリゴンが1件以上あれば、その範囲に地図をフィットさせる
+  if(kmlAreas.length&&map){
+    const bounds=new google.maps.LatLngBounds();
+    kmlAreas.forEach(a=>a.polygon.getPaths().forEach(path=>path.forEach(pt=>bounds.extend(pt))));
+    map.fitBounds(bounds,{padding:40});
+  }
+
+  const parts=[];
+  if(kmlMarkers.length)parts.push(`地点${kmlMarkers.length}件`);
+  if(kmlAreas.length)parts.push(`境界${kmlAreas.length}区画`);
+  showToast(`KML読込完了（${parts.join('／')||'0件'}）`,'ok');
+  loadProhibitedMarkersMaster();
+  renderProhibitedMarkersOnMap();
+  saveKmlAreasToStorage();
+}
+
+// ── 境界データ（KML）・世帯データ（Excel/CSV）の自動保存・自動復元 ──
+// 「エリアデータは受注案件から独立した共通データ」という設計方針に基づき、
+// 個々のプロジェクト保存とは別枠で、常にブラウザに保持し次回起動時にも自動で復元する。
+// エリア（境界線・世帯データ）だけをリセットする。配達禁止・苦情マーカーは業者の資産データのため対象外。
+function resetKmlAreaData(){
+  if(!kmlAreas.length&&!areaExcelData){showToast('リセットするエリアデータがありません','err');return;}
+  if(!confirm('境界線・世帯データをリセットします。受注案件・配達禁止マーカーは削除されません。よろしいですか？'))return;
+  kmlAreas.forEach(a=>{a.polygon?.setMap(null);a.label?.setMap(null);a.iw?.close();});
+  kmlAreas=[];
+  areaExcelData=null;
+  areaExcelLabel='';
+  localStorage.removeItem('fgm_kml_areas');
+  localStorage.removeItem('fgm_area_excel_data');
+  localStorage.removeItem('fgm_area_excel_label');
+  showToast('境界線・世帯データをリセットしました','ok');
+}
+
+function saveKmlAreasToStorage(){
+  const serialized=kmlAreas.map(a=>{
+    const paths=[];
+    a.polygon.getPaths().forEach(p=>{const arr=[];p.forEach(pt=>arr.push([pt.lat(),pt.lng()]));paths.push(arr);});
+    return{keyCode:a.keyCode,name:a.name,cityName:a.cityName,jinko:a.jinko,setai:a.setai,paths};
+  });
+  try{localStorage.setItem('fgm_kml_areas',JSON.stringify(serialized));}catch(e){console.error('KMLエリアの保存に失敗',e);}
+}
+function saveAreaExcelDataToStorage(){
+  try{
+    localStorage.setItem('fgm_area_excel_data',JSON.stringify(areaExcelData||null));
+    localStorage.setItem('fgm_area_excel_label',areaExcelLabel||'');
+  }catch(e){console.error('世帯データの保存に失敗',e);}
+}
+function restoreKmlAreasFromStorage(){
+  if(!map)return;
+  let serialized;
+  try{serialized=JSON.parse(localStorage.getItem('fgm_kml_areas')||'null');}catch(e){serialized=null;}
+  if(!serialized||!serialized.length)return;
+
+  try{areaExcelData=JSON.parse(localStorage.getItem('fgm_area_excel_data')||'null');}catch(e){areaExcelData=null;}
+  areaExcelLabel=localStorage.getItem('fgm_area_excel_label')||'';
+
+  kmlAreas.forEach(a=>{a.polygon?.setMap(null);a.label?.setMap(null);a.iw?.close();});
+  kmlAreas=[];
+
+  serialized.forEach(a=>{
+    const paths=a.paths.map(ring=>ring.map(([lat,lng])=>({lat,lng})));
+    const exData=lookupExcelArea(a.keyCode);
+    const colorBasis=exData?.total??a.setai;
+    const color=getAreaColor(colorBasis);
+    const polygon=new google.maps.Polygon({
+      paths,map:layers.boundary?map:null,
+      strokeColor:'#8080FF',strokeOpacity:.9,strokeWeight:1.5,
+      fillColor:color,fillOpacity:.45,zIndex:2
+    });
+    const area={keyCode:a.keyCode,name:a.name,cityName:a.cityName,jinko:a.jinko,setai:a.setai,color,polygon,iw:null,label:null};
+    const iw=new google.maps.InfoWindow({content:buildAreaInfoContent(area)});
+    area.iw=iw;
+    const centroid=computeCentroid(paths[0]);
+    const label=new google.maps.Marker({
+      position:centroid,map:layers.boundary?map:null,zIndex:3,
+      icon:{path:google.maps.SymbolPath.CIRCLE,scale:0,fillOpacity:0,strokeOpacity:0},
+      label:{text:colorBasis!=null?String(colorBasis):'—',color:'#1A1E26',fontSize:'12px',fontWeight:'800'}
+    });
+    area.label=label;
+    polygon.addListener('click',(e)=>{
+      if(document.getElementById('order-modal').classList.contains('show')&&currentOrderId&&orders[currentOrderId]){
+        const o=orders[currentOrderId];
+        const nowChecked=!(o.areaKeyCodes||[]).includes(area.keyCode);
+        toggleOrderArea(area.keyCode,nowChecked);
+        renderOrderAreaList();
+        showToast(`${area.name}を${nowChecked?'対象に追加':'対象から除外'}しました`);
+        return;
+      }
+      if(activeIW)activeIW.close();
+      iw.setPosition(e.latLng);
+      iw.open(map);
+      activeIW=iw;
+    });
+    label.addListener('click',()=>google.maps.event.trigger(polygon,'click',{latLng:label.getPosition()}));
+    kmlAreas.push(area);
+  });
+
+  // 復元した境界データの範囲に地図を移動させる（これが無いと、地図は初期値の位置のまま動かない）
+  if(kmlAreas.length){
+    const bounds=new google.maps.LatLngBounds();
+    kmlAreas.forEach(a=>a.polygon.getPaths().forEach(path=>path.forEach(pt=>bounds.extend(pt))));
+    map.fitBounds(bounds,{padding:40});
+  }
+
+  loadProhibitedMarkersMaster();
+  renderProhibitedMarkersOnMap();
+  showToast(`前回の境界データを復元しました（${kmlAreas.length}区画）`,'ok');
+}
+
+// 境界ポリゴンにExcel世帯データを反映（色の塗り直し・開いているInfoWindowの更新）
+function refreshAreaColorsAndInfo(){
+  kmlAreas.forEach(area=>{
+    const exData=lookupExcelArea(area.keyCode);
+    const colorBasis=exData?.total??area.setai;
+    area.color=getAreaColor(colorBasis);
+    area.polygon.setOptions({fillColor:area.color});
+    area.iw.setContent(buildAreaInfoContent(area));
+  });
+  refreshAllAreaMapStyles();
+}
+
+// ── Excel（e-Stat「住宅の建て方別世帯数」等）読み込み・KEY_CODEでの境界データ連携 ──
+function ensureExcelJS(cb){
+  if(typeof ExcelJS!=='undefined'){cb();return;}
+  const s=document.createElement('script');
+  s.src='https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js';
+  s.onload=cb;
+  s.onerror=()=>showToast('ライブラリ読み込みエラー','err');
+  document.head.appendChild(s);
+}
+
+async function handleAreaExcel(file){
+  if(!file)return;
+  // 拡張子だけに頼らず、ファイル先頭のバイト列（マジックナンバー）で実体を判定する。
+  // e-Statのダウンロードでは「拡張子は.xlsだが中身はCSV(テキスト)」というファイルが実際にあるため。
+  // 正規のxlsx/xls(いずれもZIPまたはOLE複合文書形式)は先頭が 'PK'(0x50,0x4B) または OLEシグネチャで始まる。
+  const head=new Uint8Array(await file.slice(0,4).arrayBuffer());
+  const isRealZipOrOle=(head[0]===0x50&&head[1]===0x4B)||(head[0]===0xD0&&head[1]===0xCF);
+  if(isRealZipOrOle){
+    showToast('Excel読込中...','ok');
+    ensureExcelJS(()=>_doHandleAreaExcel(file));
+  }else{
+    showToast('データ読込中...','ok');
+    _doHandleAreaCsv(file); // 拡張子が.xls/.xlsxでも、中身がテキストならCSVとして解析する
+  }
+}
+
+// 見出し文字列から列番号を特定（列順・表記ゆれが変わっても対応できるよう名前で探索。共通ロジック）
+function buildAreaColumnFinder(headerRow){
+  return (labelList)=>{
+    for(let i=0;i<headerRow.length;i++){
+      const v=headerRow[i];
+      if(v&&labelList.some(l=>v.includes(l)))return i;
+    }
+    return -1;
+  };
+}
+// 小地域コードは「必ず文字列」として扱う。数値化されてゼロ落ちしている場合は11桁ゼロ埋めで復元する
+function normalizeAreaCode(v){
+  if(v===undefined||v===null||v==='')return '';
+  let s=String(v).trim();
+  // 数値化されて先頭ゼロが1桁だけ落ちるケース（都道府県コード「01」＝北海道など）にのみ限定して補う。
+  // 5桁・9桁など明らかに短いコードは、市区町村・町丁目単位の集計行を表す別物なので、ここでは伸ばさない。
+  if(/^\d{10}$/.test(s))s='0'+s;
+  return s;
+}
+function toNumOrNull(v){
+  if(v===undefined||v===null||v==='')return null;
+  const n=Number(String(v).replace(/,/g,''));
+  return isNaN(n)?null:n;
+}
+// 抽出した列インデックス群から areaExcelData 形式のレコード1件を作る（Excel/CSV共通）
+function buildAreaRecord(row,cols){
+  return {
+    total:toNumOrNull(row[cols.cTotal]), detached:toNumOrNull(row[cols.cDetached]), row:toNumOrNull(row[cols.cRow]),
+    apartment:toNumOrNull(row[cols.cApt]), apt1_2:toNumOrNull(row[cols.cApt1_2]), apt3_5:toNumOrNull(row[cols.cApt3_5]),
+    apt6_10:toNumOrNull(row[cols.cApt6_10]), apt11up:toNumOrNull(row[cols.cApt11up])
+  };
+}
+function findAreaColumns(headerRow){
+  const colIndex=buildAreaColumnFinder(headerRow);
+  // 「小地域コード」（jSTAT MAP経由）、「コード」（e-Statの地域統計から直接CSVを落とした場合）、
+  // 「KEY_CODE」（e-Statの都道府県単位・生データ形式）の3パターンに対応
+  const cCode=colIndex(['小地域コード','コード','KEY_CODE']);
+  return{
+    cCode,
+    cTotal:colIndex(['主世帯数']),
+    cDetached:colIndex(['一戸建']),
+    cRow:colIndex(['長屋建']),
+    cApt:colIndex(['共同住宅']),
+    cApt1_2:colIndex(['共同住宅１・２階建','共同住宅1・2階建']),
+    cApt3_5:colIndex(['共同住宅３～５階建','共同住宅3～5階建']),
+    cApt6_10:colIndex(['共同住宅６～１０階建','共同住宅6～10階建']),
+    cApt11up:colIndex(['共同住宅１１階建以上','共同住宅11階建以上'])
+  };
+}
+// e-Statの都道府県単位の生データは、1行目が英語のコード名（KEY_CODE, T001086001...）、
+// 2行目が日本語ラベル（主世帯数, 一戸建...）という2行に分かれた見出しになっていることがある。
+// 列位置で2行を合成し、通常の1行見出しと同じように扱えるようにする。
+function findTwoLineHeader(getRowVals,rowCount){
+  for(let i=0;i<rowCount-1;i++){
+    const row1=getRowVals(i);
+    if(row1.some(v=>(v||'').toUpperCase().trim()==='KEY_CODE')){
+      const row2=getRowVals(i+1);
+      const merged=row1.map((v,idx)=>row2[idx]?row2[idx]:v);
+      return{headerRow:merged,headerRowIdx:i+1};
+    }
+  }
+  return null;
+}
+
+// ── CSV（e-Statの地域統計から直接ダウンロードした場合。Shift-JIS/UTF-8いずれも自動判定）──
+function parseCsvLine(line){
+  // ダブルクオート囲み・カンマ区切りの簡易CSVパーサ
+  const result=[];let cur='';let inQuotes=false;
+  for(let i=0;i<line.length;i++){
+    const c=line[i];
+    if(inQuotes){
+      if(c==='"'){
+        if(line[i+1]==='"'){cur+='"';i++;}else{inQuotes=false;}
+      }else cur+=c;
+    }else{
+      if(c==='"')inQuotes=true;
+      else if(c===','){result.push(cur);cur='';}
+      else cur+=c;
+    }
+  }
+  result.push(cur);
+  return result;
+}
+async function _doHandleAreaCsv(file){
+  try{
+    const buf=await file.arrayBuffer();
+    const bytes=new Uint8Array(buf);
+    // UTF-8 BOMがあればUTF-8、無ければ日本の統計サイトで一般的なShift-JISとして読む
+    const hasBom=bytes[0]===0xEF&&bytes[1]===0xBB&&bytes[2]===0xBF;
+    let text;
+    try{
+      text=new TextDecoder(hasBom?'utf-8':'shift_jis').decode(buf);
+    }catch(e){
+      text=new TextDecoder('utf-8').decode(buf); // shift_jisデコーダ非対応環境へのフォールバック
+    }
+    const lines=text.split(/\r\n|\n|\r/).filter(l=>l.length>0);
+    if(!lines.length){showToast('CSVが空です','err');return;}
+
+    let headerRow=null, headerRowIdx=-1;
+    for(let i=0;i<lines.length;i++){
+      const vals=parseCsvLine(lines[i]).map(v=>v.trim());
+      if(vals.some(v=>v==='コード'||v.includes('小地域コード'))&&vals.some(v=>v.includes('主世帯数'))){
+        headerRow=vals; headerRowIdx=i; break;
+      }
+    }
+    if(!headerRow){
+      const twoLine=findTwoLineHeader(i=>parseCsvLine(lines[i]).map(v=>v.trim()),lines.length);
+      if(twoLine){headerRow=twoLine.headerRow;headerRowIdx=twoLine.headerRowIdx;}
+    }
+    if(!headerRow){showToast('見出し行（コード／主世帯数）が見つかりません','err');return;}
+    const cols=findAreaColumns(headerRow);
+    if(cols.cCode<0){showToast('コード列が見つかりません','err');return;}
+
+    const data={};
+    let count=0;
+    for(let i=headerRowIdx+1;i<lines.length;i++){
+      const row=parseCsvLine(lines[i]).map(v=>v.trim());
+      const code=normalizeAreaCode(row[cols.cCode]);
+      if(!/^\d{11}$/.test(code))continue; // 市・町単位の集計行（5桁・9桁）は除外し、丁目単位（11桁）だけを採用
+      data[code]=buildAreaRecord(row,cols);
+      count++;
+    }
+    areaExcelData=data;
+    areaExcelLabel=file.name;
+    refreshAreaColorsAndInfo();
+    saveAreaExcelDataToStorage();
+    const matched=kmlAreas.filter(a=>lookupExcelArea(a.keyCode)).length;
+    showToast(`CSV読込完了（${count}件／境界${matched}件と一致）`,'ok');
+  }catch(err){
+    console.error(err);
+    showToast('CSV読込に失敗しました','err');
+  }
+}
+
+async function _doHandleAreaExcel(file){
+  try{
+    const buf=await file.arrayBuffer();
+    const wb=new ExcelJS.Workbook();
+    await wb.xlsx.load(buf);
+
+    // 「小地域コード」または「コード」を含む見出し行をシート横断で探索（シート・行位置が変わっても壊れない設計）
+    let headerRow=null, headerRowIdx=null, sheetHit=null;
+    outer:
+    for(const ws of wb.worksheets){
+      for(let r=1;r<=ws.rowCount;r++){
+        const row=ws.getRow(r);
+        const vals=row.values.map(v=>(v==null?'':String(v).trim()));
+        if(vals.some(v=>v==='コード'||v.includes('小地域コード'))&&vals.some(v=>v.includes('主世帯数'))){
+          headerRow=vals; headerRowIdx=r; sheetHit=ws;
+          break outer;
+        }
+      }
+    }
+    if(!sheetHit){
+      // 2行に分かれた見出し形式（e-Statの都道府県単位・生データ形式）にも対応
+      outer2:
+      for(const ws of wb.worksheets){
+        const twoLine=findTwoLineHeader(
+          r=>ws.getRow(r+1).values.map(v=>(v==null?'':String(v).trim())),
+          ws.rowCount
+        );
+        if(twoLine){headerRow=twoLine.headerRow;headerRowIdx=twoLine.headerRowIdx+1;sheetHit=ws;break outer2;}
+      }
+    }
+    if(!sheetHit){showToast('見出し行（コード／主世帯数）が見つかりません','err');return;}
+
+    const cols=findAreaColumns(headerRow);
+    if(cols.cCode<0){showToast('コード列が見つかりません','err');return;}
+
+    const data={};
+    let count=0;
+    for(let r=headerRowIdx+1;r<=sheetHit.rowCount;r++){
+      const row=sheetHit.getRow(r).values;
+      const code=normalizeAreaCode(row[cols.cCode]);
+      if(!/^\d{11}$/.test(code))continue; // 見出し以外の説明行・空行を除外
+      data[code]=buildAreaRecord(row,cols);
+      count++;
+    }
+
+    areaExcelData=data;
+    areaExcelLabel=file.name;
+    refreshAreaColorsAndInfo();
+    saveAreaExcelDataToStorage();
+    const matched=kmlAreas.filter(a=>lookupExcelArea(a.keyCode)).length;
+    showToast(`Excel読込完了（${count}件／境界${matched}件と一致）`,'ok');
+  }catch(err){
+    console.error(err);
+    showToast('Excel読込に失敗しました','err');
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+// 受注案件・配布計画の管理
+// 「エリア」＝境界・世帯数(共通データ)、「受注案件」＝受注社ごとの配布計画、
+// という区分に基づき、案件データはKMLエリアを「参照」するだけで境界そのものは複製しない。
+// ══════════════════════════════════════════════════════════════
+function loadOrders(){
+  try{orders=JSON.parse(localStorage.getItem('fgm_orders')||'{}');}catch(e){orders={};}
+}
+function saveOrders(){
+  localStorage.setItem('fgm_orders',JSON.stringify(orders));
+}
+function makeOrderId(){return 'order-'+Date.now();}
+
+function openOrderModal(){
+  loadOrders();
+  renderOrderList();
+  document.getElementById('order-modal').classList.add('show');
+  if(currentOrderId&&orders[currentOrderId])selectOrder(currentOrderId);
+  else document.getElementById('order-detail').style.display='none';
+  refreshAllAreaMapStyles();
+}
+function closeOrderModal(){
+  document.getElementById('order-modal').classList.remove('show');
+  refreshAllAreaMapStyles();
+}
+
+function renderOrderList(){
+  const list=document.getElementById('order-list');
+  const ids=Object.keys(orders).sort((a,b)=>(orders[b].createdAt||'').localeCompare(orders[a].createdAt||''));
+  if(!ids.length){list.innerHTML='<div style="padding:12px;font-size:12px;color:var(--dim2);">まだ受注案件がありません。「＋新規案件を作成」から始めてください。</div>';return;}
+  list.innerHTML=ids.map(id=>{
+    const o=orders[id];
+    const active=id===currentOrderId;
+    return `<div onclick="selectOrder('${id}')" style="padding:9px 12px;cursor:pointer;border-bottom:1px solid rgba(0,0,0,.06);${active?'background:#E8F0FA;':''}">
+      <div style="font-weight:700;font-size:12.5px;">${esc(o.orderName||'（名称未設定）')}</div>
+      <div style="font-size:10.5px;color:var(--dim);">${esc(o.clientName||'')}　${esc(o.roundLabel||'')}　対象エリア${(o.areaKeyCodes||[]).length}件</div>
+    </div>`;
+  }).join('');
+}
+
+function createOrder(){
+  const id=makeOrderId();
+  orders[id]={
+    orderId:id, orderName:'', clientName:'', roundLabel:'', distributorId:'', distributorName:'',
+    areaKeyCodes:[], plannedCounts:{}, areaResults:{}, achievementPhotos:[],
+    createdAt:new Date().toISOString(), sourceOrderId:null
+  };
+  saveOrders();
+  currentOrderId=id;
+  renderOrderList();
+  selectOrder(id);
+}
+
+function duplicateCurrentOrder(){
+  if(!currentOrderId||!orders[currentOrderId]){showToast('複製元の案件を選択してください','err');return;}
+  const src=orders[currentOrderId];
+  const id=makeOrderId();
+  orders[id]={
+    ...JSON.parse(JSON.stringify(src)),
+    orderId:id,
+    orderName:src.orderName+'（複製）',
+    areaResults:{}, achievementPhotos:[], // 実績は引き継がず、計画部分だけ複製する
+    createdAt:new Date().toISOString(), sourceOrderId:currentOrderId
+  };
+  saveOrders();
+  currentOrderId=id;
+  renderOrderList();
+  selectOrder(id);
+  showToast('案件を複製しました（実績データは引き継がれません）');
+}
+
+function selectOrder(id){
+  currentOrderId=id;
+  const o=orders[id];
+  if(!o)return;
+  document.getElementById('order-detail').style.display='block';
+  document.getElementById('order-name-input').value=o.orderName||'';
+  document.getElementById('order-client-input').value=o.clientName||'';
+  document.getElementById('order-round-input').value=o.roundLabel||'';
+  document.getElementById('order-distid-input').value=o.distributorId||'';
+  document.getElementById('order-distname-input').value=o.distributorName||'';
+  renderOrderAreaList();
+  renderOrderAchievementSummary();
+  renderOrderList();
+  refreshAllAreaMapStyles();
+  fitMapToOrderAreas(o);
+  renderOrderRoutePolyline(o);
+}
+
+// 受注案件は「配布計画」の段階（＝まだ写真が1枚も無い状態）から始まるため、
+// 写真の位置情報ではなく、案件に選択済みのエリアの境界そのものを手がかりに地図を移動させる
+function fitMapToOrderAreas(o){
+  if(!map||!o||!(o.areaKeyCodes||[]).length)return;
+  const bounds=new google.maps.LatLngBounds();
+  let any=false;
+  o.areaKeyCodes.forEach(keyCode=>{
+    const area=kmlAreas.find(a=>a.keyCode===keyCode);
+    if(!area)return;
+    area.polygon.getPaths().forEach(path=>path.forEach(pt=>{bounds.extend(pt);any=true;}));
+  });
+  if(any)map.fitBounds(bounds,{padding:60});
+}
+
+// 配達員が写メモVoiceで15秒間隔で記録した移動経路を、実績確認用にオレンジの線で地図に表示する
+let orderRoutePolyline=null;
+function renderOrderRoutePolyline(o){
+  if(orderRoutePolyline){orderRoutePolyline.setMap(null);orderRoutePolyline=null;}
+  if(!map||!o||!(o.routePoints||[]).length)return;
+  const path=o.routePoints.map(p=>({lat:p.lat,lng:p.lng}));
+  orderRoutePolyline=new google.maps.Polyline({
+    path,map,strokeColor:'#C06010',strokeOpacity:.85,strokeWeight:3,
+    icons:[{icon:{path:'M 0,-1 0,1',strokeOpacity:1,scale:2},offset:'0',repeat:'12px'}],
+    zIndex:7
+  });
+}
+
+function saveCurrentOrderMeta(){
+  if(!currentOrderId||!orders[currentOrderId])return;
+  const o=orders[currentOrderId];
+  o.orderName=document.getElementById('order-name-input').value.trim();
+  o.clientName=document.getElementById('order-client-input').value.trim();
+  o.roundLabel=document.getElementById('order-round-input').value.trim();
+  o.distributorId=document.getElementById('order-distid-input').value.trim();
+  o.distributorName=document.getElementById('order-distname-input').value.trim();
+  saveOrders();
+  renderOrderList();
+}
+
+// エリアごとの計画配布枚数の初期値：Excel主世帯数（あれば優先）→KMLのSETAI、の順で採用
+function defaultPlannedCount(area){
+  const ex=lookupExcelArea(area.keyCode);
+  return ex?.total ?? area.setai ?? 0;
+}
+
+function renderOrderAreaList(){
+  const wrap=document.getElementById('order-area-list');
+  const o=orders[currentOrderId];
+  if(!kmlAreas.length){wrap.innerHTML='<div style="padding:12px;font-size:12px;color:var(--dim2);">境界データ（KML/KMZ）が未読込です。</div>';return;}
+  wrap.innerHTML=kmlAreas.map(area=>{
+    const checked=(o.areaKeyCodes||[]).includes(area.keyCode);
+    const count=o.plannedCounts?.[area.keyCode] ?? defaultPlannedCount(area);
+    return `<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;border-bottom:1px solid rgba(0,0,0,.05);">
+      <input type="checkbox" ${checked?'checked':''} onchange="toggleOrderArea('${area.keyCode}',this.checked)"/>
+      <div style="flex:1;font-size:12px;">${esc(area.name)}<span style="color:var(--dim2);font-size:10px;"> ／統計${area.setai!=null?area.setai.toLocaleString():'—'}世帯</span></div>
+      <input type="number" value="${count}" style="width:80px;padding:4px 6px;font-size:12px;border:1px solid rgba(0,0,0,.15);border-radius:5px;" onchange="updateOrderPlannedCount('${area.keyCode}',this.value)"/>
+      <span style="font-size:10px;color:var(--dim2);">枚</span>
+    </div>`;
+  }).join('');
+  renderOrderSelectionTotal();
+}
+// 顧客とは配布枚数（総数）で契約していることが多いため、選択中エリアの合計枚数を常に見えるようにし、
+// 契約枚数に近づくよう小エリア単位で柔軟に選定できるようにする
+function renderOrderSelectionTotal(){
+  const el=document.getElementById('order-selection-total-value');
+  if(!el)return;
+  const o=orders[currentOrderId];
+  if(!o){el.textContent='0 枚（0エリア）';return;}
+  const keyCodes=o.areaKeyCodes||[];
+  const total=keyCodes.reduce((s,k)=>s+(o.plannedCounts?.[k]??0),0);
+  el.textContent=`${total.toLocaleString()} 枚（${keyCodes.length}エリア）`;
+}
+// 受注案件・配布計画モーダルの状態に応じて、マップ上のポリゴンの枠線と数字ラベルを切り替える
+// （モーダルを開いている間：選択中エリアは緑枠＋計画枚数を表示／未選択は薄いグレー数字で世帯数を表示。
+//   モーダルを閉じている間：通常表示に戻し、世帯数を常時表示する）
+function styleAreaForOrder(area){
+  const orderModalOpen=document.getElementById('order-modal').classList.contains('show');
+  const o=orders[currentOrderId];
+  const selected=orderModalOpen&&o&&(o.areaKeyCodes||[]).includes(area.keyCode);
+  if(orderModalOpen&&o){
+    if(selected){
+      area.polygon.setOptions({strokeColor:'#1A8040',strokeWeight:3,fillOpacity:.55});
+      const count=o.plannedCounts?.[area.keyCode] ?? defaultPlannedCount(area);
+      area.label.setLabel({text:String(count),color:'#1A8040',fontSize:'13px',fontWeight:'800'});
+    }else{
+      area.polygon.setOptions({strokeColor:'#8080FF',strokeWeight:1.5,fillOpacity:.22});
+      const basis=lookupExcelArea(area.keyCode)?.total ?? area.setai;
+      area.label.setLabel({text:basis!=null?String(basis):'—',color:'#6A7888',fontSize:'11px',fontWeight:'700'});
+    }
+  }else{
+    area.polygon.setOptions({strokeColor:'#8080FF',strokeWeight:1.5,fillOpacity:.45});
+    const basis=lookupExcelArea(area.keyCode)?.total ?? area.setai;
+    area.label.setLabel({text:basis!=null?String(basis):'—',color:'#1A1E26',fontSize:'12px',fontWeight:'800'});
+  }
+}
+function refreshAllAreaMapStyles(){
+  kmlAreas.forEach(styleAreaForOrder);
+}
+
+function toggleOrderArea(keyCode,checked){
+  const o=orders[currentOrderId];
+  o.areaKeyCodes=o.areaKeyCodes||[];
+  if(checked){
+    if(!o.areaKeyCodes.includes(keyCode))o.areaKeyCodes.push(keyCode);
+    if(o.plannedCounts[keyCode]===undefined){
+      const area=kmlAreas.find(a=>a.keyCode===keyCode);
+      o.plannedCounts[keyCode]=defaultPlannedCount(area);
+    }
+  }else{
+    o.areaKeyCodes=o.areaKeyCodes.filter(k=>k!==keyCode);
+  }
+  saveOrders();
+  renderOrderList();
+  renderOrderAreaList();
+  const area=kmlAreas.find(a=>a.keyCode===keyCode);
+  if(area)styleAreaForOrder(area);
+}
+function updateOrderPlannedCount(keyCode,value){
+  const o=orders[currentOrderId];
+  o.plannedCounts[keyCode]=Number(value)||0;
+  saveOrders();
+  renderOrderSelectionTotal();
+  const area=kmlAreas.find(a=>a.keyCode===keyCode);
+  if(area)styleAreaForOrder(area);
+}
+
+function renderOrderAchievementSummary(){
+  const el=document.getElementById('order-achievement-summary');
+  const o=orders[currentOrderId];
+  const results=o.areaResults||{};
+  const doneCount=Object.keys(results).length;
+  if(!doneCount){el.textContent='まだ配達員からの実績データは取り込まれていません。';return;}
+  const totalDone=Object.values(results).reduce((s,r)=>s+(r.completedCount||0),0);
+  const totalPlanned=(o.areaKeyCodes||[]).reduce((s,k)=>s+(o.plannedCounts[k]||0),0);
+  el.innerHTML=`実績：${doneCount}エリア完了／配布 <b>${totalDone.toLocaleString()}</b> / 計画${totalPlanned.toLocaleString()}枚　（撮影写真データ:${(o.achievementPhotos||[]).length}件／移動経路:${(o.routePoints||[]).length}点）`;
+}
+
+// ── 配達指示データのエクスポート（境界＋計画枚数＋対象エリアの配達禁止マーカーを1パッケージに）──
+function exportInstructionPackage(){
+  const o=orders[currentOrderId];
+  if(!o){showToast('案件を選択してください','err');return;}
+  if(!(o.areaKeyCodes||[]).length){showToast('対象エリアを1件以上選択してください','err');return;}
+  const areas=o.areaKeyCodes.map(keyCode=>{
+    const area=kmlAreas.find(a=>a.keyCode===keyCode);
+    if(!area)return null;
+    const path=[];
+    area.polygon.getPaths().forEach(p=>p.forEach(pt=>path.push([pt.lat(),pt.lng()])));
+    return{
+      keyCode:area.keyCode, name:area.name, cityName:area.cityName,
+      jinko:area.jinko, setai:area.setai,
+      plannedCount:o.plannedCounts[keyCode] ?? defaultPlannedCount(area),
+      path
+    };
+  }).filter(Boolean);
+
+  const relevantProhibited=Object.values(prohibitedMarkersMaster).filter(pm=>{
+    // 対象エリアいずれかのポリゴン内にあるものだけを含める
+    return areas.some(area=>{
+      const rec=kmlAreas.find(a=>a.keyCode===area.keyCode);
+      return rec&&google.maps.geometry&&google.maps.geometry.poly.containsLocation(new google.maps.LatLng(pm.lat,pm.lng),rec.polygon);
+    });
+  });
+
+  const pkg={
+    formatVersion:1, packageType:'distribution_instruction',
+    orderId:o.orderId, orderName:o.orderName, clientName:o.clientName,
+    distributorId:o.distributorId, distributorName:o.distributorName,
+    roundLabel:o.roundLabel, createdAt:new Date().toISOString(),
+    areas, prohibitedMarkers:relevantProhibited
+  };
+  const blob=new Blob([JSON.stringify(pkg,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=`配達指示データ_${o.clientName||'案件'}_${o.roundLabel||''}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast(`配達指示データを書き出しました（エリア${areas.length}件）`);
+}
+
+// ── 配達員からの実績データのインポート ──
+async function handleImportAchievement(file){
+  if(!file)return;
+  try{
+    const text=await file.text();
+    const data=JSON.parse(text);
+    if(data.packageType!=='distribution_achievement'){showToast('実績データの形式が正しくありません','err');return;}
+    let o=orders[data.orderId];
+    if(!o){showToast('対応する受注案件が見つかりません（orderIdが一致しません）','err');return;}
+    o.areaResults=o.areaResults||{};
+    (data.areaResults||[]).forEach(r=>{o.areaResults[r.keyCode]={completedCount:r.completedCount,completedAt:r.completedAt};});
+    o.achievementPhotos=data.photos||[];
+    o.routePoints=data.routePoints||[]; // 15秒間隔で記録された配達員の移動経路
+    saveOrders();
+
+    // 配達員が現地で追加した配達禁止・苦情マーカーを、エリア共通のマスタに合流させる
+    loadProhibitedMarkersMaster();
+    (data.newProhibitedMarkers||[]).forEach(pm=>{prohibitedMarkersMaster[pm.id]=pm;});
+    saveProhibitedMarkersMaster();
+    renderProhibitedMarkersOnMap();
+
+    selectOrder(data.orderId);
+    renderOrderRoutePolyline(o);
+    showToast(`実績データを取り込みました（エリア${(data.areaResults||[]).length}件／写真${(data.photos||[]).length}件／経路${(data.routePoints||[]).length}点）`);
+  }catch(err){
+    console.error(err);
+    showToast('実績データの読み込みに失敗しました','err');
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+// 配達禁止・苦情マーカー（受注案件に属さない、エリア共通の永続データ）
+// ══════════════════════════════════════════════════════════════
+function loadProhibitedMarkersMaster(){
+  try{prohibitedMarkersMaster=JSON.parse(localStorage.getItem('fgm_prohibited_markers')||'{}');}catch(e){prohibitedMarkersMaster={};}
+}
+function saveProhibitedMarkersMaster(){
+  localStorage.setItem('fgm_prohibited_markers',JSON.stringify(prohibitedMarkersMaster));
+}
+function toggleAddProhibitedMode(){
+  addProhibitedMode=!addProhibitedMode;
+  showToast(addProhibitedMode?'地図をクリックして配達禁止・苦情マーカーを追加してください':'マーカー追加モードを終了しました');
+}
+let pendingProhibitedLatLng=null;
+function openProhibitedAddModal(lat,lng){
+  pendingProhibitedLatLng={lat,lng};
+  document.getElementById('prohibited-memo-input').value='';
+  document.getElementById('prohibited-add-modal').classList.add('show');
+}
+function closeProhibitedAddModal(){
+  document.getElementById('prohibited-add-modal').classList.remove('show');
+  addProhibitedMode=false;
+}
+function confirmAddProhibitedMarker(){
+  if(!pendingProhibitedLatLng)return;
+  const id='admin-'+Date.now();
+  const pm={
+    id, lat:pendingProhibitedLatLng.lat, lng:pendingProhibitedLatLng.lng,
+    type:document.getElementById('prohibited-type-select').value,
+    memo:document.getElementById('prohibited-memo-input').value.trim(),
+    createdAt:new Date().toISOString()
+  };
+  loadProhibitedMarkersMaster();
+  prohibitedMarkersMaster[id]=pm;
+  saveProhibitedMarkersMaster();
+  renderProhibitedMarkersOnMap();
+  closeProhibitedAddModal();
+  showToast('配達禁止・苦情マーカーを登録しました');
+}
+function renderProhibitedMarkersOnMap(){
+  if(!map)return;
+  prohibitedMarkerMapObjs.forEach(m=>{m.marker.setMap(null);m.iw.close();});
+  prohibitedMarkerMapObjs=[];
+  Object.values(prohibitedMarkersMaster).forEach(pm=>{
+    const marker=new google.maps.Marker({
+      position:{lat:pm.lat,lng:pm.lng}, map, zIndex:9,
+      icon:{path:google.maps.SymbolPath.CIRCLE,scale:8,fillColor:'#C03030',fillOpacity:.95,strokeColor:'#fff',strokeWeight:2}
+    });
+    const iw=new google.maps.InfoWindow({content:`<div style="font-family:sans-serif;font-size:12px;max-width:200px;"><div style="font-weight:800;color:#C03030;">🚫 ${esc(pm.type)}</div><div style="margin-top:4px;">${esc(pm.memo||'（メモなし）')}</div><div style="margin-top:4px;font-size:10px;color:#9AAABB;">${esc((pm.createdAt||'').slice(0,10))}</div></div>`});
+    marker.addListener('click',()=>{if(activeIW)activeIW.close();iw.open(map,marker);activeIW=iw;});
+    prohibitedMarkerMapObjs.push({marker,iw,pm});
+  });
 }
 
 function plotAll(){
@@ -1093,6 +2161,7 @@ function updateMarkerVisibility(){
     }
   });
   kmlMarkers.forEach(m=>m.marker?.setMap(layers.kml?map:null));
+  kmlAreas.forEach(a=>a.polygon?.setMap(layers.boundary?map:null));
   if(routeLine)routeLine.setMap(layers.route?map:null);
 }
 
@@ -1338,6 +2407,140 @@ async function _doExportXlsx(target){
 // 地図そのもの(Google Maps)は最新のWebGL描画方式のためブラウザ印刷と相性が悪く、
 // そのまま印刷すると地図部分が白抜けすることが多い。そのため、印刷は
 // 「写真＋GPS・方角・メモを整理した一覧レポート」として別ウィンドウで生成する方式にする。
+// ── 配布レポート印刷（受注案件ごとの実績：配達後の報告用）──────────────
+function printDeliveryReport(){
+  const o=orders[currentOrderId];
+  if(!o){showToast('先に「受注案件・配布計画を管理」で対象の案件を選択してください','err');return;}
+  const areaKeyCodes=o.areaKeyCodes||[];
+  if(!areaKeyCodes.length){showToast('この案件に対象エリアが設定されていません','err');return;}
+
+  const win=window.open('','_blank');
+  if(!win){showToast('ポップアップがブロックされました。ブラウザの設定をご確認ください','err');return;}
+
+  let totalPlanned=0,totalDone=0,doneCount=0;
+  const rows=areaKeyCodes.map(keyCode=>{
+    const area=kmlAreas.find(a=>a.keyCode===keyCode);
+    const planned=o.plannedCounts?.[keyCode]??0;
+    const result=o.areaResults?.[keyCode];
+    totalPlanned+=planned;
+    if(result){totalDone+=result.completedCount||0;doneCount++;}
+    const diff=result?(result.completedCount-planned):null;
+    const diffTxt=diff==null?'—':(diff===0?'±0':(diff>0?`+${diff}`:diff));
+    return `<tr>
+      <td>${esc(area?area.name:keyCode)}</td>
+      <td class="num">${planned.toLocaleString()}</td>
+      <td class="num">${result?result.completedCount.toLocaleString():'未完了'}</td>
+      <td class="num">${diffTxt}</td>
+      <td>${result?esc((result.completedAt||'').slice(0,10)):'—'}</td>
+    </tr>`;
+  }).join('');
+
+  const prohibitedInAreas=Object.values(prohibitedMarkersMaster||{}).filter(pm=>
+    areaKeyCodes.some(keyCode=>{
+      const area=kmlAreas.find(a=>a.keyCode===keyCode);
+      return area&&google.maps.geometry&&google.maps.geometry.poly.containsLocation(new google.maps.LatLng(pm.lat,pm.lng),area.polygon);
+    })
+  );
+  const prohibitedRows=prohibitedInAreas.map(pm=>`<tr><td>${esc(pm.type)}</td><td>${esc(pm.memo||'')}</td></tr>`).join('');
+
+  win.document.write(`<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">
+  <title>配布レポート ${esc(o.orderName||'')}</title>
+  <style>
+    body{font-family:-apple-system,'Hiragino Sans','Yu Gothic UI',sans-serif;color:#1A1E26;margin:0;padding:24px;background:#fff;}
+    h1{font-size:18px;margin:0 0 4px;}
+    .sub{font-size:12px;color:#6A7888;margin-bottom:4px;}
+    .meta{display:grid;grid-template-columns:auto 1fr auto 1fr;gap:4px 16px;font-size:12px;margin:14px 0 20px;background:#F5F0E8;padding:10px 14px;border-radius:6px;}
+    .meta b{color:#6A7888;font-weight:400;}
+    table{border-collapse:collapse;width:100%;font-size:12px;margin-bottom:20px;}
+    th{background:#EAE5DB;text-align:left;padding:6px 8px;font-weight:700;}
+    td{padding:6px 8px;border-bottom:1px solid #eee;}
+    td.num{text-align:right;font-family:'SF Mono','Consolas',monospace;}
+    tr.total td{font-weight:800;border-top:2px solid #333;border-bottom:none;}
+    h2{font-size:13px;margin:20px 0 8px;color:#C03030;}
+    @media print{ body{padding:0;} }
+    .toolbar{margin-bottom:16px;}
+    .toolbar button{padding:8px 16px;font-size:13px;border-radius:5px;border:1px solid #ccc;background:#1A6EBF;color:#fff;cursor:pointer;}
+    @media print{ .toolbar{display:none;} }
+  </style></head><body>
+  <div class="toolbar"><button onclick="window.print()">この画面を印刷する</button></div>
+  <h1>配布実績レポート</h1>
+  <div class="sub">出力日時：${new Date().toLocaleString('ja-JP')}</div>
+  <div class="meta">
+    <b>案件名</b><span>${esc(o.orderName||'—')}</span><b>受注社</b><span>${esc(o.clientName||'—')}</span>
+    <b>配布回</b><span>${esc(o.roundLabel||'—')}</span><b>配布員</b><span>${esc(o.distributorName||'—')}（${esc(o.distributorId||'—')}）</span>
+  </div>
+  <table>
+    <tr><th>エリア</th><th style="text-align:right;">計画枚数</th><th style="text-align:right;">実績枚数</th><th style="text-align:right;">差分</th><th>完了日</th></tr>
+    ${rows}
+    <tr class="total"><td>合計（${doneCount}/${areaKeyCodes.length}エリア完了）</td><td class="num">${totalPlanned.toLocaleString()}</td><td class="num">${totalDone.toLocaleString()}</td><td class="num">${(totalDone-totalPlanned)>=0?'+':''}${(totalDone-totalPlanned).toLocaleString()}</td><td></td></tr>
+  </table>
+  ${prohibitedInAreas.length?`<h2>⚠ 対象エリア内の配達禁止・苦情マーカー（${prohibitedInAreas.length}件）</h2><table><tr><th>種別</th><th>メモ</th></tr>${prohibitedRows}</table>`:''}
+  </body></html>`);
+  win.document.close();
+  showToast('配布レポートを開きました','ok');
+}
+
+// ── 配布計画書印刷（提案・社内資料用：配達前の計画段階で使う）──────────────
+function printOrderPlan(){
+  const o=orders[currentOrderId];
+  if(!o){showToast('先に「受注案件・配布計画を管理」で対象の案件を選択してください','err');return;}
+  const areaKeyCodes=o.areaKeyCodes||[];
+  if(!areaKeyCodes.length){showToast('この案件に対象エリアが設定されていません','err');return;}
+
+  const win=window.open('','_blank');
+  if(!win){showToast('ポップアップがブロックされました。ブラウザの設定をご確認ください','err');return;}
+
+  let totalPlanned=0,totalSetai=0;
+  const rows=areaKeyCodes.map(keyCode=>{
+    const area=kmlAreas.find(a=>a.keyCode===keyCode);
+    const planned=o.plannedCounts?.[keyCode]??0;
+    const setai=area?.setai??null;
+    totalPlanned+=planned;
+    if(setai!=null)totalSetai+=setai;
+    return `<tr>
+      <td>${esc(area?area.name:keyCode)}</td>
+      <td class="num">${setai!=null?setai.toLocaleString():'—'}</td>
+      <td class="num">${planned.toLocaleString()}</td>
+    </tr>`;
+  }).join('');
+
+  win.document.write(`<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">
+  <title>配布計画書 ${esc(o.orderName||'')}</title>
+  <style>
+    body{font-family:-apple-system,'Hiragino Sans','Yu Gothic UI',sans-serif;color:#1A1E26;margin:0;padding:24px;background:#fff;}
+    h1{font-size:18px;margin:0 0 4px;}
+    .sub{font-size:12px;color:#6A7888;margin-bottom:4px;}
+    .meta{display:grid;grid-template-columns:auto 1fr auto 1fr;gap:4px 16px;font-size:12px;margin:14px 0 20px;background:#F5F0E8;padding:10px 14px;border-radius:6px;}
+    .meta b{color:#6A7888;font-weight:400;}
+    table{border-collapse:collapse;width:100%;font-size:12px;margin-bottom:14px;}
+    th{background:#EAE5DB;text-align:left;padding:6px 8px;font-weight:700;}
+    td{padding:6px 8px;border-bottom:1px solid #eee;}
+    td.num{text-align:right;font-family:'SF Mono','Consolas',monospace;}
+    tr.total td{font-weight:800;border-top:2px solid #333;border-bottom:none;}
+    .note{font-size:10px;color:#9AAABB;margin-top:8px;}
+    @media print{ body{padding:0;} }
+    .toolbar{margin-bottom:16px;}
+    .toolbar button{padding:8px 16px;font-size:13px;border-radius:5px;border:1px solid #ccc;background:#1A6EBF;color:#fff;cursor:pointer;}
+    @media print{ .toolbar{display:none;} }
+  </style></head><body>
+  <div class="toolbar"><button onclick="window.print()">この画面を印刷する</button></div>
+  <h1>配布計画書</h1>
+  <div class="sub">出力日時：${new Date().toLocaleString('ja-JP')}（提案・社内共有用資料）</div>
+  <div class="meta">
+    <b>案件名</b><span>${esc(o.orderName||'—')}</span><b>受注社</b><span>${esc(o.clientName||'—')}</span>
+    <b>配布回</b><span>${esc(o.roundLabel||'—')}</span><b>対象エリア数</b><span>${areaKeyCodes.length}エリア</span>
+  </div>
+  <table>
+    <tr><th>エリア</th><th style="text-align:right;">世帯数（総務省統計・参考）</th><th style="text-align:right;">計画配布枚数</th></tr>
+    ${rows}
+    <tr class="total"><td>合計</td><td class="num">${totalSetai.toLocaleString()}</td><td class="num">${totalPlanned.toLocaleString()}</td></tr>
+  </table>
+  <div class="note">※世帯数は国勢調査（総務省統計局）の公開データに基づく参考値です。計画配布枚数は上記世帯数を基準に、案件ごとの事情を踏まえて設定しています。</div>
+  </body></html>`);
+  win.document.close();
+  showToast('配布計画書を開きました','ok');
+}
+
 function printReport(){
   const target=getExportPhotos();
   const pts=target.filter(p=>p.exif?.lat!==null);
@@ -1866,13 +3069,23 @@ async function exportGovernmentLedger(){
 }
 
 function clearAll(){
-  if(photos.length>0&&!confirm('全データをクリアしますか？'))return;
+  const hasData=photos.length>0||kmlAreas.length>0||areaExcelData;
+  if(hasData&&!confirm('写真・メモ・境界線・世帯データをすべてクリアします（受注案件・配達禁止マーカーは削除されません）。よろしいですか？'))return;
   markers.forEach(m=>{m.marker?.setMap(null);m.arrow?.setMap(null);m.iw?.close();});markers=[];
   if(routeLine){routeLine.setMap(null);routeLine=null;}
   photos.forEach(p=>{if(p.thumbUrl)URL.revokeObjectURL(p.thumbUrl);});photos=[];memos=[];
   loadedProjectsMeta={};renderLoadedProjectsSidebar();
   if(activeIW){activeIW.close();activeIW=null;}
+  // 境界線・世帯データも合わせてリセットする（受注案件・配達禁止マーカーは資産データのため対象外）
+  kmlAreas.forEach(a=>{a.polygon?.setMap(null);a.label?.setMap(null);a.iw?.close();});
+  kmlAreas=[];
+  areaExcelData=null;
+  areaExcelLabel='';
+  localStorage.removeItem('fgm_kml_areas');
+  localStorage.removeItem('fgm_area_excel_data');
+  localStorage.removeItem('fgm_area_excel_label');
   updateStats();renderList();
+  showToast('クリアしました','ok');
 }
 
 function showProgress(v){document.getElementById('progress').classList.toggle('show',v);}
